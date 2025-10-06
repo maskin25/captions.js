@@ -1,0 +1,1 @@
+# captions.js Monorepo\n\nContains:\n- core library (tsup)\n- demo (vite)\n- storybook (storybook)
