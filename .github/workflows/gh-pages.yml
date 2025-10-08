@@ -25,13 +25,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Build library
-        run: pnpm --filter @captions/core build
+        run: pnpm --filter captions.js build
 
       - name: Build demo
         run: pnpm --filter captions-demo build

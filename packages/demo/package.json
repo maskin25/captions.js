@@ -7,7 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@captions/core": "workspace:*"
+    "captions.js": "workspace:*"
   },
   "devDependencies": {
     "vite": "^5.0.0",

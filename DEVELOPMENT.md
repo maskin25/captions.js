@@ -6,40 +6,42 @@ This cheat sheet summarizes all the key scripts for working with the `captions.j
 
 ## 🌟 General `pnpm` Commands
 
-| Command                                     | Description                                                  |
-| ------------------------------------------- | ------------------------------------------------------------ |
-| `pnpm install`                              | Installs all dependencies for all packages in the monorepo.  |
-| `pnpm --filter <package> run <script>`      | Runs a script `<script>` for a specific package `<package>`. |
-| `pnpm build`                                | Builds all packages that have a `build` script.              |
-| `pnpm clean`                                | Cleans build artifacts if a `clean` script is defined.       |
+| Command                                | Description                                                  |
+| -------------------------------------- | ------------------------------------------------------------ |
+| `pnpm install`                         | Installs all dependencies for all packages in the monorepo.  |
+| `pnpm --filter <package> run <script>` | Runs a script `<script>` for a specific package `<package>`. |
+| `pnpm build`                           | Builds all packages that have a `build` script.              |
+| `pnpm clean`                           | Cleans build artifacts if a `clean` script is defined.       |
 
-> **Note:** `<package>` refers to the package name in `packages/`, e.g., `@captions/core`, `captions-demo`, or `captions-storybook`.
+> **Note:** `<package>` refers to the package name in `packages/`, e.g., `captions.js`, `captions-demo`, or `captions-storybook`.
 
 ---
 
-## 📦 Package: `@captions/core`
+## 📦 Package: `captions.js`
 
-| Script  | Command                                   | Description                                                              |
-| ------- | ----------------------------------------- | ------------------------------------------------------------------------ |
-| `build` | `pnpm --filter @captions/core run build`  | Builds the library using `tsup` (CJS, ESM, and TypeScript declarations). |
-| `clean` | `pnpm --filter @captions/core run clean`  | Deletes the build folder (`dist`).                                       |
+| Script  | Command                               | Description                                                              |
+| ------- | ------------------------------------- | ------------------------------------------------------------------------ |
+| `build` | `pnpm --filter captions.js run build` | Builds the library using `tsup` (CJS, ESM, and TypeScript declarations). |
+| `clean` | `pnpm --filter captions.js run clean` | Deletes the build folder (`dist`).                                       |
 
 **Example:**
+
 ```bash
-pnpm --filter @captions/core run build
+pnpm --filter captions.js run build
 ```
 
 ---
 
 ## 🎨 Demo App: `captions-demo`
 
-| Script    | Command                                 | Description                                                        |
-| --------- | --------------------------------------- | ------------------------------------------------------------------ |
+| Script    | Command                                   | Description                                                         |
+| --------- | ----------------------------------------- | ------------------------------------------------------------------- |
 | `dev`     | `pnpm --filter captions-demo run dev`     | Runs the demo locally with Vite (default: `http://localhost:5173`). |
-| `build`   | `pnpm --filter captions-demo run build`   | Builds the demo for production into the `dist` folder.             |
-| `preview` | `pnpm --filter captions-demo run preview` | Serves the built demo locally for preview.                         |
+| `build`   | `pnpm --filter captions-demo run build`   | Builds the demo for production into the `dist` folder.              |
+| `preview` | `pnpm --filter captions-demo run preview` | Serves the built demo locally for preview.                          |
 
 **Example:**
+
 ```bash
 pnpm --filter captions-demo run dev
 ```
@@ -48,13 +50,14 @@ pnpm --filter captions-demo run dev
 
 ## 📚 Storybook: `captions-storybook`
 
-| Script            | Command                                           | Description                                                |
-| ----------------- | ------------------------------------------------- | ---------------------------------------------------------- |
-| `storybook`       | `pnpm --filter captions-storybook run storybook`  | Runs Storybook locally with Vite (`http://localhost:6006`). |
-| `build-storybook` | `pnpm --filter captions-storybook run build-storybook` | Builds a static Storybook site into `storybook-static`.    |
-| `deploy`          | `pnpm --filter captions-storybook run deploy`     | Builds and deploys Storybook to GitHub Pages.              |
+| Script            | Command                                                | Description                                                 |
+| ----------------- | ------------------------------------------------------ | ----------------------------------------------------------- |
+| `storybook`       | `pnpm --filter captions-storybook run storybook`       | Runs Storybook locally with Vite (`http://localhost:6006`). |
+| `build-storybook` | `pnpm --filter captions-storybook run build-storybook` | Builds a static Storybook site into `storybook-static`.     |
+| `deploy`          | `pnpm --filter captions-storybook run deploy`          | Builds and deploys Storybook to GitHub Pages.               |
 
 **Example:**
+
 ```bash
 pnpm --filter captions-storybook run storybook
 ```
@@ -64,16 +67,18 @@ pnpm --filter captions-storybook run storybook
 ## ⚡ Tips & Recommendations
 
 1.  **Targeted Scripts:** Always run scripts using `pnpm --filter` to ensure you're using the correct local binaries for that package.
+
     ```bash
     pnpm --filter <package> run <script>
     ```
 
 2.  **Troubleshooting:** If you encounter issues after updating packages, run this sequence to perform a clean reinstall:
+
     ```bash
     # Clean up all node_modules and lockfile
     rm -rf node_modules packages/*/node_modules
     rm pnpm-lock.yaml
-    
+
     # Prune the pnpm store and reinstall
     pnpm store prune
     pnpm install
@@ -83,10 +88,12 @@ pnpm --filter captions-storybook run storybook
 
     ```json
     "scripts": {
-      "build": "pnpm --filter @captions/core run build && pnpm --filter captions-demo run build && pnpm --filter captions-storybook run build-storybook"
+      "build": "pnpm --filter captions.js run build && pnpm --filter captions-demo run build && pnpm --filter captions-storybook run build-storybook"
     }
     ```
+
     Then, you can simply run:
+
     ```bash
     pnpm run build
     ```

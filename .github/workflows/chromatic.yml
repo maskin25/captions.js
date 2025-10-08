@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build library
-        run: pnpm --filter @captions/core build
+        run: pnpm --filter captions.js build
       - name: Run Chromatic
         uses: chromaui/action@latest
         with:

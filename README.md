@@ -5,6 +5,9 @@
 
 A modern JavaScript library for adding captions to HTML5 videos with ease.
 
+[![Storybook](https://cdn.jsdelivr.net/gh/storybookjs/brand@main/badge/badge-storybook-default.svg)](https://main--68e681805917843931c33a87.chromatic.com/)
+
+
 ## Features
 
 - **Easy Integration**: Simple API to add captions to your videos.

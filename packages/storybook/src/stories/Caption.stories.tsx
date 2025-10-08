@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { renderCaptions } from "@captions/core";
+import { renderCaptions } from "captions.js";
 
 export default { title: "Captions/Basic" };
 
