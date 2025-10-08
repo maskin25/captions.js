@@ -30,3 +30,4 @@ jobs:
           # ⚠️ Make sure to configure a `CHROMATIC_PROJECT_TOKEN` repository secret
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           buildCommand: pnpm --filter captions-storybook run build-storybook
+          outputDir: packages/storybook/storybook-static
