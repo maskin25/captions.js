@@ -7,7 +7,7 @@ A modern JavaScript library for adding captions to HTML5 videos with ease.
 
 [**Live Demo**](https://maskin25.github.io/captions.js/)
 
-[![Storybook](https://cdn.jsdelivr.net/gh/storybookjs/brand@main/badge/badge-storybook-default.svg)](https://main--68e681805917843931c33a87.chromatic.com/)
+[![Storybook](https://raw.githubusercontent.com/storybookjs/brand/refs/heads/main/badge/badge-storybook.svg)](https://main--68e681805917843931c33a87.chromatic.com/)
 
 ## Features
 
