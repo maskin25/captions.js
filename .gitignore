@@ -60,3 +60,6 @@ docs/
 *.log
 coverage/
 reports/ 
+
+
+/packages/core/README.md
