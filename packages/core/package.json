@@ -1,6 +1,8 @@
 {
   "name": "captions.js",
-  "version": "0.2.0",
+  "private": false,
+  "description": "A cross-platform captions engine for client- and server-side video processing — ideal for AI video tools, editors, and streaming apps",
+  "version": "0.3.0",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
