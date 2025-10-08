@@ -2,6 +2,18 @@
   "name": "captions.js",
   "private": false,
   "description": "A cross-platform captions engine for client- and server-side video processing — ideal for AI video tools, editors, and streaming apps",
+  "keywords": [
+    "captions",
+    "subtitles",
+    "video",
+    "streaming",
+    "transcription",
+    "AI",
+    "machine learning",
+    "ffmpeg",
+    "client-side",
+    "server-side"
+  ],
   "version": "0.4.0",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -14,7 +26,8 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch"
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "prepublishOnly": "cp ../../README.md ./README.md"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
