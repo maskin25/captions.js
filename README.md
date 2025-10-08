@@ -5,8 +5,9 @@
 
 A modern JavaScript library for adding captions to HTML5 videos with ease.
 
-[![Storybook](https://cdn.jsdelivr.net/gh/storybookjs/brand@main/badge/badge-storybook-default.svg)](https://main--68e681805917843931c33a87.chromatic.com/)
+[**Live Demo**](https://maskin25.github.io/captions.js/)
 
+[![Storybook](https://cdn.jsdelivr.net/gh/storybookjs/brand@main/badge/badge-storybook-default.svg)](https://main--68e681805917843931c33a87.chromatic.com/)
 
 ## Features
 
@@ -24,12 +25,6 @@ npm install captions.js
 ```
 
 or
-
-```bash
-yarn add captions.js
-```
-
-For development see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 ```bash
 yarn add captions.js
