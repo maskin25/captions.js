@@ -1,6 +1,12 @@
 {
   "name": "captions.js",
+  "version": "0.4.0",
   "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maskin25/captions.js"
+  },
   "description": "A cross-platform captions engine for client- and server-side video processing — ideal for AI video tools, editors, and streaming apps",
   "keywords": [
     "captions",
@@ -14,7 +20,6 @@
     "client-side",
     "server-side"
   ],
-  "version": "0.4.0",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
