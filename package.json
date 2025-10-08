@@ -4,9 +4,6 @@
   "workspaces": [
     "packages/*"
   ],
-  "scripts": {
-    "build-storybook": "pnpm --filter captions-storybook run build-storybook"
-  },
   "devDependencies": {
     "typescript": "^5.6.3"
   }

@@ -22,10 +22,11 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
+      - name: Build library
+        run: pnpm --filter @captions/core build
       - name: Run Chromatic
         uses: chromaui/action@latest
         with:
           # ⚠️ Make sure to configure a `CHROMATIC_PROJECT_TOKEN` repository secret
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          buildScriptName: build-storybook
-          outputDir: packages/storybook/storybook-static
+          buildCommand: pnpm --filter captions-storybook run build-storybook
