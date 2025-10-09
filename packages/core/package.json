@@ -1,6 +1,6 @@
 {
   "name": "captions.js",
-  "version": "0.8.0",
+  "version": "0.1.0-alpha",
   "private": false,
   "license": "MIT",
   "repository": {
@@ -12,13 +12,14 @@
     "captions",
     "subtitles",
     "video",
-    "streaming",
     "transcription",
-    "AI",
-    "machine learning",
     "ffmpeg",
     "client-side",
     "server-side"
+  ],
+  "files": [
+    "dist",
+    "README.md"
   ],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -32,7 +33,9 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
-    "prepublishOnly": "cp ../../README.md ./README.md"
+    "publish": "npm publish --access public",
+    "prepublishOnly": "cp ../../README.md ./README.md && pnpm run build",
+    "postpublish": "rm -f README.md"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
