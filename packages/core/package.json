@@ -33,7 +33,6 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
-    "publish": "npm publish --access public",
     "prepublishOnly": "cp ../../README.md ./README.md && pnpm run build",
     "postpublish": "rm -f README.md"
   },
