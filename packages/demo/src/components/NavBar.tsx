@@ -119,7 +119,9 @@ export function Navbar() {
               >
                 <Star className="h-4 w-4" />
                 {stars !== null && (
-                  <span className="text-xs font-medium">{stars}</span>
+                  <span className="text-xs font-medium">
+                    {stars.toLocaleString()}
+                  </span>
                 )}
               </a>
             </Button>
