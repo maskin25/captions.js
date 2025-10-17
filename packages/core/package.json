@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/maskin25/captions.js"
   },
-  "description": "A cross-platform captions engine for client- and server-side video processing — ideal for AI video tools, editors, and streaming apps",
+  "description": "Render styled animated captions on canvas — works both on client and server side using Node.js and FFmpeg.",
   "keywords": [
     "captions",
     "subtitles",
@@ -39,5 +39,8 @@
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "konva": "^10.0.2"
   }
 }

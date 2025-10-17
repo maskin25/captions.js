@@ -63,3 +63,8 @@ reports/
 
 
 /packages/core/README.md
+/packages/core/fonts
+/packages/demo/public/margo.mp4
+/packages/demo/public/margo.flac
+
+/packages/tools
