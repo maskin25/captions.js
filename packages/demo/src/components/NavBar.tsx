@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "./ThemeProvider";
 import { useEffect, useState } from "react";
 import { CommandDialog } from "@/components/ui/command";
+import { Link } from "react-router";
 
 export function Navbar() {
   const navItems = [
@@ -56,9 +57,9 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:gap-6">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.href}
-                href={item.href}
+                to={item.href}
                 className="flex items-center gap-1 text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
                 target={item.href.startsWith("http") ? "_blank" : undefined}
                 rel={
@@ -71,7 +72,7 @@ export function Navbar() {
                 {item.href.startsWith("http") && (
                   <ExternalLink className="h-4 w-4" />
                 )}
-              </a>
+              </Link>
             ))}
           </div>
 
