@@ -34,7 +34,7 @@ jobs:
         run: pnpm --filter captions.js build
 
       - name: Build demo
-        run: pnpm --filter captions-demo build
+        run: pnpm --filter demo build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
