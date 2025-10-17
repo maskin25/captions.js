@@ -30,13 +30,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-    - name: Build library
-      run: pnpm --filter captions.js build
+      - name: Build library
+        run: pnpm --filter captions.js build
 
-    - name: Build demo
-      run: |
-        pnpm --filter demo build
-        cp packages/demo/dist/index.html packages/demo/dist/404.html
+      - name: Build demo
+        run: |
+          pnpm --filter demo build
+          cp packages/demo/dist/index.html packages/demo/dist/404.html  # ✅ create 404 fallback
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
