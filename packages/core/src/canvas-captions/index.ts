@@ -50,7 +50,6 @@ export const renderFrame: RenderFrameFn = (
 
     const alphabetKind = detectAlphabetKind(textForDetectAlphabet);
     const alphabet = getAlphabet(alphabetKind);
-    console.log(captionsSettings.style.font.fontFamily);
 
     const alphabetText = new Konva.Text({
       text: captionsSettings.style.font.fontCapitalize
@@ -99,7 +98,7 @@ export const renderFrame: RenderFrameFn = (
 
   const chunks = splitCaptionsBytotalWordsToDisplay(
     captions,
-    totalSymbolInLine,
+    totalSymbolInLine - 6,
     captionsSettings.linesPerPage
   );
 

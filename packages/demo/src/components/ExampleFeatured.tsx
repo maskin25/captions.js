@@ -12,22 +12,48 @@ import {
 
 import {
   // renderCaptions,
-  renderString,
+  // renderString,
   attachToVideo,
   // googleFontsList,
   stylePresets,
-  type Caption,
+  // type Caption,
 } from "captions.js";
 
 const CANVAS_WIDTH = 640;
-const CANVAS_HEIGHT = 480;
+const CANVAS_HEIGHT = 360;
 
 function ExampleFeatured() {
-  const [preset, setPreset] = useState(stylePresets[0]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [preset, setPreset] = useState(
+    stylePresets.find((p) => p.captionsSettings.style.name === "Safari") ||
+      stylePresets[0]
+  );
+  // const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const captionsRef = useRef<any>(null);
 
   const [captions, setCaptions] = useState(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      captionsRef.current = attachToVideo(videoRef.current, undefined, {
+        preset,
+        captions,
+      });
+    }
+
+    return () => {
+      if (captionsRef.current) {
+        captionsRef.current.detach();
+        captionsRef.current = null;
+      }
+    };
+  }, [videoRef]);
+
+  useEffect(() => {
+    if (captionsRef.current) {
+      captionsRef.current.update({ preset, captions });
+    }
+  }, [preset, captions]);
 
   useEffect(() => {
     fetch(`${"/captions.js"}/margo-plain.json`)
@@ -43,25 +69,10 @@ function ExampleFeatured() {
       .then(setCaptions);
   }, []);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    let detach, update;
-    if (video && captions) {
-      ({ detach, update } = attachToVideo(video, undefined, {
-        preset,
-        captions,
-      }));
-    }
-
-    if (preset) {
-      update?.({ preset });
-    }
-  }, [videoRef, preset, captions]);
-
   return (
     <div className="flex flex-col items-center gap-4">
       <Select
+        value={String(preset.id)}
         onValueChange={(value) => {
           const selectedPreset = stylePresets.find(
             (preset) => String(preset.id) === value

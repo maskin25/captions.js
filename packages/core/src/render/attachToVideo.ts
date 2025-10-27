@@ -5,21 +5,11 @@ import { googleFontsList } from "../fonts/googleFonts.config";
 
 const attachedVideos = new WeakMap();
 
-export const attachToVideo = async (
+export const attachToVideo = (
   videoElement: HTMLVideoElement,
   container?: HTMLDivElement,
   options?: any
 ) => {
-  if (attachedVideos.has(videoElement)) {
-    console.warn("Captions are already attached to this video element.");
-    return attachedVideos.get(videoElement);
-  }
-
-  await loadGoogleFont2(
-    options.preset.captionsSettings.style.font
-      .fontFamily as (typeof googleFontsList)[number]
-  );
-
   // Implementation for attaching captions to the video
   if (!container) {
     container = document.createElement("div");
@@ -45,14 +35,21 @@ export const attachToVideo = async (
   stage.height(container.clientHeight);
 
   const update = () => {
+    console.log(
+      "update captions at",
+      options.preset.captionsSettings.style.name
+    );
+
     layer.destroyChildren();
     renderFrame(
       options.preset.captionsSettings,
       undefined as any,
-      options.captions,
+      options.captions || [],
       videoElement.currentTime,
       [640, 360],
-      layer
+      layer,
+      1,
+      { type: "bottom", positionTopOffset: 50 }
     );
   };
 
@@ -77,8 +74,14 @@ export const attachToVideo = async (
       stage.destroy();
       attachedVideos.delete(videoElement);
     },
-    update: (newOptions: any) => {
+    update: async (newOptions: any) => {
       options = { ...options, ...newOptions };
+
+      await loadGoogleFont2(
+        options.preset.captionsSettings.style.font
+          .fontFamily as (typeof googleFontsList)[number]
+      );
+
       update(); // re-render on update
     },
   };
