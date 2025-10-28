@@ -16,15 +16,26 @@ import {
   attachToVideo,
   // googleFontsList,
   stylePresets,
+  type StylePreset,
   // type Caption,
 } from "captions.js";
 
-const CANVAS_WIDTH = 640;
-const CANVAS_HEIGHT = 360;
+const DEFAULT_CANVAS_WIDTH = 640;
+const DEFAULT_CANVAS_HEIGHT = 360;
 
-function ExampleFeatured() {
+type ExampleFeaturedProps = {
+  videoSrc?: string;
+  captionsSrc?: string;
+  presetName?: StylePreset["captionsSettings"]["style"]["name"];
+};
+
+function ExampleFeatured({
+  videoSrc,
+  captionsSrc,
+  presetName,
+}: ExampleFeaturedProps) {
   const [preset, setPreset] = useState(
-    stylePresets.find((p) => p.captionsSettings.style.name === "Safari") ||
+    stylePresets.find((p) => p.captionsSettings.style.name === presetName) ||
       stylePresets[0]
   );
   // const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -32,6 +43,31 @@ function ExampleFeatured() {
   const captionsRef = useRef<any>(null);
 
   const [captions, setCaptions] = useState(null);
+
+  const [canvasSize, setCanvasSize] = useState<[number, number]>([
+    DEFAULT_CANVAS_WIDTH,
+    DEFAULT_CANVAS_HEIGHT,
+  ]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleMetadata = () => {
+      setCanvasSize([video.videoWidth, video.videoHeight]);
+    };
+
+    video.addEventListener("loadedmetadata", handleMetadata);
+
+    // If metadata is already loaded
+    if (video.readyState >= 1) {
+      handleMetadata();
+    }
+
+    return () => {
+      video.removeEventListener("loadedmetadata", handleMetadata);
+    };
+  }, [videoRef]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -56,7 +92,7 @@ function ExampleFeatured() {
   }, [preset, captions]);
 
   useEffect(() => {
-    fetch(`${"/captions.js"}/margo-plain.json`)
+    fetch(captionsSrc!)
       .then((res) => res.json())
       .then((data) => {
         // convert startTime and endTime to numbers
@@ -98,20 +134,14 @@ function ExampleFeatured() {
 
       <div className="relative bg-black">
         <video
+          preload="metadata"
           ref={videoRef}
-          src="https://storage.googleapis.com/shorty-uploads/margo.mp4"
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
+          src={videoSrc}
+          width={canvasSize[0]}
+          height={canvasSize[1]}
           controls
           style={{ display: "block" }}
-        ></video>
-
-        {/*   <canvas
-        ref={canvasRef}
-        style={{ width: `${CANVAS_WIDTH}px`, height: `${CANVAS_HEIGHT}px` }}
-        width={CANVAS_WIDTH * window.devicePixelRatio}
-        height={CANVAS_HEIGHT * window.devicePixelRatio}
-      ></canvas> */}
+        />
       </div>
     </div>
   );

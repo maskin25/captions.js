@@ -24,29 +24,80 @@ export const attachToVideo = (
 
   const stage = new Konva.Stage({
     container: container,
-    width: videoElement.videoWidth,
-    height: videoElement.videoHeight,
   });
 
   const layer = new Konva.Layer();
   stage.add(layer);
 
-  stage.width(container.clientWidth);
-  stage.height(container.clientHeight);
+  let videoWidth = videoElement.videoWidth;
+  let videoHeight = videoElement.videoHeight;
+
+  const syncStageDimensions = () => {
+    const currentVideoWidth = videoElement.videoWidth || videoWidth;
+    const currentVideoHeight = videoElement.videoHeight || videoHeight;
+
+    if (!currentVideoWidth || !currentVideoHeight) {
+      return;
+    }
+
+    videoWidth = currentVideoWidth;
+    videoHeight = currentVideoHeight;
+
+    stage.width(videoWidth);
+    stage.height(videoHeight);
+
+    const rect = videoElement.getBoundingClientRect();
+    const displayWidth =
+      rect.width || stage.container().offsetWidth || videoWidth;
+    const displayHeight =
+      rect.height || stage.container().offsetHeight || videoHeight;
+
+    const stageContainer = stage.container() as HTMLDivElement;
+
+    if (displayWidth && displayHeight) {
+      stageContainer.style.width = `${displayWidth}px`;
+      stageContainer.style.height = `${displayHeight}px`;
+
+      const scaleX = displayWidth / videoWidth;
+      const scaleY = displayHeight / videoHeight;
+      stage.scale({ x: scaleX, y: scaleY });
+    } else {
+      stage.scale({ x: 1, y: 1 });
+      stageContainer.style.width = `${videoWidth}px`;
+      stageContainer.style.height = `${videoHeight}px`;
+    }
+
+    stage.batchDraw();
+  };
+
+  const handleMetadata = () => {
+    syncStageDimensions();
+  };
+
+  window.addEventListener("resize", syncStageDimensions);
+
+  const resizeObserver =
+    typeof ResizeObserver !== "undefined"
+      ? new ResizeObserver(() => syncStageDimensions())
+      : undefined;
+
+  resizeObserver?.observe(videoElement);
+
+  videoElement.addEventListener("loadedmetadata", handleMetadata, {
+    once: true,
+  });
+
+  syncStageDimensions();
 
   const update = () => {
-    console.log(
-      "update captions at",
-      options.preset.captionsSettings.style.name
-    );
-
     layer.destroyChildren();
+
     renderFrame(
       options.preset.captionsSettings,
       undefined as any,
       options.captions || [],
       videoElement.currentTime,
-      [640, 360],
+      [videoWidth, videoHeight],
       layer,
       1,
       { type: "bottom", positionTopOffset: 50 }
@@ -68,6 +119,8 @@ export const attachToVideo = (
   const controls = {
     detach: () => {
       cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", syncStageDimensions);
+      resizeObserver?.disconnect();
       if (container && container.parentElement) {
         container.parentElement.removeChild(container);
       }
