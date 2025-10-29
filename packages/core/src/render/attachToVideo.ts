@@ -90,6 +90,10 @@ export const attachToVideo = (
   syncStageDimensions();
 
   const update = () => {
+    if (!videoWidth || !videoHeight) {
+      return;
+    }
+
     layer.destroyChildren();
 
     renderFrame(
