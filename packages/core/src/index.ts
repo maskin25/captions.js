@@ -1,3 +1,5 @@
+import { Captions } from "./captions/Captions";
+
 export function renderCaptions(ctx: CanvasRenderingContext2D, text: string) {
   ctx.font = "48px sans-serif";
   ctx.fillStyle = "red";
@@ -16,3 +18,5 @@ export { renderString } from "./render/renderString";
 export { attachToVideo } from "./render/attachToVideo";
 
 export { Caption } from "./entities/captions/captions.types";
+
+export default Captions;

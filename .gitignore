@@ -52,7 +52,6 @@ Thumbs.db
 
 # === GitHub Pages build ===
 gh-pages/
-docs/
 
 # === Temporary artifacts ===
 *.zip

@@ -1,0 +1,16 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "docs": "typedoc"
+  },
+  "author": "Maxim Mordasov",
+  "license": "ISC",
+  "devDependencies": {
+    "typedoc": "^0.28.14",
+    "typedoc-plugin-markdown": "^4.9.0",
+    "vitepress": "^1.6.4"
+  }
+}
