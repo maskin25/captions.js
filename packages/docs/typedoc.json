@@ -1,5 +1,6 @@
 {
   "entryPoints": ["../core/src/index.ts"],
+  "tsconfig": "../core/tsconfig.json",
   "out": "./src/api",
   "plugin": ["typedoc-plugin-markdown"],
   "excludePrivate": true,

@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "docs": "typedoc"
+    "docs": "pnpm run docs:build",
+    "docs:generate": "typedoc",
+    "docs:dev": "pnpm run docs:generate && vitepress dev src",
+    "docs:build": "pnpm run docs:generate && vitepress build src",
+    "docs:preview": "vitepress preview src"
   },
   "author": "Maxim Mordasov",
   "license": "ISC",
