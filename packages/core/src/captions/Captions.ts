@@ -5,6 +5,17 @@ import { googleFontsList } from "../fonts/googleFonts.config";
 import type { Caption } from "../entities/captions/captions.types";
 import type { StylePreset } from "../stylePresets/stylePresets.config";
 
+/**
+ * Configuration passed to the captions runtime when binding to a video element.
+ *
+ * @public
+ * @typedef CaptionsOptions
+ * @property {HTMLVideoElement} video - Video element that should receive overlays.
+ * @property {HTMLDivElement=} container - Optional custom container to host the Konva stage.
+ * @property {StylePreset} preset - Initial preset controlling font, colors, animations.
+ * @property {Caption[] | null=} captions - Initial caption track.
+ * @property {boolean=} autoEnable - When false, caller must invoke `enable()` manually.
+ */
 export type CaptionsOptions = {
   video: HTMLVideoElement;
   container?: HTMLDivElement;
@@ -13,6 +24,12 @@ export type CaptionsOptions = {
   autoEnable?: boolean;
 };
 
+/**
+ * Imperative controller that owns the Konva stage lifecycle for a single video element.
+ *
+ * @public
+ * @class
+ */
 export class Captions {
   private enabled = false;
   private readonly video: HTMLVideoElement;
@@ -41,6 +58,11 @@ export class Captions {
     this.animationFrameId = requestAnimationFrame(this.animationLoop);
   };
 
+  /**
+   * Create a controller bound to the provided video element and preset.
+   *
+   * @param {CaptionsOptions} options - Complete configuration for the controller.
+   */
   constructor(options: CaptionsOptions) {
     if (!options.video) {
       throw new Error("captionsjs requires a video element");
@@ -56,6 +78,11 @@ export class Captions {
     }
   }
 
+  /**
+   * Mount caption overlays onto the configured video if they are not active yet.
+   *
+   * @returns {void}
+   */
   enable() {
     if (this.enabled) {
       return;
@@ -92,6 +119,11 @@ export class Captions {
     void this.refreshFrame();
   }
 
+  /**
+   * Tear down overlays, observers and animation loops to free resources.
+   *
+   * @returns {void}
+   */
   disable() {
     if (!this.enabled) {
       return;
@@ -119,10 +151,21 @@ export class Captions {
     this.enabled = false;
   }
 
+  /**
+   * Alias for `disable()` to match typical imperative controller APIs.
+   *
+   * @returns {void}
+   */
   destroy() {
     this.disable();
   }
 
+  /**
+   * Swap the active preset and re-render with updated typography/colors.
+   *
+   * @param {StylePreset} nextPreset - Preset that becomes the new render baseline.
+   * @returns {void}
+   */
   preset(nextPreset: StylePreset) {
     this.presetState = nextPreset;
     if (!this.enabled) {
@@ -132,6 +175,12 @@ export class Captions {
     void this.refreshFrame();
   }
 
+  /**
+   * Replace the current caption track and repaint without reloading fonts.
+   *
+   * @param {Caption[] | null} nextCaptions - Timed words that should drive the overlay.
+   * @returns {void}
+   */
   captions(nextCaptions: Caption[] | null) {
     this.captionsState = nextCaptions;
     if (!this.enabled) {
@@ -141,6 +190,11 @@ export class Captions {
     void this.refreshFrame(false);
   }
 
+  /**
+   * Whether the Konva overlay is currently attached to the video element.
+   *
+   * @returns {boolean}
+   */
   isEnabled() {
     return this.enabled;
   }
@@ -242,8 +296,20 @@ export class Captions {
   }
 }
 
+/**
+ * Convenience alias for the concrete controller class.
+ *
+ * @public
+ * @typedef {Captions} CaptionsInstance
+ */
 export type CaptionsInstance = Captions;
 
+/**
+ * Factory mirroring the legacy default export for ergonomic imports.
+ *
+ * @param {CaptionsOptions} options - Same options accepted by the `Captions` constructor.
+ * @returns {Captions} New controller instance.
+ */
 export function captionsjs(options: CaptionsOptions) {
   return new Captions(options);
 }

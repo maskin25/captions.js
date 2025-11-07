@@ -1,3 +1,14 @@
+/**
+ * Shared schema describing how a preset styles captions + rough layout hints.
+ *
+ * @public
+ * @interface StylePreset
+ * @property {number} id - Stable identifier used when selecting presets.
+ * @property {{ style: object; position: string; animation: string; linesPerPage: number; positionTopOffset?: number }} captionsSettings -
+ *   Visual configuration consumed by the renderer (font, background, timing).
+ * @property {{ aspectRatio: string; aIAutoLayout: string[]; fitLayoutAspectRatio: string }} layoutSettings -
+ *   Optional helper metadata for surrounding UI layout engines.
+ */
 export interface StylePreset {
   id: number;
   captionsSettings: {
@@ -36,6 +47,12 @@ export interface StylePreset {
   };
 }
 
+/**
+ * Curated set of presets that ship with captions.js out of the box.
+ * Downstream apps can reference them directly or clone/extend as needed.
+ *
+ * @type {StylePreset[]}
+ */
 export const stylePresets: StylePreset[] = [
   {
     id: 1,

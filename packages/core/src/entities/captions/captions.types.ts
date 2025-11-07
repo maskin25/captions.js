@@ -1,3 +1,9 @@
+/**
+ * Full styling + animation configuration for a single captions track.
+ *
+ * @public
+ * @interface CaptionsSettings
+ */
 export interface CaptionsSettings {
   style: {
     name: string;
@@ -38,6 +44,12 @@ export interface CaptionsSettings {
     | "box-word";
 }
 
+/**
+ * Single timed word/segment that will be highlighted as audio plays.
+ *
+ * @public
+ * @interface Caption
+ */
 export interface Caption {
   word: string;
   startTime: number;

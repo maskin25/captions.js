@@ -1,3 +1,9 @@
+/**
+ * Whitelisted Google Fonts that the renderer knows how to lazy-load.
+ * Restricting the list keeps bundle size predictable across consumers.
+ *
+ * @type {readonly string[]}
+ */
 export const googleFontsList = [
   "Roboto",
   "Open Sans",
