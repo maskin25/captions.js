@@ -10,10 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import {
+import captionsjs, {
   // renderCaptions,
   // renderString,
-  attachToVideo,
   // googleFontsList,
   stylePresets,
   type StylePreset,
@@ -40,7 +39,7 @@ function ExampleFeatured({
   );
   // const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const captionsRef = useRef<any>(null);
+  const captionsRef = useRef<ReturnType<typeof captionsjs> | null>(null);
 
   const [captions, setCaptions] = useState(null);
 
@@ -71,7 +70,8 @@ function ExampleFeatured({
 
   useEffect(() => {
     if (videoRef.current) {
-      captionsRef.current = attachToVideo(videoRef.current, undefined, {
+      captionsRef.current = captionsjs({
+        video: videoRef.current,
         preset,
         captions,
       });
@@ -79,7 +79,7 @@ function ExampleFeatured({
 
     return () => {
       if (captionsRef.current) {
-        captionsRef.current.detach();
+        captionsRef.current.destroy();
         captionsRef.current = null;
       }
     };
@@ -87,9 +87,15 @@ function ExampleFeatured({
 
   useEffect(() => {
     if (captionsRef.current) {
-      captionsRef.current.update({ preset, captions });
+      captionsRef.current.preset(preset);
     }
-  }, [preset, captions]);
+  }, [preset]);
+
+  useEffect(() => {
+    if (captionsRef.current) {
+      captionsRef.current.captions(captions);
+    }
+  }, [captions]);
 
   useEffect(() => {
     fetch(captionsSrc!)
