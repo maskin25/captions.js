@@ -15,9 +15,9 @@ export default defineConfig({
     },
     logoLink: "../",
     nav: [
-      { text: "Demo", link: "../", target: "_blank" },
       { text: "Guide", link: "/" },
       { text: "API", link: "/api/" },
+      { text: "Demo", link: "../", target: "_blank" },
     ],
     sidebar: {
       "/": [
