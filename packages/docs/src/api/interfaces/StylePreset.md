@@ -4,11 +4,9 @@
 
 # Interface: StylePreset
 
-Defined in: [stylePresets/stylePresets.config.ts:12](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/stylePresets/stylePresets.config.ts#L12)
+Defined in: [stylePresets/stylePresets.config.ts:6](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/stylePresets/stylePresets.config.ts#L6)
 
-Shared schema describing how a preset styles captions + rough layout hints.
-
- StylePreset
+Shared schema describing how a preset styles captions plus rough layout hints.
 
 ## Properties
 
@@ -16,9 +14,7 @@ Shared schema describing how a preset styles captions + rough layout hints.
 
 > **captionsSettings**: `object`
 
-Defined in: [stylePresets/stylePresets.config.ts:14](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/stylePresets/stylePresets.config.ts#L14)
-
-Visual configuration consumed by the renderer (font, background, timing).
+Defined in: [stylePresets/stylePresets.config.ts:8](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/stylePresets/stylePresets.config.ts#L8)
 
 #### animation
 
@@ -122,9 +118,7 @@ Visual configuration consumed by the renderer (font, background, timing).
 
 > **id**: `number`
 
-Defined in: [stylePresets/stylePresets.config.ts:13](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/stylePresets/stylePresets.config.ts#L13)
-
-Stable identifier used when selecting presets.
+Defined in: [stylePresets/stylePresets.config.ts:7](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/stylePresets/stylePresets.config.ts#L7)
 
 ***
 
@@ -132,9 +126,7 @@ Stable identifier used when selecting presets.
 
 > **layoutSettings**: `object`
 
-Defined in: [stylePresets/stylePresets.config.ts:43](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/stylePresets/stylePresets.config.ts#L43)
-
-Optional helper metadata for surrounding UI layout engines.
+Defined in: [stylePresets/stylePresets.config.ts:37](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/stylePresets/stylePresets.config.ts#L37)
 
 #### aIAutoLayout
 

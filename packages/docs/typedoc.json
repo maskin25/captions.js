@@ -6,6 +6,6 @@
   "excludePrivate": true,
   "excludeProtected": true,
   "hideBreadcrumbs": true,
-  "hideInPageTOC": false,
+  /* "hideInPageTOC": false, */
   "categorizeByGroup": true
 }

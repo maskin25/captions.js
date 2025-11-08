@@ -4,7 +4,7 @@
 
 # Class: Captions
 
-Defined in: [captions/Captions.ts:33](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L33)
+Defined in: [captions/Captions.ts:31](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L31)
 
 Imperative controller that owns the Konva stage lifecycle for a single video element.
 
@@ -14,7 +14,7 @@ Imperative controller that owns the Konva stage lifecycle for a single video ele
 
 > **new Captions**(`options`): `Captions`
 
-Defined in: [captions/Captions.ts:66](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L66)
+Defined in: [captions/Captions.ts:64](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L64)
 
 Create a controller bound to the provided video element and preset.
 
@@ -36,7 +36,7 @@ Complete configuration for the controller.
 
 > **captions**(`nextCaptions`): `void`
 
-Defined in: [captions/Captions.ts:184](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L184)
+Defined in: [captions/Captions.ts:174](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L174)
 
 Replace the current caption track and repaint without reloading fonts.
 
@@ -58,9 +58,9 @@ Timed words that should drive the overlay.
 
 > **destroy**(): `void`
 
-Defined in: [captions/Captions.ts:159](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L159)
+Defined in: [captions/Captions.ts:151](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L151)
 
-Alias for `disable()` to match typical imperative controller APIs.
+Alias for [disable()](#disable) to match typical imperative controller APIs.
 
 #### Returns
 
@@ -72,7 +72,7 @@ Alias for `disable()` to match typical imperative controller APIs.
 
 > **disable**(): `void`
 
-Defined in: [captions/Captions.ts:127](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L127)
+Defined in: [captions/Captions.ts:121](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L121)
 
 Tear down overlays, observers and animation loops to free resources.
 
@@ -86,7 +86,7 @@ Tear down overlays, observers and animation loops to free resources.
 
 > **enable**(): `void`
 
-Defined in: [captions/Captions.ts:86](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L86)
+Defined in: [captions/Captions.ts:82](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L82)
 
 Mount caption overlays onto the configured video if they are not active yet.
 
@@ -100,7 +100,7 @@ Mount caption overlays onto the configured video if they are not active yet.
 
 > **isEnabled**(): `boolean`
 
-Defined in: [captions/Captions.ts:198](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L198)
+Defined in: [captions/Captions.ts:188](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L188)
 
 Whether the Konva overlay is currently attached to the video element.
 
@@ -108,13 +108,15 @@ Whether the Konva overlay is currently attached to the video element.
 
 `boolean`
 
+`true` when the overlay is mounted on top of the video.
+
 ***
 
 ### preset()
 
 > **preset**(`nextPreset`): `void`
 
-Defined in: [captions/Captions.ts:169](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L169)
+Defined in: [captions/Captions.ts:160](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L160)
 
 Swap the active preset and re-render with updated typography/colors.
 

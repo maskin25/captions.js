@@ -6,10 +6,9 @@
 
 > **renderString**(`canvas`, `text`, `options`): `Promise`\<`boolean`\>
 
-Defined in: [render/renderString.ts:18](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/render/renderString.ts#L18)
+Defined in: [render/renderString.ts:21](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/render/renderString.ts#L21)
 
-Server/worker-friendly helper that paints a text string onto a provided canvas
-using the same Konva pipeline as the video overlay renderer.
+Server/worker-friendly helper that paints a text string onto a provided canvas.
 
 ## Parameters
 
@@ -37,4 +36,9 @@ Rendering options that include the style preset.
 
 `Promise`\<`boolean`\>
 
-Resolves once the frame has been painted (always resolves to true).
+Resolves once the frame has been painted (always resolves to `true`).
+
+## Remarks
+
+Uses the same Konva pipeline as the video overlay renderer so the results
+match what users see in the browser.

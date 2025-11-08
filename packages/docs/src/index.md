@@ -1,32 +1,20 @@
-# captions.js
+# captions.js Guide
 
-Render animated, highly styled captions on HTML5 video elements or offscreen canvases using a single declarative preset.
+Welcome to the captions.js developer documentation. Use the sidebar to explore the full API reference and learn how to embed animated captions into your video workflow.
 
 ```ts
 import captionsjs, { stylePresets } from "captions.js";
 
-const captions = captionsjs({
+const instance = captionsjs({
   video: document.querySelector("video")!,
   preset: stylePresets[0],
   captions: [
-    { word: "Hello", startTime: 0, endTime: 0.5 },
-    { word: "world", startTime: 0.5, endTime: 1.2 },
+    { word: "Hello", startTime: 0, endTime: 0.4 },
+    { word: "world", startTime: 0.4, endTime: 0.9 },
   ],
 });
 
-captions.enable();
+instance.enable();
 ```
 
-## Workflow
-
-1. Pick a base look & feel from `stylePresets` or craft your own preset.
-2. Load captions with per-word timestamps.
-3. Use the `Captions` instance to toggle overlays, swap presets, or update the caption track in real time.
-
-## API reference
-
-The full TypeDoc-generated API (classes, functions, type aliases, etc.) lives under the [API](/api/README) section and updates automatically whenever you run:
-
-```bash
-pnpm --filter docs run docs:generate
-```
+To regenerate this documentation run `pnpm --filter docs run docs:generate`. 

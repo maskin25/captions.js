@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "docs": "pnpm run docs:build",
     "docs:generate": "typedoc",
-    "docs:dev": "pnpm run docs:generate && vitepress dev src",
-    "docs:build": "pnpm run docs:generate && vitepress build src",
-    "docs:preview": "vitepress preview src"
+    "docs:dev": "pnpm run docs:generate && vitepress dev",
+    "docs:build": "pnpm run docs:generate && vitepress build",
+    "docs:preview": "vitepress preview"
   },
   "author": "Maxim Mordasov",
   "license": "ISC",

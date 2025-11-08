@@ -36,9 +36,18 @@ export default defineConfig({
           items: [
             { text: "Overview", link: "/api/README" },
             { text: "Captions Class", link: "/api/classes/Captions" },
-            { text: "Rendering Functions", link: "/api/functions/renderString" },
-            { text: "Utility Functions", link: "/api/functions/renderCaptions" },
-            { text: "Style Preset Interface", link: "/api/interfaces/StylePreset" },
+            {
+              text: "Rendering Functions",
+              link: "/api/functions/renderString",
+            },
+            {
+              text: "Utility Functions",
+              link: "/api/functions/renderCaptions",
+            },
+            {
+              text: "Style Preset Interface",
+              link: "/api/interfaces/StylePreset",
+            },
             { text: "Type Aliases", link: "/api/type-aliases/CaptionsOptions" },
           ],
         },

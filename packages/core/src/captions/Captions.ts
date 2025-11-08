@@ -9,18 +9,17 @@ import type { StylePreset } from "../stylePresets/stylePresets.config";
  * Configuration passed to the captions runtime when binding to a video element.
  *
  * @public
- * @typedef CaptionsOptions
- * @property {HTMLVideoElement} video - Video element that should receive overlays.
- * @property {HTMLDivElement=} container - Optional custom container to host the Konva stage.
- * @property {StylePreset} preset - Initial preset controlling font, colors, animations.
- * @property {Caption[] | null=} captions - Initial caption track.
- * @property {boolean=} autoEnable - When false, caller must invoke `enable()` manually.
  */
 export type CaptionsOptions = {
+  /** Video element that should receive overlays. */
   video: HTMLVideoElement;
+  /** Optional custom container to host the Konva stage. */
   container?: HTMLDivElement;
+  /** Initial preset controlling font, colors, animations. */
   preset: StylePreset;
+  /** Initial caption track. */
   captions?: Caption[] | null;
+  /** When false, caller must invoke {@link Captions.enable} manually. */
   autoEnable?: boolean;
 };
 
@@ -28,7 +27,6 @@ export type CaptionsOptions = {
  * Imperative controller that owns the Konva stage lifecycle for a single video element.
  *
  * @public
- * @class
  */
 export class Captions {
   private enabled = false;
@@ -61,7 +59,7 @@ export class Captions {
   /**
    * Create a controller bound to the provided video element and preset.
    *
-   * @param {CaptionsOptions} options - Complete configuration for the controller.
+   * @param options - Complete configuration for the controller.
    */
   constructor(options: CaptionsOptions) {
     if (!options.video) {
@@ -80,8 +78,6 @@ export class Captions {
 
   /**
    * Mount caption overlays onto the configured video if they are not active yet.
-   *
-   * @returns {void}
    */
   enable() {
     if (this.enabled) {
@@ -121,8 +117,6 @@ export class Captions {
 
   /**
    * Tear down overlays, observers and animation loops to free resources.
-   *
-   * @returns {void}
    */
   disable() {
     if (!this.enabled) {
@@ -152,9 +146,7 @@ export class Captions {
   }
 
   /**
-   * Alias for `disable()` to match typical imperative controller APIs.
-   *
-   * @returns {void}
+    * Alias for {@link Captions.disable | disable()} to match typical imperative controller APIs.
    */
   destroy() {
     this.disable();
@@ -163,8 +155,7 @@ export class Captions {
   /**
    * Swap the active preset and re-render with updated typography/colors.
    *
-   * @param {StylePreset} nextPreset - Preset that becomes the new render baseline.
-   * @returns {void}
+   * @param nextPreset - Preset that becomes the new render baseline.
    */
   preset(nextPreset: StylePreset) {
     this.presetState = nextPreset;
@@ -178,8 +169,7 @@ export class Captions {
   /**
    * Replace the current caption track and repaint without reloading fonts.
    *
-   * @param {Caption[] | null} nextCaptions - Timed words that should drive the overlay.
-   * @returns {void}
+   * @param nextCaptions - Timed words that should drive the overlay.
    */
   captions(nextCaptions: Caption[] | null) {
     this.captionsState = nextCaptions;
@@ -193,7 +183,7 @@ export class Captions {
   /**
    * Whether the Konva overlay is currently attached to the video element.
    *
-   * @returns {boolean}
+   * @returns `true` when the overlay is mounted on top of the video.
    */
   isEnabled() {
     return this.enabled;
@@ -300,15 +290,14 @@ export class Captions {
  * Convenience alias for the concrete controller class.
  *
  * @public
- * @typedef {Captions} CaptionsInstance
  */
 export type CaptionsInstance = Captions;
 
 /**
  * Factory mirroring the legacy default export for ergonomic imports.
  *
- * @param {CaptionsOptions} options - Same options accepted by the `Captions` constructor.
- * @returns {Captions} New controller instance.
+ * @param options - Same options accepted by the {@link Captions} constructor.
+ * @returns New controller instance.
  */
 export function captionsjs(options: CaptionsOptions) {
   return new Captions(options);

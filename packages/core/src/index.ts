@@ -1,10 +1,13 @@
 /**
  * Simple canvas demo renderer used only for the docs playground.
- * Keeps a reference implementation of drawing raw text to a canvas.
  *
- * @param {CanvasRenderingContext2D} ctx - Target 2D context to draw on.
- * @param {string} text - Arbitrary string that should be painted on the canvas.
- * @returns {boolean} Always returns true to match the historical API surface.
+ * @remarks
+ * Keeps a reference implementation of drawing raw text to a canvas so we can
+ * showcase caption styling without a video element.
+ *
+ * @param ctx - Target 2D context to draw on.
+ * @param text - Arbitrary string that should be painted on the canvas.
+ * @returns Always returns `true` to match the historical API surface.
  */
 export function renderCaptions(
   ctx: CanvasRenderingContext2D,
@@ -25,10 +28,7 @@ export {
   stylePresets,
 } from "./stylePresets/stylePresets.config";
 
-/**
- * Renders a captions string to an offscreen canvas.
- * Used by Node/FFmpeg integrations.
- */
+/** Renders a captions string to an offscreen canvas (Node/FFmpeg helper). */
 export { renderString } from "./render/renderString";
 
 /** Strong typing for caption entries (word timing, styling etc). */

@@ -67,4 +67,4 @@ reports/
 /packages/demo/public/margo.flac
 
 /packages/tools
-packages/docs/src/.vitepress/*
+/packages/docs/.vitepress/cache

@@ -7,13 +7,16 @@ import { StylePreset } from "./../stylePresets/stylePresets.config";
 import { googleFontsList } from "./../fonts/googleFonts.config";
 
 /**
- * Server/worker-friendly helper that paints a text string onto a provided canvas
- * using the same Konva pipeline as the video overlay renderer.
+ * Server/worker-friendly helper that paints a text string onto a provided canvas.
  *
- * @param {HTMLCanvasElement} canvas - Destination canvas that should receive the rendered text.
- * @param {string} text - Arbitrary content that needs to be painted.
- * @param {{ preset: StylePreset }} options - Rendering options that include the style preset.
- * @returns {Promise<boolean>} Resolves once the frame has been painted (always resolves to true).
+ * @remarks
+ * Uses the same Konva pipeline as the video overlay renderer so the results
+ * match what users see in the browser.
+ *
+ * @param canvas - Destination canvas that should receive the rendered text.
+ * @param text - Arbitrary content that needs to be painted.
+ * @param options - Rendering options that include the style preset.
+ * @returns Resolves once the frame has been painted (always resolves to `true`).
  */
 export async function renderString(
   canvas: HTMLCanvasElement,

@@ -6,7 +6,7 @@
 
 > **CaptionsOptions** = `object`
 
-Defined in: [captions/Captions.ts:19](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L19)
+Defined in: [captions/Captions.ts:13](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L13)
 
 Configuration passed to the captions runtime when binding to a video element.
 
@@ -16,9 +16,9 @@ Configuration passed to the captions runtime when binding to a video element.
 
 > `optional` **autoEnable**: `boolean`
 
-Defined in: [captions/Captions.ts:24](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L24)
+Defined in: [captions/Captions.ts:23](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L23)
 
-When false, caller must invoke `enable()` manually.
+When false, caller must invoke [Captions.enable](../classes/Captions.md#enable) manually.
 
 ***
 
@@ -26,7 +26,7 @@ When false, caller must invoke `enable()` manually.
 
 > `optional` **captions**: [`Caption`](../interfaces/Caption.md)[] \| `null`
 
-Defined in: [captions/Captions.ts:23](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L23)
+Defined in: [captions/Captions.ts:21](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L21)
 
 Initial caption track.
 
@@ -36,7 +36,7 @@ Initial caption track.
 
 > `optional` **container**: `HTMLDivElement`
 
-Defined in: [captions/Captions.ts:21](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L21)
+Defined in: [captions/Captions.ts:17](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L17)
 
 Optional custom container to host the Konva stage.
 
@@ -46,7 +46,7 @@ Optional custom container to host the Konva stage.
 
 > **preset**: [`StylePreset`](../interfaces/StylePreset.md)
 
-Defined in: [captions/Captions.ts:22](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L22)
+Defined in: [captions/Captions.ts:19](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L19)
 
 Initial preset controlling font, colors, animations.
 
@@ -56,6 +56,6 @@ Initial preset controlling font, colors, animations.
 
 > **video**: `HTMLVideoElement`
 
-Defined in: [captions/Captions.ts:20](https://github.com/maskin25/captions.js/blob/1fec33b360629c31031f61bbab6a686d60277c68/packages/core/src/captions/Captions.ts#L20)
+Defined in: [captions/Captions.ts:15](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/captions/Captions.ts#L15)
 
 Video element that should receive overlays.
