@@ -1,7 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Menu, Star, Search, Moon, Sun, ExternalLink } from "lucide-react";
+import {
+  Menu,
+  Star,
+  /*  Search, */
+  Moon,
+  Sun,
+  ExternalLink,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "./ThemeProvider";
 import { useEffect, useState } from "react";

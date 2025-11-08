@@ -4,7 +4,7 @@
 
 # Interface: StylePreset
 
-Defined in: [stylePresets/stylePresets.config.ts:6](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/stylePresets/stylePresets.config.ts#L6)
+Defined in: [stylePresets/stylePresets.config.ts:6](https://github.com/maskin25/captions.js/blob/b528ac4031c0134114f42f5ddcfe4e7c5829a65f/packages/core/src/stylePresets/stylePresets.config.ts#L6)
 
 Shared schema describing how a preset styles captions plus rough layout hints.
 
@@ -14,7 +14,7 @@ Shared schema describing how a preset styles captions plus rough layout hints.
 
 > **captionsSettings**: `object`
 
-Defined in: [stylePresets/stylePresets.config.ts:8](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/stylePresets/stylePresets.config.ts#L8)
+Defined in: [stylePresets/stylePresets.config.ts:8](https://github.com/maskin25/captions.js/blob/b528ac4031c0134114f42f5ddcfe4e7c5829a65f/packages/core/src/stylePresets/stylePresets.config.ts#L8)
 
 #### animation
 
@@ -118,7 +118,7 @@ Defined in: [stylePresets/stylePresets.config.ts:8](https://github.com/maskin25/
 
 > **id**: `number`
 
-Defined in: [stylePresets/stylePresets.config.ts:7](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/stylePresets/stylePresets.config.ts#L7)
+Defined in: [stylePresets/stylePresets.config.ts:7](https://github.com/maskin25/captions.js/blob/b528ac4031c0134114f42f5ddcfe4e7c5829a65f/packages/core/src/stylePresets/stylePresets.config.ts#L7)
 
 ***
 
@@ -126,7 +126,7 @@ Defined in: [stylePresets/stylePresets.config.ts:7](https://github.com/maskin25/
 
 > **layoutSettings**: `object`
 
-Defined in: [stylePresets/stylePresets.config.ts:37](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/stylePresets/stylePresets.config.ts#L37)
+Defined in: [stylePresets/stylePresets.config.ts:37](https://github.com/maskin25/captions.js/blob/b528ac4031c0134114f42f5ddcfe4e7c5829a65f/packages/core/src/stylePresets/stylePresets.config.ts#L37)
 
 #### aIAutoLayout
 
