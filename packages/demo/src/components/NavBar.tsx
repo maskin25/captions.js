@@ -18,7 +18,7 @@ import { Link } from "react-router";
 export function Navbar() {
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/docs/", label: "Docs", reloadDocument: true },
+    { href: "docs/", label: "Docs", reloadDocument: true },
     { href: "https://github.com/maskin25/captions.js", label: "Github" },
     {
       href: "https://main--68e681805917843931c33a87.chromatic.com",
@@ -162,16 +162,26 @@ export function Navbar() {
               <SheetContent side="right">
                 <div className="flex flex-col gap-4 p-4">
                   {navItems.map((item) => (
-                    <a
+                    <Link
+                      reloadDocument={item.reloadDocument}
+                      discover={"none"}
                       key={item.href}
-                      href={item.href}
-                      className="flex items-center gap-1 xt-lg font-medium text-foreground/60 transition-colors hover:text-foreground"
+                      to={item.href}
+                      className="flex items-center gap-1 text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
+                      target={
+                        item.href.startsWith("http") ? "_blank" : undefined
+                      }
+                      rel={
+                        item.href.startsWith("http")
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
                     >
                       {item.label}
                       {item.href.startsWith("http") && (
                         <ExternalLink className="h-4 w-4" />
                       )}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </SheetContent>
