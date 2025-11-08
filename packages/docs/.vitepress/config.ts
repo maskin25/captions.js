@@ -3,7 +3,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   srcDir: "src",
   base: "/captions.js/docs/",
-  title: "captions.js",
+  title: "captions.js | Docs",
   description: "Render styled animated captions on HTML5 video & canvas.",
   cleanUrls: true,
   rewrites: {
@@ -15,6 +15,7 @@ export default defineConfig({
     },
     logoLink: "../",
     nav: [
+      { text: "Demo", link: "../" },
       { text: "Guide", link: "/" },
       { text: "API", link: "/api/" },
     ],
