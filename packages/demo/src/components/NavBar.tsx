@@ -5,13 +5,13 @@ import { Menu, Star, Search, Moon, Sun, ExternalLink } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "./ThemeProvider";
 import { useEffect, useState } from "react";
-import { CommandDialog } from "@/components/ui/command";
+// import { CommandDialog } from "@/components/ui/command";
 import { Link } from "react-router";
 
 export function Navbar() {
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/documentation", label: "Documentation" },
+    { href: "/docs", label: "Docs" },
     { href: "https://github.com/maskin25/captions.js", label: "Github" },
     {
       href: "https://main--68e681805917843931c33a87.chromatic.com",
@@ -24,7 +24,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -34,7 +34,7 @@ export function Navbar() {
       .catch(() => setStars(null));
   }, []);
 
-  useEffect(() => {
+  /*  useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
@@ -43,7 +43,7 @@ export function Navbar() {
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, []); */
 
   return (
     <>
@@ -78,7 +78,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-2">
             {/* Search Button */}
-            <Button
+            {/* <Button
               variant="outline"
               size="sm"
               className="hidden md:flex items-center gap-2 bg-transparent"
@@ -91,10 +91,10 @@ export function Navbar() {
               <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
                 <span className="text-xs">⌘</span>K
               </kbd>
-            </Button>
+            </Button> */}
 
             {/* Mobile Search Icon */}
-            <Button
+            {/* <Button
               variant="ghost"
               size="icon"
               className="md:hidden"
@@ -102,7 +102,7 @@ export function Navbar() {
             >
               <Search className="h-5 w-5" />
               <span className="sr-only">Search documentation</span>
-            </Button>
+            </Button> */}
 
             {/* GitHub Stars */}
             <Button
@@ -151,14 +151,17 @@ export function Navbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
-                <div className="flex flex-col gap-4 mt-8">
+                <div className="flex flex-col gap-4 p-4">
                   {navItems.map((item) => (
                     <a
                       key={item.href}
                       href={item.href}
-                      className="text-lg font-medium text-foreground/60 transition-colors hover:text-foreground"
+                      className="flex items-center gap-1 xt-lg font-medium text-foreground/60 transition-colors hover:text-foreground"
                     >
                       {item.label}
+                      {item.href.startsWith("http") && (
+                        <ExternalLink className="h-4 w-4" />
+                      )}
                     </a>
                   ))}
                 </div>
@@ -168,7 +171,7 @@ export function Navbar() {
         </div>
       </nav>
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      {/* <CommandDialog open={open} onOpenChange={setOpen}>
         <div className="flex items-center border-b px-3">
           <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
           <input
@@ -195,7 +198,7 @@ export function Navbar() {
             </button>
           </div>
         </div>
-      </CommandDialog>
+      </CommandDialog> */}
     </>
   );
 }
