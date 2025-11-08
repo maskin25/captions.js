@@ -65,7 +65,7 @@ export function Navbar() {
           <div className="hidden md:flex md:items-center md:gap-6">
             {navItems.map((item) => (
               <Link
-                reloadDocument
+                reloadDocument={item.reloadDocument}
                 discover={"none"}
                 key={item.href}
                 to={item.href}
