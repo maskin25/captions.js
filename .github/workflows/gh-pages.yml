@@ -47,7 +47,7 @@ jobs:
           mkdir -p gh-pages-dist
           cp -r packages/demo/dist/. gh-pages-dist/
           mkdir -p gh-pages-dist/docs
-          cp -r packages/docs/src/.vitepress/dist/. gh-pages-dist/docs/
+          cp -r packages/docs/.vitepress/dist/. gh-pages-dist/docs/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

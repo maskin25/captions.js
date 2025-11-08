@@ -4,7 +4,7 @@
 
 # Interface: Caption
 
-Defined in: [entities/captions/captions.types.ts:51](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/entities/captions/captions.types.ts#L51)
+Defined in: [entities/captions/captions.types.ts:51](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/entities/captions/captions.types.ts#L51)
 
 Single timed word/segment that will be highlighted as audio plays.
 
@@ -14,7 +14,7 @@ Single timed word/segment that will be highlighted as audio plays.
 
 > **endTime**: `number`
 
-Defined in: [entities/captions/captions.types.ts:54](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/entities/captions/captions.types.ts#L54)
+Defined in: [entities/captions/captions.types.ts:54](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/entities/captions/captions.types.ts#L54)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [entities/captions/captions.types.ts:54](https://github.com/maskin25
 
 > `optional` **highlightColor**: `string`
 
-Defined in: [entities/captions/captions.types.ts:55](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/entities/captions/captions.types.ts#L55)
+Defined in: [entities/captions/captions.types.ts:55](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/entities/captions/captions.types.ts#L55)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [entities/captions/captions.types.ts:55](https://github.com/maskin25
 
 > **startTime**: `number`
 
-Defined in: [entities/captions/captions.types.ts:53](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/entities/captions/captions.types.ts#L53)
+Defined in: [entities/captions/captions.types.ts:53](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/entities/captions/captions.types.ts#L53)
 
 ***
 
@@ -38,4 +38,4 @@ Defined in: [entities/captions/captions.types.ts:53](https://github.com/maskin25
 
 > **word**: `string`
 
-Defined in: [entities/captions/captions.types.ts:52](https://github.com/maskin25/captions.js/blob/3bd5c8160fe7926aa760bd06fafac5f863c27219/packages/core/src/entities/captions/captions.types.ts#L52)
+Defined in: [entities/captions/captions.types.ts:52](https://github.com/maskin25/captions.js/blob/5306e4286bfd37e77c18c7059327f58bf33f0d1c/packages/core/src/entities/captions/captions.types.ts#L52)
