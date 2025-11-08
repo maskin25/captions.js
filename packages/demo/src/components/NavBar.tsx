@@ -18,7 +18,7 @@ import { Link } from "react-router";
 export function Navbar() {
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/docs", label: "Docs" },
+    { href: "/docs/", label: "Docs" },
     { href: "https://github.com/maskin25/captions.js", label: "Github" },
     {
       href: "https://main--68e681805917843931c33a87.chromatic.com",

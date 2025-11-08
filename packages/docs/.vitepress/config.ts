@@ -13,13 +13,10 @@ export default defineConfig({
     search: {
       provider: "local",
     },
+    logoLink: "../",
     nav: [
       { text: "Guide", link: "/" },
-      { text: "API", link: "/api/README" },
-      {
-        text: "GitHub",
-        link: "https://github.com/maskin25/captions.js",
-      },
+      { text: "API", link: "/api/" },
     ],
     sidebar: {
       "/": [
@@ -27,7 +24,7 @@ export default defineConfig({
           text: "Guide",
           items: [
             { text: "Introduction", link: "/" },
-            { text: "API Reference", link: "/api/README" },
+            { text: "API Reference", link: "/api/" },
           ],
         },
       ],
@@ -35,7 +32,7 @@ export default defineConfig({
         {
           text: "API Reference",
           items: [
-            { text: "Overview", link: "/api/README" },
+            { text: "Overview", link: "/api/" },
             { text: "Captions Class", link: "/api/classes/Captions" },
             {
               text: "Rendering Functions",
@@ -57,5 +54,9 @@ export default defineConfig({
     socialLinks: [
       { icon: "github", link: "https://github.com/maskin25/captions.js" },
     ],
+    /*  footer: {
+      message: "Released under the MIT License.",
+      copyright: "© 2025 @maskin25",
+    }, */
   },
 });
