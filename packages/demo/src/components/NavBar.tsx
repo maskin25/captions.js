@@ -18,7 +18,7 @@ import { Link } from "react-router";
 export function Navbar() {
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/docs/", label: "Docs" },
+    { href: "/docs/", label: "Docs", reloadDocument: true },
     { href: "https://github.com/maskin25/captions.js", label: "Github" },
     {
       href: "https://main--68e681805917843931c33a87.chromatic.com",
@@ -65,6 +65,7 @@ export function Navbar() {
           <div className="hidden md:flex md:items-center md:gap-6">
             {navItems.map((item) => (
               <Link
+                reloadDocument={item.reloadDocument}
                 key={item.href}
                 to={item.href}
                 className="flex items-center gap-1 text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
