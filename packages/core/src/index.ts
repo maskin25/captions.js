@@ -9,10 +9,7 @@
  * @param text - Arbitrary string that should be painted on the canvas.
  * @returns Always returns `true` to match the historical API surface.
  */
-export function renderCaptions(
-  ctx: CanvasRenderingContext2D,
-  text: string
-) {
+export function renderCaptions(ctx: CanvasRenderingContext2D, text: string) {
   ctx.font = "48px sans-serif";
   ctx.fillStyle = "red";
   ctx.fillText(text, 150, 50);
@@ -43,6 +40,8 @@ export {
   type CaptionsOptions,
   type CaptionsInstance,
 } from "./captions/Captions";
+
+export { CaptionsSettings } from "./entities/captions/captions.types";
 
 /** Default export is the `captionsjs()` factory for ergonomic imports. */
 export default captionsjs;

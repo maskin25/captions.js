@@ -146,7 +146,7 @@ export class Captions {
   }
 
   /**
-    * Alias for {@link Captions.disable | disable()} to match typical imperative controller APIs.
+   * Alias for {@link Captions.disable | disable()} to match typical imperative controller APIs.
    */
   destroy() {
     this.disable();
@@ -202,9 +202,8 @@ export class Captions {
   }
 
   private async loadFontForCurrentPreset() {
-    const fontFamily =
-      this.presetState.captionsSettings.style.font
-        .fontFamily as (typeof googleFontsList)[number];
+    const fontFamily = this.presetState.captionsSettings.style.font
+      .fontFamily as (typeof googleFontsList)[number];
 
     await loadGoogleFont2(fontFamily);
   }
@@ -227,7 +226,7 @@ export class Captions {
       this.video.currentTime,
       [this.videoWidth, this.videoHeight],
       this.layer,
-      1,
+      2,
       { type: "bottom", positionTopOffset: 50 }
     );
   }
@@ -253,7 +252,8 @@ export class Captions {
     const rect = this.video.getBoundingClientRect();
     const stageContainer = this.stage.container() as HTMLDivElement;
 
-    const displayWidth = rect.width || stageContainer.offsetWidth || this.videoWidth;
+    const displayWidth =
+      rect.width || stageContainer.offsetWidth || this.videoWidth;
     const displayHeight =
       rect.height || stageContainer.offsetHeight || this.videoHeight;
 
