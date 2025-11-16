@@ -219,15 +219,23 @@ export class Captions {
 
     this.layer.destroyChildren();
 
+    const captionsSettings = this.presetState.captionsSettings;
     renderFrame(
-      this.presetState.captionsSettings as any,
+      captionsSettings as any,
       undefined as any,
       this.captionsState || [],
       this.video.currentTime,
       [this.videoWidth, this.videoHeight],
       this.layer,
       2,
-      { type: "bottom", positionTopOffset: 50 }
+      {
+        type: (captionsSettings.position ?? "bottom") as
+          | "auto"
+          | "top"
+          | "middle"
+          | "bottom",
+        positionTopOffset: captionsSettings.positionTopOffset ?? 0,
+      }
     );
   }
 

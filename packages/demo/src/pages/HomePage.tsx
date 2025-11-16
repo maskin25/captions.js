@@ -1,5 +1,4 @@
 import Configurator from "@/components/Configurator";
-import Configurator2 from "@/components/Configurator2";
 import ExampleFeatured from "@/components/ExampleFeatured";
 
 function HomePage() {

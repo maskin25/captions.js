@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import captionsjs, { type Caption, stylePresets } from "captions.js";
+import captionsjs, {
+  type Caption,
+  googleFontsList,
+  stylePresets,
+} from "captions.js";
 import type { CaptionsSettings } from "captions.js";
 import { ChevronsUpDown } from "lucide-react";
 import {
@@ -10,13 +14,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
 import {
   type AspectRatio,
   VideoOptionSelect,
@@ -32,24 +35,47 @@ import {
 } from "./ui/collapsible";
 import { CopyButton } from "./ui/shadcn-io/copy-button";
 
+type BaseStyleField = {
+  path: (string | number)[];
+  label: string;
+};
+
+type TextStyleField = BaseStyleField & {
+  type: "text" | "color";
+};
+
+type NumberStyleField = BaseStyleField & {
+  type: "number";
+  min?: number;
+  max?: number;
+  step?: number;
+};
+
+type SelectStyleField = BaseStyleField & {
+  type: "select";
+  options: readonly string[];
+};
+
+type SwitchStyleField = BaseStyleField & {
+  type: "switch";
+};
+
 type StyleField =
-  | {
-      path: (string | number)[];
-      label: string;
-      type: "text" | "color" | "number";
-      min?: number;
-      max?: number;
-      step?: number;
-    }
-  | {
-      path: (string | number)[];
-      label: string;
-      type: "switch";
-    };
+  | TextStyleField
+  | NumberStyleField
+  | SelectStyleField
+  | SwitchStyleField;
+
+const POSITION_OPTIONS = ["auto", "top", "middle", "bottom"] as const;
 
 const STYLE_FIELDS: StyleField[] = [
-  { path: ["style", "name"], label: "Preset Name", type: "text" },
-  { path: ["style", "font", "fontFamily"], label: "Font Family", type: "text" },
+  /* { path: ["style", "name"], label: "Preset Name", type: "text" }, */
+  {
+    path: ["style", "font", "fontFamily"],
+    label: "Font Family",
+    type: "select",
+    options: googleFontsList,
+  },
   {
     path: ["style", "font", "fontSize"],
     label: "Font Size",
@@ -122,7 +148,12 @@ const STYLE_FIELDS: StyleField[] = [
     label: "Background Color",
     type: "color",
   },
-  { path: ["position"], label: "Position", type: "text" },
+  {
+    path: ["position"],
+    label: "Position",
+    type: "select",
+    options: POSITION_OPTIONS,
+  },
   {
     path: ["positionTopOffset"],
     label: "Top Offset",
@@ -145,9 +176,14 @@ const Configurator = () => {
       ? globalThis.structuredClone(value)
       : (JSON.parse(JSON.stringify(value)) as T);
 
-  const [selectedPresetId, setSelectedPresetId] = useState(stylePresets[0].id);
+  const [selectedPresetId, setSelectedPresetId] = useState(
+    stylePresets.find((p) => p.captionsSettings.style.name === "From")?.id ?? 0
+  );
   const [settings, setSettings] = useState<CaptionsSettings>(
-    clone(stylePresets[0].captionsSettings)
+    clone(
+      stylePresets.find((p) => p.id === selectedPresetId)?.captionsSettings ||
+        stylePresets[0].captionsSettings
+    )
   );
   const [videoOption, setVideoOption] = useState<VideoOption>(videoOptions[0]);
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>(
@@ -330,6 +366,9 @@ const Configurator = () => {
               style={{ aspectRatio: aspectRatio.ratio }}
             >
               <video
+                playsInline
+                disablePictureInPicture
+                disableRemotePlayback
                 key={videoOption.videoSrc}
                 ref={videoRef}
                 src={videoOption.videoSrc}
@@ -347,37 +386,40 @@ const Configurator = () => {
                 <TabsTrigger value="layout">Layout</TabsTrigger>
               </TabsList>
               <ScrollArea
-                className={`-m-4 p-4 min-h-80  ${
+                className={`-m-4 p-4 min-h-120  ${
                   isJsonOpen
-                    ? "xl:h-[calc(100vh-42rem)]"
+                    ? "xl:h-[calc(100vh-80rem)]"
                     : "xl:h-[calc(100vh-15rem)]"
                 }`}
               >
-                <TabsContent value="font" className="space-y-4">
-                  {STYLE_FIELDS.filter((field) =>
-                    String(field.path.join(".")).startsWith("style")
-                  ).map((field) => (
-                    <StyleFieldInput
-                      key={field.label}
-                      field={field}
-                      settings={settings}
-                      onChange={updateSettingValue}
-                    />
-                  ))}
-                </TabsContent>
+                <div className="px-2">
+                  <TabsContent value="font" className="space-y-4">
+                    {STYLE_FIELDS.filter((field) =>
+                      String(field.path.join(".")).startsWith("style")
+                    ).map((field) => (
+                      <StyleFieldInput
+                        key={field.label}
+                        field={field}
+                        settings={settings}
+                        onChange={updateSettingValue}
+                      />
+                    ))}
+                  </TabsContent>
 
-                <TabsContent value="layout" className="mt-4 space-y-4">
-                  {STYLE_FIELDS.filter(
-                    (field) => !String(field.path.join(".")).startsWith("style")
-                  ).map((field) => (
-                    <StyleFieldInput
-                      key={field.label}
-                      field={field}
-                      settings={settings}
-                      onChange={updateSettingValue}
-                    />
-                  ))}
-                </TabsContent>
+                  <TabsContent value="layout" className="mt-4 space-y-4">
+                    {STYLE_FIELDS.filter(
+                      (field) =>
+                        !String(field.path.join(".")).startsWith("style")
+                    ).map((field) => (
+                      <StyleFieldInput
+                        key={field.label}
+                        field={field}
+                        settings={settings}
+                        onChange={updateSettingValue}
+                      />
+                    ))}
+                  </TabsContent>
+                </div>
               </ScrollArea>
             </Tabs>
           </CardContent>
@@ -439,10 +481,16 @@ const StyleFieldInput = ({
   onChange,
 }: StyleFieldInputProps) => {
   const value = field.path.reduce<any>((acc, key) => acc?.[key], settings);
-  const normalizeColorValue = (color: unknown) =>
-    typeof color === "string" && /^#[0-9a-fA-F]{6}$/.test(color)
-      ? color
-      : "#000000";
+  const parseHexColor = (color: unknown) => {
+    if (typeof color !== "string") return null;
+    const match = color.match(/^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})?$/);
+    if (!match) return null;
+    return {
+      hex: `#${match[1]}`,
+      alpha: match[2]?.toUpperCase(),
+    };
+  };
+  const parsedColor = field.type === "color" ? parseHexColor(value) : null;
 
   if (field.type === "switch") {
     return (
@@ -479,8 +527,48 @@ const StyleFieldInput = ({
     );
   }
 
-  const inputValue =
-    field.type === "color" ? normalizeColorValue(value) : value ?? "";
+  if (field.type === "color") {
+    const colorValue = parsedColor?.hex ?? "#000000";
+    const alphaSuffix = parsedColor?.alpha ?? "FF";
+
+    return (
+      <Field>
+        <FieldLabel>{field.label}</FieldLabel>
+        <Input
+          type="color"
+          value={colorValue}
+          onChange={(event) =>
+            onChange(field.path, `${event.target.value}${alphaSuffix}`)
+          }
+        />
+      </Field>
+    );
+  }
+
+  if (field.type === "select") {
+    return (
+      <Field>
+        <FieldLabel>{field.label}</FieldLabel>
+        <Select
+          value={typeof value === "string" ? value : undefined}
+          onValueChange={(nextValue) => onChange(field.path, nextValue)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select font family" />
+          </SelectTrigger>
+          <SelectContent>
+            {field.options.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Field>
+    );
+  }
+
+  const inputValue = value ?? "";
 
   return (
     <Field>
