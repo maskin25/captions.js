@@ -225,6 +225,7 @@ const Configurator = () => {
       video,
       preset: { id: 0, captionsSettings: settings },
       captions,
+      debug: import.meta.env.DEV,
     });
 
     captionsInstance.current = instance;

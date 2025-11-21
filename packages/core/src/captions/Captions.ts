@@ -73,7 +73,7 @@ export class Captions {
     this.providedContainer = options.container;
     this.presetState = options.preset;
     this.captionsState = options.captions ?? null;
-    this.debug = options.debug ?? import.meta.env.DEV;
+    this.debug = options.debug ?? false;
 
     if (options.autoEnable ?? true) {
       this.enable();
