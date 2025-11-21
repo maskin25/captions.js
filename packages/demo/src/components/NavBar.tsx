@@ -8,6 +8,8 @@ import {
   Moon,
   Sun,
   ExternalLink,
+  GithubIcon,
+  Github,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "./ThemeProvider";
@@ -150,6 +152,22 @@ export function Navbar() {
                 <span className="sr-only">Toggle theme</span>
               </Button>
             )}
+
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="hidden md:flex"
+            >
+              <a
+                href="https://github.com/maskin25/captions.js"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm font-medium text-foreground/80 hover:text-foreground"
+              >
+                <Github />
+              </a>
+            </Button>
 
             {/* Mobile Menu */}
             <Sheet>

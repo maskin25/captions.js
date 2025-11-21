@@ -38,6 +38,7 @@ export const splitCaptionsBytotalWordsToDisplay = (
   const maxWordGapSec = 1;
 
   const isValidBlockGap = (currentBlock: Caption[], caption: Caption) => {
+    return true;
     return (
       (currentBlock.length > 0 &&
         caption.startTime - currentBlock[currentBlock.length - 1].endTime <
@@ -49,11 +50,11 @@ export const splitCaptionsBytotalWordsToDisplay = (
   while (currentCaptionIndex < captions.length) {
     const caption = captions[currentCaptionIndex];
     if (
-      currentSymbolsLength + caption.word.length <= totalWordsToDisplay &&
+      currentSymbolsLength + caption.word.length + 1 <= totalWordsToDisplay &&
       isValidBlockGap(currentBlock, caption)
     ) {
       currentBlock.push(caption);
-      currentSymbolsLength += caption.word.length;
+      currentSymbolsLength += caption.word.length + 1;
       currentCaptionIndex++;
     } else if (
       linesPerPage > currentLine &&
@@ -200,16 +201,26 @@ export const alignLinesInGroup = (
   maxGroupWidth: number,
   xOffset: number
 ) => {
-  group.children.forEach((line, i) => {
+  return group.children.map((line) => {
     const lineWords = (line as Konva.Group).children;
     const lineWordsWidth = lineWords.reduce(
       (acc, word, currentIndex) =>
-        acc + word.width() + (currentIndex > 0 ? xOffset : 0),
+        acc + (word as Konva.Text).width() + (currentIndex > 0 ? xOffset : 0),
+      0
+    );
+    const lineHeight = lineWords.reduce(
+      (acc, word) => Math.max(acc, (word as Konva.Text).height()),
       0
     );
 
     const lineX = (maxGroupWidth - lineWordsWidth) / 2;
     line.x(lineX);
+
+    return {
+      line: line as Konva.Group,
+      width: lineWordsWidth,
+      height: lineHeight,
+    };
   });
 };
 

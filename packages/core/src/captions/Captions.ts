@@ -21,6 +21,8 @@ export type CaptionsOptions = {
   captions?: Caption[] | null;
   /** When false, caller must invoke {@link Captions.enable} manually. */
   autoEnable?: boolean;
+  /** Show debug bounding boxes around lines/blocks. */
+  debug?: boolean;
 };
 
 /**
@@ -42,6 +44,7 @@ export class Captions {
   private animationFrameId: number | null = null;
   private videoWidth = 0;
   private videoHeight = 0;
+  private readonly debug: boolean;
 
   private readonly handleResize = () => {
     this.syncStageDimensions();
@@ -70,6 +73,7 @@ export class Captions {
     this.providedContainer = options.container;
     this.presetState = options.preset;
     this.captionsState = options.captions ?? null;
+    this.debug = options.debug ?? import.meta.env.DEV;
 
     if (options.autoEnable ?? true) {
       this.enable();
@@ -91,7 +95,7 @@ export class Captions {
       container: this.containerElement,
     });
 
-    this.layer = new Konva.Layer();
+    this.layer = new Konva.Layer({ listening: false });
     this.stage.add(this.layer);
 
     this.videoWidth = this.video.videoWidth;
@@ -219,23 +223,15 @@ export class Captions {
 
     this.layer.destroyChildren();
 
-    const captionsSettings = this.presetState.captionsSettings;
     renderFrame(
-      captionsSettings as any,
+      this.presetState.captionsSettings as any,
       undefined as any,
       this.captionsState || [],
       this.video.currentTime,
       [this.videoWidth, this.videoHeight],
       this.layer,
       2,
-      {
-        type: (captionsSettings.position ?? "bottom") as
-          | "auto"
-          | "top"
-          | "middle"
-          | "bottom",
-        positionTopOffset: captionsSettings.positionTopOffset ?? 0,
-      }
+      this.debug
     );
   }
 
@@ -289,7 +285,11 @@ export class Captions {
     container.style.width = "100%";
     container.style.height = "100%";
     container.style.pointerEvents = "none";
-    this.video.parentElement?.appendChild(container);
+    const parent = this.video.parentElement;
+    parent?.appendChild(container);
+    if (parent) {
+      parent.style.position = "relative";
+    }
     return container;
   }
 }

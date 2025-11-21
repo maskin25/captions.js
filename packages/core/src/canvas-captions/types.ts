@@ -1,8 +1,8 @@
-import Konva from 'konva';
+import Konva from "konva";
 
-import { Caption, CaptionsSettings } from '../entities/captions/captions.types';
-import { LayoutSettings } from '../entities/layout/layout.types';
-import { Timeline } from '../entities/timeline/timeline.types';
+import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
+import { LayoutSettings } from "../entities/layout/layout.types";
+import { Timeline } from "../entities/timeline/timeline.types";
 
 export type RenderFrameFn = (
   captionsSettings: CaptionsSettings,
@@ -12,10 +12,7 @@ export type RenderFrameFn = (
   targetSize: [number, number],
   layer: Konva.Layer,
   toCoef?: number,
-  position?: {
-    type: 'auto' | 'top' | 'middle' | 'bottom';
-    positionTopOffset?: number;
-  }
+  debug?: boolean
 ) => void;
 
 export type TrimLayoutsCaptionsFn = (

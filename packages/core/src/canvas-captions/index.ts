@@ -20,6 +20,28 @@ import { Timeline } from "../entities/timeline/timeline.types";
 import { fonts } from "./fonts.config";
 let memo: { [hash: string]: number } = {};
 
+const drawDebugBoundingBox = (
+  parent: Konva.Group,
+  width: number,
+  height: number,
+  stroke: string,
+  dash: number[] = [6, 4]
+) => {
+  const rect = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width,
+    height,
+    stroke,
+    strokeWidth: 4,
+    dash,
+    listening: false,
+  });
+
+  parent.add(rect);
+  rect.moveToTop();
+};
+
 export const renderFrame: RenderFrameFn = (
   captionsSettings: CaptionsSettings,
   layoutSettings: LayoutSettings,
@@ -28,15 +50,11 @@ export const renderFrame: RenderFrameFn = (
   targetSize: [number, number],
   layer: Konva.Layer,
   toCoef?: number,
-  position?: {
-    type: "auto" | "top" | "middle" | "bottom";
-    positionTopOffset?: number;
-  }
+  debug?: boolean
 ) => {
-  const style = captionsSettings.style.name;
   const [width, height] = targetSize;
   const targetFontSize = captionsSettings.style.font.fontSize * (toCoef ?? 1);
-
+  const showDebugBoundingBoxes = Boolean(debug);
   let totalSymbolInLine = 0;
   const hash = objectHash({ captionsSettings });
 
@@ -98,7 +116,7 @@ export const renderFrame: RenderFrameFn = (
 
   const chunks = splitCaptionsBytotalWordsToDisplay(
     captions,
-    totalSymbolInLine - 6,
+    totalSymbolInLine,
     captionsSettings.linesPerPage
   );
 
@@ -109,18 +127,25 @@ export const renderFrame: RenderFrameFn = (
   );
 
   const xOffset = targetFontSize * 0.1;
+  const wordSpacing =
+    xOffset +
+    (captionsSettings.animation === "bounce" ? 8 : 0) +
+    (captionsSettings.style.font.fontCapitalize ? 2 : 0);
   const yOffset = captionsSettings.lineSpacing ?? 4;
 
   if (currentChunk) {
-    var group = new Konva.Group();
+    const group = new Konva.Group({
+      drawBorder: true,
+    });
     let x = 0;
     let y = 0;
     let maxGroupWidth = 0;
     let groupWidth = 0;
     let groupHeight = 0;
-    let line: Konva.Group = new Konva.Group();
+    let line: Konva.Group = new Konva.Group({
+      drawBorder: true,
+    });
     let currentSymbolsLength = 0;
-    let box: Konva.Group = new Konva.Group();
 
     let current:
       | {
@@ -193,6 +218,8 @@ export const renderFrame: RenderFrameFn = (
                 y: captionsSettings.style.font.shadow?.fontShadowOffsetY ?? 0,
               }
             : undefined,
+          listening: false,
+          perfectDrawEnabled: false,
         });
       };
 
@@ -230,12 +257,8 @@ export const renderFrame: RenderFrameFn = (
         };
       }
 
-      x +=
-        text.width() +
-        xOffset +
-        (captionsSettings.animation === "bounce" ? 8 : 0) +
-        (captionsSettings.style.font.fontCapitalize ? 2 : 0);
-      groupWidth += text.width() + (isLastWordInLine ? 0 : xOffset);
+      x += text.width() + wordSpacing;
+      groupWidth += text.width() + (isLastWordInLine ? 0 : wordSpacing);
 
       line.y(y);
       line.add(text);
@@ -254,14 +277,16 @@ export const renderFrame: RenderFrameFn = (
           maxGroupWidth = groupWidth;
         }
         groupWidth = 0;
-        line = new Konva.Group();
+        line = new Konva.Group({
+          drawBorder: true,
+        });
         currentSymbolsLength = 0;
       } else {
-        currentSymbolsLength += caption.word.length;
+        currentSymbolsLength += caption.word.length + 1;
       }
     });
 
-    alignLinesInGroup(group, maxGroupWidth, xOffset);
+    const lineMetrics = alignLinesInGroup(group, maxGroupWidth, wordSpacing);
 
     /*  const progress =
       (currentTime - currentChunk[0].start_time) /
@@ -282,8 +307,8 @@ export const renderFrame: RenderFrameFn = (
         groupHeight,
         width,
         height,
-        position?.type ?? captionsSettings.position,
-        position?.positionTopOffset ?? captionsSettings.positionTopOffset ?? 0,
+        captionsSettings.position,
+        captionsSettings.positionTopOffset ?? 0,
         toCoef ?? 1
       )
     );
@@ -298,6 +323,13 @@ export const renderFrame: RenderFrameFn = (
       },
       current
     );
+
+    if (showDebugBoundingBoxes) {
+      drawDebugBoundingBox(group, maxGroupWidth, groupHeight, "#ff4081");
+      lineMetrics.forEach(({ line, width, height }) => {
+        drawDebugBoundingBox(line, width, height, "#2196f3", [4, 3]);
+      });
+    }
 
     if ((current as any)?.text && captionsSettings.animation === "box-word") {
       current!.text?.zIndex(10);

@@ -7,7 +7,7 @@ Star or watch the repo on GitHub to get updates!
 
 # Captions.js
 
-A modern JavaScript library for adding captions to HTML5 videos with ease.
+Render styled animated captions on canvas — works both on client and server side using Node.js and FFmpeg.
 
 [**Live Demo**](https://maskin25.github.io/captions.js/)
 

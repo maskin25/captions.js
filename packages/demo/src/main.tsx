@@ -4,7 +4,7 @@ import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router";
 import AppLayout from "./layouts/AppLayout.tsx";
 import HomePage from "./pages/HomePage.tsx";
-import DocumentationPage from "./pages/DocumentationPage.tsx";
+import TestPage from "./pages/Test.tsx";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
@@ -14,7 +14,7 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route element={<AppLayout />}>
             <Route index element={<HomePage />} />
-            <Route path="/documentation" element={<DocumentationPage />} />
+            <Route path="/test" element={<TestPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

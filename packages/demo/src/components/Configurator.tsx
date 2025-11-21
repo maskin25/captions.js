@@ -192,6 +192,14 @@ const Configurator = () => {
   const [captions, setCaptions] = useState<Caption[]>([]);
   const [isJsonOpen, setIsJsonOpen] = useState(false);
 
+  const jsonRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (jsonRef.current && isJsonOpen) {
+      jsonRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isJsonOpen]);
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const captionsInstance = useRef<ReturnType<typeof captionsjs> | null>(null);
 
@@ -386,11 +394,7 @@ const Configurator = () => {
                 <TabsTrigger value="layout">Layout</TabsTrigger>
               </TabsList>
               <ScrollArea
-                className={`-m-4 p-4 min-h-120  ${
-                  isJsonOpen
-                    ? "xl:h-[calc(100vh-80rem)]"
-                    : "xl:h-[calc(100vh-15rem)]"
-                }`}
+                className={`-m-4 p-4 min-h-120 xl:h-[calc(100vh-15rem)]`}
               >
                 <div className="px-2">
                   <TabsContent value="font" className="space-y-4">
@@ -426,7 +430,7 @@ const Configurator = () => {
         </Card>
       </div>
 
-      <Collapsible open={isJsonOpen} onOpenChange={setIsJsonOpen}>
+      <Collapsible ref={jsonRef} open={isJsonOpen} onOpenChange={setIsJsonOpen}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between py-4">
             <CardTitle className="m-0">Captions Settings</CardTitle>
@@ -458,8 +462,9 @@ const Configurator = () => {
             <CardContent className="h-full">
               <Textarea
                 readOnly
-                className="h-[400px] resize-none font-mono text-xs"
+                className="resize-none font-mono text-xs"
                 value={settingsJson}
+                rows={30}
               />
             </CardContent>
           </CollapsibleContent>
