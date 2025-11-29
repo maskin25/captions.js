@@ -41,6 +41,8 @@ export {
   type CaptionsInstance,
 } from "./captions/Captions";
 
+export { renderFrame } from "./canvas-captions";
+
 export { CaptionsSettings } from "./entities/captions/captions.types";
 
 /** Default export is the `captionsjs()` factory for ergonomic imports. */
