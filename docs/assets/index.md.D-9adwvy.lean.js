@@ -1,0 +1,1 @@
+import{_ as i,c as a,o as n,ag as t}from"./chunks/framework.BPWKEOVK.js";const o=JSON.parse('{"title":"captions.js Guide","description":"","frontmatter":{},"headers":[],"relativePath":"index.md","filePath":"index.md"}'),e={name:"index.md"};function p(l,s,h,k,E,d){return n(),a("div",null,[...s[0]||(s[0]=[t("",3)])])}const c=i(e,[["render",p]]);export{o as __pageData,c as default};
