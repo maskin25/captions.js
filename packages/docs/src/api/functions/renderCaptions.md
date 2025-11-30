@@ -6,7 +6,7 @@
 
 > **renderCaptions**(`ctx`, `text`): `boolean`
 
-Defined in: [index.ts:12](https://github.com/maskin25/captions.js/blob/b528ac4031c0134114f42f5ddcfe4e7c5829a65f/packages/core/src/index.ts#L12)
+Defined in: [index.ts:12](https://github.com/maskin25/captions.js/blob/5b711180c3152bda8f15a5bee82a3003106d29ad/packages/core/src/index.ts#L12)
 
 Simple canvas demo renderer used only for the docs playground.
 

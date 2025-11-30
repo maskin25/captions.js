@@ -42,6 +42,37 @@ export interface StylePreset {
 }
 
 /**
+ * Names of all available style presets.
+ */
+
+export type StylePresetName =
+  | "Karaoke"
+  | "Beasty"
+  | "Safari"
+  | "Acid"
+  | "Popline"
+  | "Desert"
+  | "Hook"
+  | "Sky"
+  | "Flamingo"
+  | "Deep Diver B&W"
+  | "New"
+  | "Banger"
+  | "Catchy"
+  | "Karaoke 2"
+  | "Karaoke 3"
+  | "From"
+  | "Classic"
+  | "Classic Big"
+  | "Crazy"
+  | "Acid 2"
+  | "Marvel"
+  | "Lovly"
+  | "Old Money"
+  | "Cinema"
+  | "Marker";
+
+/**
  * Curated set of presets that ship with captions.js out of the box.
  *
  * @remarks

@@ -3,14 +3,11 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
+  injectWorkspacePackages: true
 
 importers:
 
   .:
-    dependencies:
-      skia-canvas:
-        specifier: ^3.0.8
-        version: 3.0.8
     devDependencies:
       typescript:
         specifier: ^5.6.3

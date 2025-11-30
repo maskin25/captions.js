@@ -6,13 +6,20 @@ const isFlagToken = (token: string) =>
 const isFileReference = (value: string) =>
   value.startsWith("@") && value.length > 1;
 
-const readFileArgument = async (value: string, argName: string) => {
+const resolveFileReference = (value: string, baseDir?: string) => {
   const rawPath = value.slice(1);
-  const absolutePath = path.isAbsolute(rawPath)
+
+  if (baseDir && !path.isAbsolute(rawPath)) {
+    return path.resolve(baseDir, rawPath.replace(/^\/+/, ""));
+  }
+
+  if (baseDir) {
+    return path.resolve(baseDir, rawPath.replace(/^\/+/, ""));
+  }
+
+  return path.isAbsolute(rawPath)
     ? rawPath
     : path.resolve(process.cwd(), rawPath);
-
-  return absolutePath;
 };
 
 export const parseMethodArguments = async (
@@ -22,6 +29,8 @@ export const parseMethodArguments = async (
     positional: [],
     named: {},
   };
+
+  let rootDir: string | undefined;
 
   for (let index = 0; index < args.length; index += 1) {
     const token = args[index];
@@ -51,11 +60,16 @@ export const parseMethodArguments = async (
         continue;
       }
 
+      if (flag === "rootDir") {
+        rootDir = value;
+        continue;
+      }
+
       const finalValue = value ?? "true";
       invocation.named[flag] = finalValue;
 
       if (isFileReference(finalValue)) {
-        const absolutePath = await readFileArgument(finalValue, flag);
+        const absolutePath = resolveFileReference(finalValue, rootDir);
         invocation.named[flag] = absolutePath;
       }
 
@@ -69,10 +83,15 @@ export const parseMethodArguments = async (
       const value = token.slice(equalsIndex + 1);
 
       if (key) {
+        if (key === "rootDir") {
+          rootDir = value;
+          continue;
+        }
+
         invocation.named[key] = value;
 
         if (isFileReference(value)) {
-          const absolutePath = await readFileArgument(value, key);
+          const absolutePath = resolveFileReference(value, rootDir);
           invocation.named[key] = absolutePath;
         }
 

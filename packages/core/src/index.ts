@@ -23,6 +23,7 @@ export { googleFontsList } from "./fonts/googleFonts.config";
 export {
   type StylePreset,
   stylePresets,
+  StylePresetName,
 } from "./stylePresets/stylePresets.config";
 
 /** Renders a captions string to an offscreen canvas (Node/FFmpeg helper). */

@@ -16,5 +16,3 @@ const instance = captionsjs({
 
 instance.enable();
 ```
-
-To regenerate this documentation run `pnpm --filter docs run docs:generate`. 

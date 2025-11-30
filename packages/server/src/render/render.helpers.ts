@@ -1,33 +1,17 @@
 import path from "path";
 import fs from "fs";
-import { Caption, CaptionsSettings } from "@nexpanse/video-editor";
-
-export const prepareCaptions = (captions: Caption[], startTimeLayout) => {
-  return (
-    captions
-      /* .filter(
-      (caption) =>
-        (caption.start_time >= startTime && caption.end_time <= endTime) ||
-        (caption.start_time <= startTime && caption.end_time >= startTime) ||
-        (caption.start_time <= endTime && caption.end_time >= endTime)
-      //&& caption.end_time > caption.start_time
-    ) */
-      .map((caption) => ({
-        ...caption,
-        start_time: caption.start_time - startTimeLayout,
-        end_time: caption.end_time - startTimeLayout,
-      }))
-    //.filter((caption) => caption.start_time > 0)
-  );
-};
+import { CaptionsSettings } from "captions.js";
 
 export const getFontPath = (
-  fontsPath: string = "/assets/fonts/",
+  fontsPath: string = "assets/fonts",
   fontFamily: CaptionsSettings["style"]["font"]["fontFamily"],
   fontWeight: CaptionsSettings["style"]["font"]["fontWeight"],
   italic: CaptionsSettings["style"]["font"]["italic"]
 ) => {
   // TODO: analyze files in assets/fonts and provide me with the correct path
+  const baseFontsPath = path.isAbsolute(fontsPath)
+    ? fontsPath
+    : path.resolve(fontsPath);
 
   // Normalize font family to lowercase for consistent checking
   const fontFamilyDir = fontFamily.split(" ").join("_");
@@ -50,7 +34,7 @@ export const getFontPath = (
   const fontFileName = `${normalizedFontFamily}-${weight}${fontStyle}.ttf`;
 
   // Construct full path
-  const fullPath = path.join(fontsPath, fontFamilyDir, fontFileName);
+  const fullPath = path.join(baseFontsPath, fontFamilyDir, fontFileName);
 
   const fallbacks = {
     ExtraLight: ["Thin", "Light", "Regular"],
@@ -65,15 +49,20 @@ export const getFontPath = (
     return fullPath;
   }
 
+  // @ts-expect-error ignore
   for (const fallback of fallbacks[weight]) {
     const fallbackFontFileName = `${normalizedFontFamily}-${fallback}${fontStyle}.ttf`;
-    const fallbackFullPath = path.join(fontsPath, fontFamilyDir, fallbackFontFileName);
+    const fallbackFullPath = path.join(
+      baseFontsPath,
+      fontFamilyDir,
+      fallbackFontFileName
+    );
     if (fs.existsSync(fallbackFullPath)) {
       return fallbackFullPath;
     }
   }
 
-  return `${normalizedFontFamily}-Regular.ttf`;
+  return path.join(baseFontsPath, fontFamilyDir, `${normalizedFontFamily}-Regular.ttf`);
 };
 
 export const fontWeightToNumber = (fontWeight: string) => {

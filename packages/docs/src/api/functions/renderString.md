@@ -6,7 +6,7 @@
 
 > **renderString**(`canvas`, `text`, `options`): `Promise`\<`boolean`\>
 
-Defined in: [render/renderString.ts:21](https://github.com/maskin25/captions.js/blob/b528ac4031c0134114f42f5ddcfe4e7c5829a65f/packages/core/src/render/renderString.ts#L21)
+Defined in: [render/renderString.ts:21](https://github.com/maskin25/captions.js/blob/5b711180c3152bda8f15a5bee82a3003106d29ad/packages/core/src/render/renderString.ts#L21)
 
 Server/worker-friendly helper that paints a text string onto a provided canvas.
 
