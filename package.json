@@ -1,6 +1,7 @@
 {
   "name": "captions.js",
   "private": false,
+  "packageManager": "pnpm@9.12.2",
   "workspaces": [
     "packages/*"
   ],
