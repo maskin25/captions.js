@@ -369,7 +369,7 @@ const Configurator = () => {
         </Card>
 
         <Card className="flex flex-col overflow-hidden">
-          <CardContent className="p-6 flex flex-1 flex-col gap-4 overflow-hidden">
+          <CardContent className="p-0 xl:p-6 flex flex-1 flex-col gap-4 overflow-hidden">
             <div
               className="relative rounded-xl overflow-hidden max-w-full bg-black mx-auto"
               style={{ aspectRatio: aspectRatio.ratio }}

@@ -3,7 +3,7 @@ title: Docker Render Service
 outline: deep
 ---
 
-# captions.js render image
+# captions.js Server Side Rendering
 
 `maskin25/captions.js-render` is a ready-to-run container that burns captions onto a video using the **captions.js** renderer plus ffmpeg. This page shows how to pull the image, feed it your assets, and customize the render through CLI flags.
 
@@ -37,7 +37,7 @@ docker run --rm \
   maskin25/captions.js-render:latest \
   burnCaptions \
     --preset Lovly \
-    -- rootDir /data \
+    --rootDir /data \
     --video @/video.mp4 \
     --captions @/captions.json \
     --output @/output.mp4
@@ -54,7 +54,7 @@ The CLI can download files directly:
 docker run --rm maskin25/captions.js-render \
   burnCaptions \
     --preset From \
-    -- rootDir /data \
+    --rootDir /data \
     --video https://<path-to-video> \
     --captions https://<path-to-captions> \
     --output /app/output.mp4

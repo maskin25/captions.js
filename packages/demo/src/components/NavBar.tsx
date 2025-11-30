@@ -21,11 +21,12 @@ export function Navbar() {
   const navItems = [
     { href: "/", label: "Home" },
     { href: "docs/", label: "Docs", reloadDocument: true },
+    { href: "/docs/server/", label: "Server-side", reloadDocument: true },
     { href: "https://github.com/maskin25/captions.js", label: "Github" },
-    {
-      href: "https://main--68e681805917843931c33a87.chromatic.com",
-      label: "Storybook",
-    },
+    // {
+    //   href: "https://main--68e681805917843931c33a87.chromatic.com",
+    //   label: "Storybook",
+    // },
   ];
 
   const [stars, setStars] = useState<number | null>(null);
