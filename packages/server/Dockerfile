@@ -1,5 +1,4 @@
 FROM node:22-slim AS base
-ENV NODE_ENV=production
 WORKDIR /app
 
 RUN apt-get update \
@@ -25,12 +24,15 @@ FROM base AS deps
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
 COPY packages ./packages
 RUN pnpm config set inject-workspace-packages true
-RUN pnpm install --frozen-lockfile
+RUN pnpm config set link-workspace-packages true
+RUN pnpm install --frozen-lockfile --prod=false
+RUN pnpm --filter captions.js build
 RUN pnpm --filter @captionsjs/server build
 RUN pnpm deploy --filter @captionsjs/server --prod /app/deploy
 RUN cp -R packages/server/assets /app/deploy/assets
 
 FROM base AS runner
+ENV NODE_ENV=production
 ENV PORT=4000
 WORKDIR /app
 COPY --from=deps /app/deploy/ ./
