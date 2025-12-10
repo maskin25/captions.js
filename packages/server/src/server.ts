@@ -15,10 +15,35 @@ export const createApp = () => {
     });
   });
 
+  type RenderJobPayload = {
+    preset: string;
+    video_uri: string;
+    captions_uri: string;
+    output_uri: string;
+  };
+
   app.post("/burnCaptions", (req, res) => {
-    console.log("Headers:", req.headers);
-    console.log("Body:", JSON.stringify(req.body, null, 2));
-    res.status(200).send(JSON.stringify(req.body, null, 2));
+    const envelope = req.body;
+    const message = envelope?.message;
+
+    if (!message || !message.data) {
+      console.error("No message data");
+      return res.status(400).send("No message data");
+    }
+
+    const decoded = Buffer.from(message.data, "base64").toString("utf8");
+
+    let payload: RenderJobPayload;
+    try {
+      payload = JSON.parse(decoded);
+    } catch (e) {
+      console.error("Invalid JSON payload", e, decoded);
+      return res.status(400).send("Invalid JSON payload");
+    }
+
+    console.log("Got render job:", payload);
+
+    res.status(200).send("OK");
   });
 
   return app;
