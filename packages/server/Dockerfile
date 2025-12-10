@@ -23,9 +23,13 @@ RUN corepack enable
 FROM base AS deps
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml ./
 COPY packages ./packages
+<<<<<<< HEAD
 RUN pnpm config set inject-workspace-packages true
 RUN pnpm config set link-workspace-packages true
 RUN pnpm install --frozen-lockfile --prod=false
+=======
+RUN pnpm install --frozen-lockfile
+>>>>>>> 4a34129669d437ef63bbad926b24e4d75ef02144
 RUN pnpm --filter captions.js build
 RUN pnpm --filter @captionsjs/server build
 RUN pnpm deploy --filter @captionsjs/server --prod /app/deploy

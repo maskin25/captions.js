@@ -32,7 +32,7 @@ export interface BurnCaptionsParams {
 export const burnCaptions = async (params: BurnCaptionsParams) => {
   const presetConfig =
     stylePresets.find(
-      (preset) => preset.captionsSettings.style.name === params.preset
+      (preset: any) => preset.captionsSettings.style.name === params.preset
     ) || stylePresets[0];
   const { captionsSettings } = presetConfig;
 
