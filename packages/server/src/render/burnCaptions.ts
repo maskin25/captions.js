@@ -30,9 +30,11 @@ export interface BurnCaptionsParams {
 }
 
 export const burnCaptions = async (params: BurnCaptionsParams) => {
-  const { captionsSettings } =
-    stylePresets.find((p) => p.captionsSettings.style.name === params.preset) ||
-    stylePresets[0];
+  const presetConfig =
+    stylePresets.find(
+      (preset) => preset.captionsSettings.style.name === params.preset
+    ) || stylePresets[0];
+  const { captionsSettings } = presetConfig;
 
   if (/^https?:\/\//i.test(params.video)) {
     params.video = await download(params.video);

@@ -15,6 +15,12 @@ export const createApp = () => {
     });
   });
 
+  app.post("/burnCaptions", (req, res) => {
+    console.log("Headers:", req.headers);
+    console.log("Body:", JSON.stringify(req.body, null, 2));
+    res.status(200).send(JSON.stringify(req.body, null, 2));
+  });
+
   return app;
 };
 
