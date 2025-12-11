@@ -44,12 +44,17 @@ export const createApp = () => {
 
     console.log("Got render job:", payload);
 
-    await burnCaptions({
-      preset: payload.preset,
-      video: payload.video_uri,
-      captions: payload.captions_uri,
-      output: payload.output_uri,
-    });
+    try {
+      await burnCaptions({
+        preset: payload.preset,
+        video: payload.video_uri,
+        captions: payload.captions_uri,
+        output: payload.output_uri,
+      });
+    } catch (error) {
+      console.error("Error burning captions:", error);
+      //return res.status(500).send("Error burning captions");
+    }
 
     res.status(200).send("OK");
   });

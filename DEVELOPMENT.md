@@ -97,3 +97,41 @@ pnpm --filter captions-storybook run storybook
     ```bash
     pnpm run build
     ```
+
+# DockerHub Deployment
+
+The server package can be containerized using Docker. Below are the steps to build and run the Docker container for the server.
+
+## Build the Docker Image
+
+To build the Docker image for the server, navigate to the `packages/server` directory and run the following command:
+
+```bash
+docker build -t maskin25/captions.js-render:latest -f packages/server/Dockerfile .
+```
+
+This command builds the Docker image and tags it as `maskin25/captions.js-render:latest`.
+
+## Run the Docker Container
+
+To run the Docker container from the built image, use the following command:
+
+```bash
+docker run --rm -p 4000:4000 maskin25/captions.js-render:latest
+```
+
+This command runs the container, mapping port 4000 of the container to port 4000 on your host machine. The `--rm` flag ensures that the container is removed after it stops
+
+## Pushing to DockerHub
+
+To push the Docker image to DockerHub, first log in to your DockerHub account:
+
+```bash
+docker login
+```
+
+Then, tag the image with your DockerHub username and push it:
+
+```bash
+docker push maskin25/captions.js-render:latest
+```
