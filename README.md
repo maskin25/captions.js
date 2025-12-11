@@ -1,6 +1,6 @@
 > [!WARNING]
 > 🚧 **Captions.js is nearing its first public release**  
-> The library is under active development and a full-featured version is expected around **November 2025**.
+> The library is under active development and a full-featured version is expected around **January 2026**.
 
 💌 Want to know when Captions.js is released?
 Star or watch the repo on GitHub to get updates!

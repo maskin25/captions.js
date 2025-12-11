@@ -2,6 +2,7 @@ import express from "express";
 import type { Server } from "http";
 import { env } from "./config/env.js";
 import { logger } from "./utils/logger.js";
+import { burnCaptions } from "./render/burnCaptions.js";
 
 export const createApp = () => {
   const app = express();
@@ -22,7 +23,7 @@ export const createApp = () => {
     output_uri: string;
   };
 
-  app.post("/burnCaptions", (req, res) => {
+  app.post("/burnCaptions", async (req, res) => {
     const envelope = req.body;
     const message = envelope?.message;
 
@@ -42,6 +43,13 @@ export const createApp = () => {
     }
 
     console.log("Got render job:", payload);
+
+    await burnCaptions({
+      preset: payload.preset,
+      video: payload.video_uri,
+      captions: payload.captions_uri,
+      output: payload.output_uri,
+    });
 
     res.status(200).send("OK");
   });
