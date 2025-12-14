@@ -44,6 +44,8 @@ export const createApp = () => {
 
     console.log("Got render job:", payload);
 
+    res.status(200).send("OK");
+
     try {
       await burnCaptions({
         preset: payload.preset,
@@ -55,8 +57,6 @@ export const createApp = () => {
       console.error("Error burning captions:", error);
       //return res.status(500).send("Error burning captions");
     }
-
-    res.status(200).send("OK");
   });
 
   return app;
