@@ -4,8 +4,8 @@ import {
   SelectValue,
   SelectContent,
   SelectTrigger,
-} from "@/components/ui/select";
-import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
+} from "./ui/select";
+import { Field, FieldLabel, FieldDescription } from "./ui/field";
 
 export type AspectRatio = {
   label: string;

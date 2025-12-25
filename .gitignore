@@ -68,3 +68,5 @@ reports/
 
 /packages/tools
 /packages/docs/.vitepress/cache
+
+.npmrc

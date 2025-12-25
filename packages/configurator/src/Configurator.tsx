@@ -4,7 +4,6 @@ import captionsjs, {
   googleFontsList,
   stylePresets,
 } from "captions.js";
-import type { CaptionsSettings } from "captions.js";
 import { ChevronsUpDown } from "lucide-react";
 import {
   Select,
@@ -12,14 +11,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Field, FieldLabel } from "@/components/ui/field";
+} from "./ui/select";
+import { Input } from "./ui/input";
+import { Switch } from "./ui/switch";
+import { Slider } from "./ui/slider";
+import { Textarea } from "./ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Field, FieldLabel } from "./ui/field";
 import {
   type AspectRatio,
   VideoOptionSelect,
@@ -34,6 +33,9 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import { CopyButton } from "./ui/shadcn-io/copy-button";
+
+type ConfiguratorCaptionsSettings =
+  (typeof stylePresets)[number]["captionsSettings"];
 
 type BaseStyleField = {
   path: (string | number)[];
@@ -176,13 +178,20 @@ const Configurator = () => {
       ? globalThis.structuredClone(value)
       : (JSON.parse(JSON.stringify(value)) as T);
 
+  const getPresetSettings = (presetId: number): ConfiguratorCaptionsSettings => {
+    const base =
+      stylePresets.find((p) => p.id === presetId)?.captionsSettings ||
+      stylePresets[0]?.captionsSettings;
+    return clone(base) as ConfiguratorCaptionsSettings;
+  };
+
   const [selectedPresetId, setSelectedPresetId] = useState(
     stylePresets.find((p) => p.captionsSettings.style.name === "From")?.id ?? 0
   );
-  const [settings, setSettings] = useState<CaptionsSettings>(
-    clone(
-      stylePresets.find((p) => p.id === selectedPresetId)?.captionsSettings ||
-        stylePresets[0].captionsSettings
+  const [settings, setSettings] = useState<ConfiguratorCaptionsSettings>(() =>
+    getPresetSettings(
+      stylePresets.find((p) => p.captionsSettings.style.name === "From")?.id ??
+        0
     )
   );
   const [videoOption, setVideoOption] = useState<VideoOption>(videoOptions[0]);
@@ -221,11 +230,20 @@ const Configurator = () => {
     if (!video) return;
 
     captionsInstance.current?.destroy();
+    const nodeEnv =
+      typeof globalThis === "object" &&
+      typeof (globalThis as Record<string, any>).process === "object"
+        ? (globalThis as Record<string, any>).process?.env?.NODE_ENV
+        : undefined;
+    const isDev = nodeEnv !== "production";
+
+    const presetPayload = { id: 0, captionsSettings: settings } as any;
+
     const instance = captionsjs({
       video,
-      preset: { id: 0, captionsSettings: settings },
+      preset: presetPayload,
       captions,
-      debug: import.meta.env.DEV,
+      debug: isDev,
     });
 
     captionsInstance.current = instance;
@@ -237,7 +255,9 @@ const Configurator = () => {
   }, [videoOption.videoSrc]);
 
   useEffect(() => {
-    captionsInstance.current?.preset({ id: 0, captionsSettings: settings });
+    captionsInstance.current?.preset(
+      { id: 0, captionsSettings: settings } as any
+    );
   }, [settings]);
 
   useEffect(() => {
@@ -289,7 +309,7 @@ const Configurator = () => {
     if (!preset) return;
 
     setSelectedPresetId(presetId);
-    setSettings(clone(preset.captionsSettings));
+    setSettings(getPresetSettings(presetId));
   };
 
   const updateSettingValue = (path: (string | number)[], value: unknown) => {
@@ -477,7 +497,7 @@ const Configurator = () => {
 
 type StyleFieldInputProps = {
   field: StyleField;
-  settings: CaptionsSettings;
+  settings: ConfiguratorCaptionsSettings;
   onChange: (path: (string | number)[], value: unknown) => void;
 };
 
