@@ -1,5 +1,5 @@
 import ExampleFeatured from "@/components/ExampleFeatured";
-import { Configurator } from "@maskin25/captions-configurator";
+  import { Configurator } from "@maskin25/captions-configurator";
 
 function HomePage() {
   return <Configurator />;

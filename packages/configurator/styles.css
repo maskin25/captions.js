@@ -1,0 +1,3 @@
+/* Import this file in your application's Tailwind entrypoint so the Configurator's markup is processed by your Tailwind v4 pipeline. */
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
