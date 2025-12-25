@@ -33,6 +33,7 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import { CopyButton } from "./ui/shadcn-io/copy-button";
+import { twMerge } from "tailwind-merge";
 
 type ConfiguratorCaptionsSettings =
   (typeof stylePresets)[number]["captionsSettings"];
@@ -172,13 +173,15 @@ const STYLE_FIELDS: StyleField[] = [
   },
 ];
 
-const Configurator = () => {
+const Configurator = ({ className }: { className?: string }) => {
   const clone = <T,>(value: T): T =>
     typeof globalThis.structuredClone === "function"
       ? globalThis.structuredClone(value)
       : (JSON.parse(JSON.stringify(value)) as T);
 
-  const getPresetSettings = (presetId: number): ConfiguratorCaptionsSettings => {
+  const getPresetSettings = (
+    presetId: number
+  ): ConfiguratorCaptionsSettings => {
     const base =
       stylePresets.find((p) => p.id === presetId)?.captionsSettings ||
       stylePresets[0]?.captionsSettings;
@@ -255,9 +258,10 @@ const Configurator = () => {
   }, [videoOption.videoSrc]);
 
   useEffect(() => {
-    captionsInstance.current?.preset(
-      { id: 0, captionsSettings: settings } as any
-    );
+    captionsInstance.current?.preset({
+      id: 0,
+      captionsSettings: settings,
+    } as any);
   }, [settings]);
 
   useEffect(() => {
@@ -327,8 +331,8 @@ const Configurator = () => {
   };
 
   return (
-    <div className="flex flex-col xl:h-[calc(100vh-4rem-1px)] p-4 gap-4">
-      <div className="grid flex-1 grid-cols-1 gap-4 xl:grid-cols-[320px_minmax(0,1fr)_340px]">
+    <div className={twMerge(`flex flex-col p-4 gap-4`, className)}>
+      <div className="grid flex-1 grid-cols-1 gap-4 xl:grid-cols-[320px_minmax(0,1fr)_340px] h-full">
         <Card className="flex flex-col overflow-hidden">
           <CardContent className="p-6 space-y-4 overflow-y-auto">
             {/*   <Field>
@@ -407,16 +411,14 @@ const Configurator = () => {
             </div>
           </CardContent>
         </Card>
-        <Card className="flex flex-col">
-          <CardContent className="p-6 flex flex-1 flex-col">
-            <Tabs defaultValue="font" className="flex flex-col">
+        <Card className="flex flex-col overflow-hidden">
+          <CardContent className="p-6 flex flex-col h-full">
+            <Tabs defaultValue="font" className="flex flex-col h-full">
               <TabsList className="grid grid-cols-2 mb-2 w-full">
                 <TabsTrigger value="font">Font</TabsTrigger>
                 <TabsTrigger value="layout">Layout</TabsTrigger>
               </TabsList>
-              <ScrollArea
-                className={`-m-4 p-4 min-h-120 xl:h-[calc(100vh-15rem)]`}
-              >
+              <ScrollArea className={`-m-4 p-4 min-h-120 xl:min-h-none h-full`}>
                 <div className="px-2">
                   <TabsContent value="font" className="space-y-4">
                     {STYLE_FIELDS.filter((field) =>

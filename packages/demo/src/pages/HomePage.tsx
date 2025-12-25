@@ -1,8 +1,8 @@
 import ExampleFeatured from "@/components/ExampleFeatured";
-  import { Configurator } from "@maskin25/captions-configurator";
+import { Configurator } from "@maskin25/captions-configurator";
 
 function HomePage() {
-  return <Configurator />;
+  return <Configurator className="xl:h-[calc(100vh-9rem+2px)]" />;
 
   return (
     <div className="p-4 flex flex-col items-center gap-4">
