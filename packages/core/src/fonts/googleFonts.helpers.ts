@@ -59,6 +59,8 @@ export async function loadGoogleFont2(fontFamily: string) {
     console.warn(`[loadGoogleFont] failed to load font "${fontFamily}":`, err);
   }
 
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
   // 4. Force update Konva layers (if necessary)
   Konva.stages?.forEach((stage) => stage.batchDraw());
 

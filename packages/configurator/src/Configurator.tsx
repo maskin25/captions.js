@@ -34,6 +34,8 @@ import {
 } from "./ui/collapsible";
 import { CopyButton } from "./ui/shadcn-io/copy-button";
 import { twMerge } from "tailwind-merge";
+import { STYLE_FIELDS } from "Configurator.config";
+import PresetsCarousel from "PresetsCarousel";
 
 type ConfiguratorCaptionsSettings =
   (typeof stylePresets)[number]["captionsSettings"];
@@ -69,132 +71,35 @@ type StyleField =
   | SelectStyleField
   | SwitchStyleField;
 
-const POSITION_OPTIONS = ["auto", "top", "middle", "bottom"] as const;
-
-const STYLE_FIELDS: StyleField[] = [
-  /* { path: ["style", "name"], label: "Preset Name", type: "text" }, */
-  {
-    path: ["style", "font", "fontFamily"],
-    label: "Font Family",
-    type: "select",
-    options: googleFontsList,
-  },
-  {
-    path: ["style", "font", "fontSize"],
-    label: "Font Size",
-    type: "number",
-    min: 10,
-    max: 120,
-    step: 1,
-  },
-  {
-    path: ["style", "font", "fontColor"],
-    label: "Font Color",
-    type: "color",
-  },
-  {
-    path: ["style", "font", "fontStrokeColor"],
-    label: "Stroke Color",
-    type: "color",
-  },
-  {
-    path: ["style", "font", "fontStrokeWidth"],
-    label: "Stroke Width",
-    type: "number",
-    min: 0,
-    max: 10,
-    step: 1,
-  },
-  {
-    path: ["style", "font", "fontCapitalize"],
-    label: "Capitalize",
-    type: "switch",
-  },
-  { path: ["style", "font", "italic"], label: "Italic", type: "switch" },
-  { path: ["style", "font", "underline"], label: "Underline", type: "switch" },
-  {
-    path: ["style", "font", "shadow", "fontShadowColor"],
-    label: "Shadow Color",
-    type: "color",
-  },
-  {
-    path: ["style", "font", "shadow", "fontShadowBlur"],
-    label: "Shadow Blur",
-    type: "number",
-    min: 0,
-    max: 40,
-    step: 1,
-  },
-  {
-    path: ["style", "font", "shadow", "fontShadowOffsetX"],
-    label: "Shadow X Offset",
-    type: "number",
-    min: -20,
-    max: 20,
-    step: 1,
-  },
-  {
-    path: ["style", "font", "shadow", "fontShadowOffsetY"],
-    label: "Shadow Y Offset",
-    type: "number",
-    min: -20,
-    max: 20,
-    step: 1,
-  },
-  {
-    path: ["style", "aplifiedWordColor"],
-    label: "Highlighted Word Color",
-    type: "color",
-  },
-  {
-    path: ["style", "backgroundColor"],
-    label: "Background Color",
-    type: "color",
-  },
-  {
-    path: ["position"],
-    label: "Position",
-    type: "select",
-    options: POSITION_OPTIONS,
-  },
-  {
-    path: ["positionTopOffset"],
-    label: "Top Offset",
-    type: "number",
-    min: 0,
-    max: 200,
-  },
-  {
-    path: ["linesPerPage"],
-    label: "Lines Per Page",
-    type: "number",
-    min: 1,
-    max: 4,
-  },
-];
-
-const Configurator = ({ className }: { className?: string }) => {
+const Configurator = ({
+  className,
+  videoSrc,
+}: {
+  className?: string;
+  videoSrc?: string;
+}) => {
   const clone = <T,>(value: T): T =>
     typeof globalThis.structuredClone === "function"
       ? globalThis.structuredClone(value)
       : (JSON.parse(JSON.stringify(value)) as T);
 
   const getPresetSettings = (
-    presetId: number
+    presetName: string
   ): ConfiguratorCaptionsSettings => {
     const base =
-      stylePresets.find((p) => p.id === presetId)?.captionsSettings ||
-      stylePresets[0]?.captionsSettings;
+      stylePresets.find((p) => p.captionsSettings.style.name === presetName)
+        ?.captionsSettings || stylePresets[0]?.captionsSettings;
     return clone(base) as ConfiguratorCaptionsSettings;
   };
 
-  const [selectedPresetId, setSelectedPresetId] = useState(
-    stylePresets.find((p) => p.captionsSettings.style.name === "From")?.id ?? 0
+  const [selectedPresetName, setSelectedPresetName] = useState(
+    stylePresets.find((p) => p.captionsSettings.style.name === "From")!
+      .captionsSettings.style.name
   );
   const [settings, setSettings] = useState<ConfiguratorCaptionsSettings>(() =>
     getPresetSettings(
-      stylePresets.find((p) => p.captionsSettings.style.name === "From")?.id ??
-        0
+      stylePresets.find((p) => p.captionsSettings.style.name === "From")!
+        .captionsSettings.style.name
     )
   );
   const [videoOption, setVideoOption] = useState<VideoOption>(videoOptions[0]);
@@ -308,14 +213,6 @@ const Configurator = ({ className }: { className?: string }) => {
     };
   }, [videoOption.captionsSrc]);
 
-  const handlePresetChange = (presetId: number) => {
-    const preset = stylePresets.find((p) => p.id === presetId);
-    if (!preset) return;
-
-    setSelectedPresetId(presetId);
-    setSettings(getPresetSettings(presetId));
-  };
-
   const updateSettingValue = (path: (string | number)[], value: unknown) => {
     setSettings((prev) => {
       const next = clone(prev);
@@ -330,11 +227,13 @@ const Configurator = ({ className }: { className?: string }) => {
     });
   };
 
+  const carouselRef = useRef(null);
+
   return (
     <div className={twMerge(`flex flex-col p-4 gap-4`, className)}>
       <div className="grid flex-1 grid-cols-1 gap-4 xl:grid-cols-[320px_minmax(0,1fr)_340px] h-full">
-        <Card className="flex flex-col overflow-hidden">
-          <CardContent className="p-6 space-y-4 overflow-y-auto">
+        <Card className="flex flex-col">
+          <CardContent className="p-6">
             {/*   <Field>
               <FieldLabel>Aspect Ratio</FieldLabel>
               <Select
@@ -359,36 +258,28 @@ const Configurator = ({ className }: { className?: string }) => {
               </Select>
             </Field> */}
 
-            <VideoOptionSelect
-              value={videoOption.videoSrc}
-              onChange={(value) => {
-                const option = videoOptions.find(
-                  (candidate) => candidate.videoSrc === value
-                );
-                if (option) {
-                  setVideoOption(option);
-                }
-              }}
-            />
-
-            <Field>
-              <FieldLabel>Style Preset</FieldLabel>
-              <Select
-                value={String(selectedPresetId)}
-                onValueChange={(value) => handlePresetChange(Number(value))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select preset" />
-                </SelectTrigger>
-                <SelectContent>
-                  {presetOptions.map((preset) => (
-                    <SelectItem key={preset.id} value={String(preset.id)}>
-                      {preset.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
+            {!videoSrc && (
+              <VideoOptionSelect
+                value={videoOption.videoSrc}
+                onChange={(value) => {
+                  const option = videoOptions.find(
+                    (candidate) => candidate.videoSrc === value
+                  );
+                  if (option) {
+                    setVideoOption(option);
+                  }
+                }}
+              />
+            )}
+            <div className="flex w-full justify-center items-center my-16">
+              <PresetsCarousel
+                value={selectedPresetName}
+                onSelect={(presetName) => {
+                  setSelectedPresetName(presetName);
+                  setSettings(getPresetSettings(presetName));
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
 
@@ -402,9 +293,9 @@ const Configurator = ({ className }: { className?: string }) => {
                 playsInline
                 disablePictureInPicture
                 disableRemotePlayback
-                key={videoOption.videoSrc}
+                key={videoSrc || videoOption.videoSrc}
                 ref={videoRef}
-                src={videoOption.videoSrc}
+                src={videoSrc || videoOption.videoSrc}
                 controls
                 className="h-full w-full bg-black"
               />

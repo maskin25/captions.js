@@ -1,3 +1,5 @@
+import { CaptionsSettings } from "../entities/captions/captions.types";
+
 /**
  * Shared schema describing how a preset styles captions plus rough layout hints.
  *
@@ -5,35 +7,7 @@
  */
 export interface StylePreset {
   id: number;
-  captionsSettings: {
-    style: {
-      font: {
-        italic: boolean;
-        fontSize: number;
-        fontColor: string;
-        underline: boolean;
-        fontFamily: string;
-        fontWeight: string;
-        fontCapitalize: boolean;
-        fontStrokeColor: string;
-        fontStrokeWidth: number;
-        shadow?: {
-          fontShadowBlur: number;
-          fontShadowColor: string;
-          fontShadowOffsetX: number;
-          fontShadowOffsetY: number;
-        };
-      };
-      name: string;
-      backgroundColor: string;
-      verticalCoverImg: string;
-      aplifiedWordColor: string;
-    };
-    position: string;
-    animation: string;
-    linesPerPage: number;
-    positionTopOffset?: number;
-  };
+  captionsSettings: CaptionsSettings;
   layoutSettings: {
     aspectRatio: string;
     aIAutoLayout: string[];

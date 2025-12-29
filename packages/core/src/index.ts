@@ -42,7 +42,7 @@ export {
   type CaptionsInstance,
 } from "./captions/Captions";
 
-export { renderFrame } from "./canvas-captions";
+export { renderFrame, renderStylePreset } from "./canvas-captions";
 
 export { CaptionsSettings } from "./entities/captions/captions.types";
 

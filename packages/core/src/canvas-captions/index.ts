@@ -18,6 +18,9 @@ import {
 import objectHash from "object-hash";
 import { Timeline } from "../entities/timeline/timeline.types";
 import { fonts } from "./fonts.config";
+import { StylePreset } from "../stylePresets/stylePresets.config";
+import { loadGoogleFont2 } from "../fonts/googleFonts.helpers";
+import { googleFontsList } from "../fonts/googleFonts.config";
 let memo: { [hash: string]: number } = {};
 
 const drawDebugBoundingBox = (
@@ -420,4 +423,71 @@ export const warmUpKonvaFonts = (layer: Konva.Layer) => {
     texts.forEach((x) => x.destroy());
     clearTimeout(timeout);
   }, 2000);
+};
+
+export const renderStylePreset = async (
+  stylePreset: StylePreset,
+  size: [number, number],
+  text: string = "Hello World"
+) => {
+  const [width, height] = size;
+  const containerElement = document.createElement("div");
+
+  const stage = new Konva.Stage({
+    container: containerElement,
+    width,
+    height,
+  });
+
+  const layer = new Konva.Layer({ listening: false });
+  stage.add(layer);
+
+  const fontFamily = stylePreset.captionsSettings.style.font
+    .fontFamily as (typeof googleFontsList)[number];
+  await loadGoogleFont2(fontFamily);
+
+  const [firstWord, secondWord = ""] = text.split(" ");
+
+  renderFrame(
+    {
+      ...stylePreset.captionsSettings,
+      style: {
+        ...stylePreset.captionsSettings.style,
+        font: {
+          ...stylePreset.captionsSettings.style.font,
+          fontSize: 20,
+          shadow: {
+            fontShadowBlur: 0,
+            fontShadowColor: "#333333",
+            fontShadowOffsetX: 2,
+            fontShadowOffsetY: 2,
+          },
+        },
+      },
+      position: "middle",
+      animation: "none",
+      linesPerPage: 1,
+      positionTopOffset: 0,
+    },
+    undefined as any,
+    [
+      {
+        startTime: 0,
+        endTime: 1,
+        word: firstWord,
+      },
+      {
+        startTime: 1,
+        endTime: 2,
+        word: secondWord,
+      },
+    ],
+    0.5,
+    size,
+    layer,
+    1.5
+  );
+
+  const image = stage.toDataURL({ pixelRatio: devicePixelRatio });
+  return image;
 };

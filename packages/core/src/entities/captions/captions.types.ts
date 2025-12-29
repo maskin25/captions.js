@@ -16,20 +16,21 @@ export interface CaptionsSettings {
       underline: boolean;
       fontStrokeColor: string;
       fontStrokeWidth: number;
-      shadow: {
+      shadow?: {
         fontShadowColor: string;
         fontShadowBlur: number;
         fontShadowOffsetX: number;
         fontShadowOffsetY: number;
       };
     };
+    verticalCoverImg?: string;
     aplifiedWordColor: string;
     backgroundColor: string;
   };
   linesPerPage: number;
   lineSpacing?: number | null;
   position: "auto" | "top" | "middle" | "bottom";
-  positionTopOffset: number;
+  positionTopOffset?: number;
   animation:
     | "none"
     | "bounce"
