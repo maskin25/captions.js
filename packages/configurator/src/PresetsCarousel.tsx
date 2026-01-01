@@ -9,7 +9,11 @@ import {
   CarouselPrevious,
 } from "ui/carousel";
 
-import { renderStylePreset, StylePreset, stylePresets } from "captions.js";
+import { StylePreset, stylePresets } from "captions.js";
+import StylePresetPreview from "components/CaptionsStylePreview";
+import type { CarouselApi } from "ui/carousel";
+
+const SLIDES_TO_SCROLL = 3;
 
 export default function PresetsCarousel({
   value,
@@ -20,33 +24,20 @@ export default function PresetsCarousel({
     presetName: StylePreset["captionsSettings"]["style"]["name"]
   ) => void;
 }) {
-  const [previews, setPreviews] = useState<Record<string, string>>({});
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    if (!carouselApi) {
+      return;
+    }
+    const targetIndex = stylePresets.findIndex(
+      (preset) => preset.captionsSettings.style.name === value
+    );
 
-    const loadPreviews = async () => {
-      try {
-        const entries = await Promise.all(
-          stylePresets.map(async (preset) => {
-            const image = await renderStylePreset(preset, [320, 84]);
-            return [preset.captionsSettings.style.name, image] as const;
-          })
-        );
-        if (!cancelled) {
-          setPreviews(Object.fromEntries(entries));
-        }
-      } catch (error) {
-        console.error("Failed to render preset previews", error);
-      }
-    };
-
-    void loadPreviews();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (targetIndex >= 0) {
+      carouselApi.scrollTo(Math.floor(targetIndex / SLIDES_TO_SCROLL), true);
+    }
+  }, [carouselApi]);
 
   const getClickhandler = (
     presetName: StylePreset["captionsSettings"]["style"]["name"]
@@ -66,10 +57,11 @@ export default function PresetsCarousel({
       opts={{
         align: "start",
         dragFree: true,
-        slidesToScroll: 3,
+        slidesToScroll: SLIDES_TO_SCROLL,
       }}
       orientation="vertical"
       className="w-full max-w-xs"
+      setApi={setCarouselApi}
     >
       <CarouselContent className="-mt-1 h-[calc(100vh-350px)]">
         {stylePresets.map((preset, index) => {
@@ -89,12 +81,11 @@ export default function PresetsCarousel({
                 }`}
               >
                 <CardContent className="flex items-center justify-center bg-linear-to-b from-white via-slate-50 to-neutral-100 p-0 dark:from-slate-900/80 dark:via-slate-900 dark:to-slate-800/80">
-                  <img
-                    className={`w-full max-w-full object-contain px-2 py-3 transition-opacity ${
-                      previews[presetName] ? "opacity-100" : "opacity-50"
-                    }`}
-                    src={previews[presetName]}
-                    alt={`Preset ${index + 1}`}
+                  <StylePresetPreview
+                    stylePreset={preset}
+                    isSelected={isSelected}
+                    width={320}
+                    height={84}
                   />
                 </CardContent>
               </Card>

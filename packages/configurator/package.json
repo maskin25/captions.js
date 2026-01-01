@@ -19,8 +19,8 @@
     "./styles.css": "./styles.css"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts && cp styles.css dist/styles.css",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "build": "tsup --config tsup.config.ts && cp styles.css dist/styles.css",
+    "dev": "tsup --config tsup.config.ts --watch",
     "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {

@@ -428,6 +428,7 @@ export const warmUpKonvaFonts = (layer: Konva.Layer) => {
 export const renderStylePreset = async (
   stylePreset: StylePreset,
   size: [number, number],
+  frames: number[],
   text: string = "Hello World"
 ) => {
   const [width, height] = size;
@@ -447,47 +448,41 @@ export const renderStylePreset = async (
   await loadGoogleFont2(fontFamily);
 
   const [firstWord, secondWord = ""] = text.split(" ");
-
-  renderFrame(
+  const previewCaptions: Caption[] = [
     {
-      ...stylePreset.captionsSettings,
-      style: {
-        ...stylePreset.captionsSettings.style,
-        font: {
-          ...stylePreset.captionsSettings.style.font,
-          fontSize: 20,
-          shadow: {
-            fontShadowBlur: 0,
-            fontShadowColor: "#333333",
-            fontShadowOffsetX: 2,
-            fontShadowOffsetY: 2,
-          },
-        },
-      },
-      position: "middle",
-      animation: "none",
-      linesPerPage: 1,
-      positionTopOffset: 0,
+      startTime: 0,
+      endTime: 1,
+      word: "",
     },
-    undefined as any,
-    [
-      {
-        startTime: 0,
-        endTime: 1,
-        word: firstWord,
-      },
-      {
-        startTime: 1,
-        endTime: 2,
-        word: secondWord,
-      },
-    ],
-    0.5,
-    size,
-    layer,
-    1.5
-  );
+    {
+      startTime: 1,
+      endTime: 2,
+      word: firstWord,
+    },
+    {
+      startTime: 2,
+      endTime: 3,
+      word: secondWord,
+    },
+  ];
 
-  const image = stage.toDataURL({ pixelRatio: devicePixelRatio });
-  return image;
+  const renderAtTime = (currentTime: number) => {
+    layer.destroyChildren();
+    renderFrame(
+      stylePreset.captionsSettings,
+      undefined as any,
+      previewCaptions,
+      currentTime,
+      size,
+      layer,
+      1.3
+    );
+    return stage.toDataURL({ pixelRatio: devicePixelRatio });
+  };
+
+  const images = frames.map((time) => renderAtTime(time));
+
+  stage.destroy();
+
+  return images;
 };
