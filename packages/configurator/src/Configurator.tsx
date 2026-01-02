@@ -320,7 +320,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           <Card className="flex flex-col overflow-hidden">
             <CardContent className="p-0 xl:p-6 flex flex-1 flex-col gap-4 overflow-hidden relative">
               <div
-                className="group relative rounded-xl overflow-hidden w-full bg-black mx-auto"
+                className="group relative rounded-xl overflow-hidden bg-black mx-auto"
                 style={{ aspectRatio: aspectRatio.ratio }}
               >
                 {!videoSrc && (
