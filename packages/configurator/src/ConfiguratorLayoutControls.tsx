@@ -28,28 +28,28 @@ export type VideoOption = {
 
 export const videoOptions: VideoOption[] = [
   {
-    label: "Product Demo (rKpltaOMFdc)",
+    label: "Product Demo",
     videoSrc:
       "https://storage.googleapis.com/shorty-uploads/captions.js/rKpltaOMFdc.mp4",
     captionsSrc:
       "https://storage.googleapis.com/shorty-uploads/captions.js/rKpltaOMFdc-dg.json",
   },
   {
-    label: "Promo Clip (Mf7HyLkuNS0)",
+    label: "Promo Clip",
     videoSrc:
       "https://storage.googleapis.com/shorty-uploads/captions.js/Mf7HyLkuNS0.mp4",
     captionsSrc:
       "https://storage.googleapis.com/shorty-uploads/captions.js/Mf7HyLkuNS0-dg.json",
   },
   {
-    label: "Interview (0DOMlNJ9sOk)",
+    label: "Interview",
     videoSrc:
       "https://storage.googleapis.com/shorty-uploads/captions.js/0DOMlNJ9sOk.mp4",
     captionsSrc:
       "https://storage.googleapis.com/shorty-uploads/captions.js/0DOMlNJ9sOk-dg.json",
   },
   {
-    label: "Elon Musk Interview (Rni7Fz7208c)",
+    label: "Elon Musk Interview",
     videoSrc:
       "https://storage.googleapis.com/shorty-uploads/captions.js/Rni7Fz7208c.mp4",
     captionsSrc:
@@ -75,7 +75,6 @@ type VideoSelectProps = {
 
 export const VideoOptionSelect = ({ value, onChange }: VideoSelectProps) => (
   <Field>
-    <FieldLabel>Video Example</FieldLabel>
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger>
         <SelectValue />

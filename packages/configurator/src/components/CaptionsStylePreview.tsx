@@ -8,6 +8,7 @@ type StylePresetPreviewProps = {
   width: number;
   height: number;
   isSelected: boolean;
+  text?: string;
 };
 
 export default function StylePresetPreview({
@@ -15,6 +16,7 @@ export default function StylePresetPreview({
   width,
   height,
   isSelected,
+  text,
 }: StylePresetPreviewProps) {
   const [frames, setFrames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +56,7 @@ export default function StylePresetPreview({
           },
           [width, height],
           [0, 0.6, 1.2, 1.8, 2.4, 3],
-          "Hello world!"
+          text ?? "The quick brown fox jumps over the lazy dog."
         );
         if (!cancelled) {
           setFrames(images);
@@ -80,7 +82,7 @@ export default function StylePresetPreview({
         hoverIntervalRef.current = null;
       }
     };
-  }, [stylePreset, width, height]);
+  }, [stylePreset, width, height, text]);
 
   const handleHoverStart = () => {
     if (!frames.length) {

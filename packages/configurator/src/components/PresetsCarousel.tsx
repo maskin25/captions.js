@@ -15,15 +15,23 @@ import type { CarouselApi } from "ui/carousel";
 
 const SLIDES_TO_SCROLL = 3;
 
-export default function PresetsCarousel({
-  value,
-  onSelect,
-}: {
+type PresetsCarouselProps = {
   value: StylePreset["captionsSettings"]["style"]["name"];
   onSelect: (
     presetName: StylePreset["captionsSettings"]["style"]["name"]
   ) => void;
-}) {
+  className?: string;
+  contentClassName?: string;
+  previewText?: string;
+};
+
+export default function PresetsCarousel({
+  value,
+  onSelect,
+  className,
+  contentClassName,
+  previewText,
+}: PresetsCarouselProps) {
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
   useEffect(() => {
@@ -35,9 +43,9 @@ export default function PresetsCarousel({
     );
 
     if (targetIndex >= 0) {
-      carouselApi.scrollTo(Math.floor(targetIndex / SLIDES_TO_SCROLL), true);
+      carouselApi.scrollTo(Math.floor(targetIndex / SLIDES_TO_SCROLL), false);
     }
-  }, [carouselApi]);
+  }, [carouselApi, value]);
 
   const getClickhandler = (
     presetName: StylePreset["captionsSettings"]["style"]["name"]
@@ -60,10 +68,10 @@ export default function PresetsCarousel({
         slidesToScroll: SLIDES_TO_SCROLL,
       }}
       orientation="vertical"
-      className="w-full max-w-xs"
+      className={`w-full ${className}`}
       setApi={setCarouselApi}
     >
-      <CarouselContent className="-mt-1 h-[calc(100vh-350px)]">
+      <CarouselContent className={`-mt-1 ${contentClassName}`}>
         {stylePresets.map((preset, index) => {
           const presetName = preset.captionsSettings.style.name;
           const isSelected = presetName === value;
@@ -86,6 +94,7 @@ export default function PresetsCarousel({
                     isSelected={isSelected}
                     width={320}
                     height={84}
+                    text={previewText}
                   />
                 </CardContent>
               </Card>

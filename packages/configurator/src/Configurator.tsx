@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import captionsjs, {
   type Caption,
   googleFontsList,
@@ -35,7 +42,7 @@ import {
 import { CopyButton } from "./ui/shadcn-io/copy-button";
 import { twMerge } from "tailwind-merge";
 import { STYLE_FIELDS } from "Configurator.config";
-import PresetsCarousel from "PresetsCarousel";
+import PresetsCarousel from "components/PresetsCarousel";
 
 type ConfiguratorCaptionsSettings =
   (typeof stylePresets)[number]["captionsSettings"];
@@ -71,170 +78,208 @@ type StyleField =
   | SelectStyleField
   | SwitchStyleField;
 
-const Configurator = ({
-  className,
-  videoSrc,
-}: {
-  className?: string;
+type ConfiguratorProps = {
+  captions?: Caption[];
   videoSrc?: string;
-}) => {
-  const clone = <T,>(value: T): T =>
-    typeof globalThis.structuredClone === "function"
-      ? globalThis.structuredClone(value)
-      : (JSON.parse(JSON.stringify(value)) as T);
+  className?: string;
+  carouselContentClassName?: string;
+  hideFooter?: boolean;
+};
 
-  const getPresetSettings = (
-    presetName: string
-  ): ConfiguratorCaptionsSettings => {
-    const base =
-      stylePresets.find((p) => p.captionsSettings.style.name === presetName)
-        ?.captionsSettings || stylePresets[0]?.captionsSettings;
-    return clone(base) as ConfiguratorCaptionsSettings;
-  };
+export type ConfiguratorHandle = {
+  getCaptionsSettings: () => ConfiguratorCaptionsSettings;
+};
 
-  const [selectedPresetName, setSelectedPresetName] = useState(
-    stylePresets.find((p) => p.captionsSettings.style.name === "From")!
-      .captionsSettings.style.name
-  );
-  const [settings, setSettings] = useState<ConfiguratorCaptionsSettings>(() =>
-    getPresetSettings(
+const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
+  (
+    {
+      captions: captionsProp,
+      className,
+      videoSrc,
+      carouselContentClassName,
+      hideFooter,
+    },
+    ref
+  ) => {
+    const clone = <T,>(value: T): T =>
+      typeof globalThis.structuredClone === "function"
+        ? globalThis.structuredClone(value)
+        : (JSON.parse(JSON.stringify(value)) as T);
+
+    const getPresetSettings = (
+      presetName: string
+    ): ConfiguratorCaptionsSettings => {
+      const base =
+        stylePresets.find((p) => p.captionsSettings.style.name === presetName)
+          ?.captionsSettings || stylePresets[0]?.captionsSettings;
+      return clone(base) as ConfiguratorCaptionsSettings;
+    };
+
+    const [selectedPresetName, setSelectedPresetName] = useState(
       stylePresets.find((p) => p.captionsSettings.style.name === "From")!
         .captionsSettings.style.name
-    )
-  );
-  const [videoOption, setVideoOption] = useState<VideoOption>(videoOptions[0]);
-  const [aspectRatio, setAspectRatio] = useState<AspectRatio>(
-    aspectRatioOptions[0]
-  );
-  const [captions, setCaptions] = useState<Caption[]>([]);
-  const [isJsonOpen, setIsJsonOpen] = useState(false);
+    );
+    const [settings, setSettings] = useState<ConfiguratorCaptionsSettings>(() =>
+      getPresetSettings(
+        stylePresets.find((p) => p.captionsSettings.style.name === "From")!
+          .captionsSettings.style.name
+      )
+    );
+    const [videoOption, setVideoOption] = useState<VideoOption>(
+      videoOptions[0]
+    );
+    const [aspectRatio, setAspectRatio] = useState<AspectRatio>(
+      aspectRatioOptions[0]
+    );
+    const [captions, setCaptions] = useState<Caption[]>(captionsProp || []);
+    const [isJsonOpen, setIsJsonOpen] = useState(false);
 
-  const jsonRef = useRef<HTMLDivElement | null>(null);
+    const jsonRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (jsonRef.current && isJsonOpen) {
-      jsonRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [isJsonOpen]);
+    useImperativeHandle(
+      ref,
+      () => ({
+        getCaptionsSettings: () => clone(settings),
+      }),
+      [settings]
+    );
 
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const captionsInstance = useRef<ReturnType<typeof captionsjs> | null>(null);
-
-  const presetOptions = useMemo(
-    () =>
-      stylePresets.map((preset) => ({
-        id: preset.id,
-        label: preset.captionsSettings.style.name,
-      })),
-    []
-  );
-  const settingsJson = useMemo(
-    () => JSON.stringify(settings, null, 2),
-    [settings]
-  );
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    captionsInstance.current?.destroy();
-    const nodeEnv =
-      typeof globalThis === "object" &&
-      typeof (globalThis as Record<string, any>).process === "object"
-        ? (globalThis as Record<string, any>).process?.env?.NODE_ENV
-        : undefined;
-    const isDev = nodeEnv !== "production";
-
-    const presetPayload = { id: 0, captionsSettings: settings } as any;
-
-    const instance = captionsjs({
-      video,
-      preset: presetPayload,
-      captions,
-      debug: isDev,
-    });
-
-    captionsInstance.current = instance;
-
-    return () => {
-      instance.destroy();
-      captionsInstance.current = null;
-    };
-  }, [videoOption.videoSrc]);
-
-  useEffect(() => {
-    captionsInstance.current?.preset({
-      id: 0,
-      captionsSettings: settings,
-    } as any);
-  }, [settings]);
-
-  useEffect(() => {
-    captionsInstance.current?.captions(captions);
-  }, [captions]);
-
-  useEffect(() => {
-    let cancelled = false;
-    setCaptions([]);
-
-    const loadCaptions = async () => {
-      try {
-        const response = await fetch(videoOption.captionsSrc);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch captions: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        if (cancelled) return;
-
-        const parsed: Caption[] = Array.isArray(data)
-          ? data
-              .map((entry: any) => ({
-                word: String(entry.word ?? entry.text ?? entry.value ?? ""),
-                startTime: Number(entry.startTime ?? entry.start ?? 0),
-                endTime: Number(entry.endTime ?? entry.end ?? 0),
-              }))
-              .filter((item) => item.word)
-          : [];
-
-        setCaptions(parsed);
-      } catch (error) {
-        console.error(error);
-        if (!cancelled) {
-          setCaptions([]);
-        }
+    useEffect(() => {
+      if (jsonRef.current && isJsonOpen) {
+        jsonRef.current.scrollIntoView({ behavior: "smooth" });
       }
+    }, [isJsonOpen]);
+
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const captionsInstance = useRef<ReturnType<typeof captionsjs> | null>(null);
+
+    const presetOptions = useMemo(
+      () =>
+        stylePresets.map((preset) => ({
+          id: preset.id,
+          label: preset.captionsSettings.style.name,
+        })),
+      []
+    );
+    const settingsJson = useMemo(
+      () => JSON.stringify(settings, null, 2),
+      [settings]
+    );
+    const previewText = useMemo(() => {
+      const words = captions
+        .map((caption) => {
+          if (typeof caption.word === "string" && caption.word.trim().length) {
+            return caption.word.trim();
+          }
+          if (typeof (caption as any).text === "string") {
+            return (caption as any).text.trim();
+          }
+          return "";
+        })
+        .filter(Boolean);
+      return words.slice(0, 2).join(" ") || "The quick brown fox jumps";
+    }, [captions]);
+
+    useEffect(() => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      captionsInstance.current?.destroy();
+      const nodeEnv =
+        typeof globalThis === "object" &&
+        typeof (globalThis as Record<string, any>).process === "object"
+          ? (globalThis as Record<string, any>).process?.env?.NODE_ENV
+          : undefined;
+      const isDev = nodeEnv !== "production";
+
+      const presetPayload = { id: 0, captionsSettings: settings } as any;
+
+      const instance = captionsjs({
+        video,
+        preset: presetPayload,
+        captions,
+        debug: isDev,
+      });
+
+      captionsInstance.current = instance;
+
+      return () => {
+        instance.destroy();
+        captionsInstance.current = null;
+      };
+    }, [videoOption.videoSrc]);
+
+    useEffect(() => {
+      captionsInstance.current?.preset({
+        id: 0,
+        captionsSettings: settings,
+      } as any);
+    }, [settings]);
+
+    useEffect(() => {
+      captionsInstance.current?.captions(captions);
+    }, [captions]);
+
+    useEffect(() => {
+      let cancelled = false;
+      setCaptions([]);
+
+      const loadCaptions = async () => {
+        try {
+          const response = await fetch(videoOption.captionsSrc);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch captions: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          if (cancelled) return;
+
+          const parsed: Caption[] = Array.isArray(data)
+            ? data
+                .map((entry: any) => ({
+                  word: String(entry.word ?? entry.text ?? entry.value ?? ""),
+                  startTime: Number(entry.startTime ?? entry.start ?? 0),
+                  endTime: Number(entry.endTime ?? entry.end ?? 0),
+                }))
+                .filter((item) => item.word)
+            : [];
+
+          setCaptions(parsed);
+        } catch (error) {
+          console.error(error);
+          if (!cancelled) {
+            setCaptions([]);
+          }
+        }
+      };
+
+      void loadCaptions();
+
+      return () => {
+        cancelled = true;
+      };
+    }, [videoOption.captionsSrc]);
+
+    const updateSettingValue = (path: (string | number)[], value: unknown) => {
+      setSettings((prev) => {
+        const next = clone(prev);
+        let cursor: any = next;
+        for (let i = 0; i < path.length - 1; i++) {
+          const key = path[i];
+          cursor[key] = cursor[key] ?? {};
+          cursor = cursor[key];
+        }
+        cursor[path[path.length - 1]] = value;
+        return next;
+      });
     };
 
-    void loadCaptions();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [videoOption.captionsSrc]);
-
-  const updateSettingValue = (path: (string | number)[], value: unknown) => {
-    setSettings((prev) => {
-      const next = clone(prev);
-      let cursor: any = next;
-      for (let i = 0; i < path.length - 1; i++) {
-        const key = path[i];
-        cursor[key] = cursor[key] ?? {};
-        cursor = cursor[key];
-      }
-      cursor[path[path.length - 1]] = value;
-      return next;
-    });
-  };
-
-  const carouselRef = useRef(null);
-
-  return (
-    <div className={twMerge(`flex flex-col p-4 gap-4`, className)}>
-      <div className="grid flex-1 grid-cols-1 gap-4 xl:grid-cols-[320px_minmax(0,1fr)_340px] h-full">
-        <Card className="flex flex-col">
-          <CardContent className="p-6">
-            {/*   <Field>
+    return (
+      <div className={twMerge(`flex flex-col p-4 gap-4`, className)}>
+        <div className="grid flex-1 grid-cols-1 gap-4 xl:grid-cols-[320px_minmax(0,1fr)_340px] h-full">
+          <Card className="flex flex-col">
+            <CardContent className="p-6">
+              {/*   <Field>
               <FieldLabel>Aspect Ratio</FieldLabel>
               <Select
                 value={aspectRatio.value}
@@ -258,135 +303,147 @@ const Configurator = ({
               </Select>
             </Field> */}
 
-            {!videoSrc && (
-              <VideoOptionSelect
-                value={videoOption.videoSrc}
-                onChange={(value) => {
-                  const option = videoOptions.find(
-                    (candidate) => candidate.videoSrc === value
-                  );
-                  if (option) {
-                    setVideoOption(option);
-                  }
-                }}
-              />
-            )}
-            <div className="flex w-full justify-center items-center my-16">
-              <PresetsCarousel
-                value={selectedPresetName}
-                onSelect={(presetName) => {
-                  setSelectedPresetName(presetName);
-                  setSettings(getPresetSettings(presetName));
-                }}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="flex flex-col overflow-hidden">
-          <CardContent className="p-0 xl:p-6 flex flex-1 flex-col gap-4 overflow-hidden">
-            <div
-              className="relative rounded-xl overflow-hidden max-w-full bg-black mx-auto"
-              style={{ aspectRatio: aspectRatio.ratio }}
-            >
-              <video
-                playsInline
-                disablePictureInPicture
-                disableRemotePlayback
-                key={videoSrc || videoOption.videoSrc}
-                ref={videoRef}
-                src={videoSrc || videoOption.videoSrc}
-                controls
-                className="h-full w-full bg-black"
-              />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="flex flex-col overflow-hidden">
-          <CardContent className="p-6 flex flex-col h-full">
-            <Tabs defaultValue="font" className="flex flex-col h-full">
-              <TabsList className="grid grid-cols-2 mb-2 w-full">
-                <TabsTrigger value="font">Font</TabsTrigger>
-                <TabsTrigger value="layout">Layout</TabsTrigger>
-              </TabsList>
-              <ScrollArea className={`-m-4 p-4 min-h-120 xl:min-h-none h-full`}>
-                <div className="px-2">
-                  <TabsContent value="font" className="space-y-4">
-                    {STYLE_FIELDS.filter((field) =>
-                      String(field.path.join(".")).startsWith("style")
-                    ).map((field) => (
-                      <StyleFieldInput
-                        key={field.label}
-                        field={field}
-                        settings={settings}
-                        onChange={updateSettingValue}
-                      />
-                    ))}
-                  </TabsContent>
-
-                  <TabsContent value="layout" className="mt-4 space-y-4">
-                    {STYLE_FIELDS.filter(
-                      (field) =>
-                        !String(field.path.join(".")).startsWith("style")
-                    ).map((field) => (
-                      <StyleFieldInput
-                        key={field.label}
-                        field={field}
-                        settings={settings}
-                        onChange={updateSettingValue}
-                      />
-                    ))}
-                  </TabsContent>
-                </div>
-              </ScrollArea>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Collapsible ref={jsonRef} open={isJsonOpen} onOpenChange={setIsJsonOpen}>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between py-4">
-            <CardTitle className="m-0">Captions Settings</CardTitle>
-            <div className="flex items-center gap-3">
-              <CopyButton
-                content={settingsJson}
-                size="sm"
-                variant="outline"
-                aria-label="Copy current caption JSON"
-              />
-              <CollapsibleTrigger asChild>
-                <button
-                  type="button"
-                  className="rounded-full border border-input bg-transparent p-1 text-muted-foreground transition hover:text-foreground"
-                  aria-label={`${
-                    isJsonOpen ? "Hide" : "Show"
-                  } current caption JSON`}
-                >
-                  <ChevronsUpDown
-                    className={`h-4 w-4 transition-transform ${
-                      isJsonOpen ? "rotate-180" : "rotate-0"
-                    }`}
-                  />
-                </button>
-              </CollapsibleTrigger>
-            </div>
-          </CardHeader>
-          <CollapsibleContent className="data-[state=closed]:hidden">
-            <CardContent className="h-full">
-              <Textarea
-                readOnly
-                className="resize-none font-mono text-xs"
-                value={settingsJson}
-                rows={30}
-              />
+              <div className="flex w-full justify-center items-center my-16">
+                <PresetsCarousel
+                  contentClassName={carouselContentClassName}
+                  value={selectedPresetName}
+                  previewText={previewText}
+                  onSelect={(presetName) => {
+                    setSelectedPresetName(presetName);
+                    setSettings(getPresetSettings(presetName));
+                  }}
+                />
+              </div>
             </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
-    </div>
-  );
-};
+          </Card>
+
+          <Card className="flex flex-col overflow-hidden">
+            <CardContent className="p-0 xl:p-6 flex flex-1 flex-col gap-4 overflow-hidden relative">
+              <div
+                className="group relative rounded-xl overflow-hidden w-full bg-black mx-auto"
+                style={{ aspectRatio: aspectRatio.ratio }}
+              >
+                {!videoSrc && (
+                  <div className="pointer-events-none absolute top-4 left-4 z-10 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                    <VideoOptionSelect
+                      value={videoOption.videoSrc}
+                      onChange={(value) => {
+                        const option = videoOptions.find(
+                          (candidate) => candidate.videoSrc === value
+                        );
+                        if (option) {
+                          setVideoOption(option);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+                <video
+                  playsInline
+                  disablePictureInPicture
+                  disableRemotePlayback
+                  key={videoSrc || videoOption.videoSrc}
+                  ref={videoRef}
+                  src={videoSrc || videoOption.videoSrc}
+                  controls
+                  className="h-full w-full bg-black"
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="flex flex-col overflow-hidden">
+            <CardContent className="p-6 flex flex-col h-full">
+              <Tabs defaultValue="font" className="flex flex-col h-full">
+                <TabsList className="grid grid-cols-2 mb-2 w-full">
+                  <TabsTrigger value="font">Font</TabsTrigger>
+                  <TabsTrigger value="layout">Layout</TabsTrigger>
+                </TabsList>
+                <ScrollArea
+                  className={`-m-4 p-4 min-h-120 xl:min-h-none h-full`}
+                >
+                  <div className="px-2">
+                    <TabsContent value="font" className="space-y-4">
+                      {STYLE_FIELDS.filter((field) =>
+                        String(field.path.join(".")).startsWith("style")
+                      ).map((field) => (
+                        <StyleFieldInput
+                          key={field.label}
+                          field={field}
+                          settings={settings}
+                          onChange={updateSettingValue}
+                        />
+                      ))}
+                    </TabsContent>
+
+                    <TabsContent value="layout" className="space-y-4">
+                      {STYLE_FIELDS.filter(
+                        (field) =>
+                          !String(field.path.join(".")).startsWith("style")
+                      ).map((field) => (
+                        <StyleFieldInput
+                          key={field.label}
+                          field={field}
+                          settings={settings}
+                          onChange={updateSettingValue}
+                        />
+                      ))}
+                    </TabsContent>
+                  </div>
+                </ScrollArea>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+        {!hideFooter && (
+          <Collapsible
+            ref={jsonRef}
+            open={isJsonOpen}
+            onOpenChange={setIsJsonOpen}
+          >
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between py-4">
+                <CardTitle className="m-0">Settings JSON</CardTitle>
+                <div className="flex items-center gap-3">
+                  <CopyButton
+                    content={settingsJson}
+                    size="sm"
+                    variant="outline"
+                    aria-label="Copy current caption JSON"
+                  />
+                  <CollapsibleTrigger asChild>
+                    <button
+                      type="button"
+                      className="rounded-full border border-input bg-transparent p-1 text-muted-foreground transition hover:text-foreground"
+                      aria-label={`${
+                        isJsonOpen ? "Hide" : "Show"
+                      } current caption JSON`}
+                    >
+                      <ChevronsUpDown
+                        className={`h-4 w-4 transition-transform ${
+                          isJsonOpen ? "rotate-180" : "rotate-0"
+                        }`}
+                      />
+                    </button>
+                  </CollapsibleTrigger>
+                </div>
+              </CardHeader>
+              <CollapsibleContent className="data-[state=closed]:hidden">
+                <CardContent className="h-full">
+                  <Textarea
+                    readOnly
+                    className="resize-none font-mono text-xs"
+                    value={settingsJson}
+                    rows={30}
+                  />
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+        )}
+      </div>
+    );
+  }
+);
 
 type StyleFieldInputProps = {
   field: StyleField;
