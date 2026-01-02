@@ -83,6 +83,7 @@ type ConfiguratorProps = {
   videoSrc?: string;
   className?: string;
   carouselContentClassName?: string;
+  scrollAreaClassName?: string;
   hideFooter?: boolean;
   debug?: boolean;
 };
@@ -98,6 +99,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       className,
       videoSrc,
       carouselContentClassName,
+      scrollAreaClassName,
       hideFooter,
       debug = false,
     },
@@ -355,7 +357,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                   <TabsTrigger value="layout">Layout</TabsTrigger>
                 </TabsList>
                 <ScrollArea
-                  className={`-m-4 p-4 min-h-120 xl:min-h-none flex-1`}
+                  className={`-m-4 p-4 min-h-120 xl:min-h-none flex-1 ${scrollAreaClassName}`}
                 >
                   <div className="px-2">
                     <TabsContent value="font" className="space-y-4">
