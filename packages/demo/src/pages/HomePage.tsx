@@ -19,8 +19,8 @@ function HomePage() {
     <Configurator
       ref={configuratorRef}
       className="xl:h-[calc(100vh-9rem+2px)]"
-      /* videoSrc="https://storage.googleapis.com/shorty-uploads/captions.js/rKpltaOMFdc.mp4" */
       carouselContentClassName="h-[calc(100vh-350px)]"
+      
     />
   );
 
