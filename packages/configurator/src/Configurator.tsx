@@ -84,6 +84,7 @@ type ConfiguratorProps = {
   className?: string;
   carouselContentClassName?: string;
   hideFooter?: boolean;
+  debug?: boolean;
 };
 
 export type ConfiguratorHandle = {
@@ -98,6 +99,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       videoSrc,
       carouselContentClassName,
       hideFooter,
+      debug = false,
     },
     ref
   ) => {
@@ -185,12 +187,6 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       if (!video) return;
 
       captionsInstance.current?.destroy();
-      const nodeEnv =
-        typeof globalThis === "object" &&
-        typeof (globalThis as Record<string, any>).process === "object"
-          ? (globalThis as Record<string, any>).process?.env?.NODE_ENV
-          : undefined;
-      const isDev = nodeEnv !== "production";
 
       const presetPayload = { id: 0, captionsSettings: settings } as any;
 
@@ -198,7 +194,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
         video,
         preset: presetPayload,
         captions,
-        debug: isDev,
+        debug,
       });
 
       captionsInstance.current = instance;
@@ -303,7 +299,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               </Select>
             </Field> */}
 
-              <div className="flex w-full justify-center items-center my-16">
+              <div className="flex w-full justify-center items-center my-6">
                 <PresetsCarousel
                   contentClassName={carouselContentClassName}
                   value={selectedPresetName}
@@ -359,7 +355,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                   <TabsTrigger value="layout">Layout</TabsTrigger>
                 </TabsList>
                 <ScrollArea
-                  className={`-m-4 p-4 min-h-120 xl:min-h-none h-full`}
+                  className={`-m-4 p-4 min-h-120 xl:min-h-none flex-1`}
                 >
                   <div className="px-2">
                     <TabsContent value="font" className="space-y-4">
