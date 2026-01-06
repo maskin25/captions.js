@@ -368,13 +368,15 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                 </div>
               </CardContent>
             </Card>
-            <CaptionsList
-              className={`min-h-0 flex-1 ${captionsListClassName || ""}`}
-              onCaptionsChange={setCaptions}
-              captions={captions}
-              readonly={captionsReadonly}
-              currentTime={currentTime}
-            />
+            <div className="hidden min-h-0 flex-1 xl:flex">
+              <CaptionsList
+                className={`min-h-0 flex-1 ${captionsListClassName || ""}`}
+                onCaptionsChange={setCaptions}
+                captions={captions}
+                readonly={captionsReadonly}
+                currentTime={currentTime}
+              />
+            </div>
           </div>
           <Card className="flex flex-col overflow-hidden">
             <CardContent className="p-6 flex flex-col h-full">
