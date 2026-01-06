@@ -21,6 +21,7 @@ function HomePage() {
       className="xl:h-[calc(100vh-9rem+2px)]"
       carouselContentClassName="h-[calc(100vh-312px)]"
       debug={import.meta.env.DEV}
+      captionsReadonly={false}
     />
   );
 

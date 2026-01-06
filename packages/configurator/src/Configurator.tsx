@@ -43,6 +43,7 @@ import { CopyButton } from "./ui/shadcn-io/copy-button";
 import { twMerge } from "tailwind-merge";
 import { STYLE_FIELDS } from "Configurator.config";
 import PresetsCarousel from "components/PresetsCarousel";
+import { CaptionsList } from "components/CaptionsList";
 
 type ConfiguratorCaptionsSettings =
   (typeof stylePresets)[number]["captionsSettings"];
@@ -84,6 +85,8 @@ type ConfiguratorProps = {
   className?: string;
   carouselContentClassName?: string;
   scrollAreaClassName?: string;
+  captionsListClassName?: string;
+  captionsReadonly?: boolean;
   hideFooter?: boolean;
   debug?: boolean;
 };
@@ -100,6 +103,8 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       videoSrc,
       carouselContentClassName,
       scrollAreaClassName,
+      captionsListClassName,
+      captionsReadonly,
       hideFooter,
       debug = false,
     },
@@ -314,41 +319,48 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               </div>
             </CardContent>
           </Card>
-
-          <Card className="flex flex-col overflow-hidden">
-            <CardContent className="p-0 xl:p-6 flex flex-1 flex-col gap-4 overflow-hidden relative">
-              <div
-                className="group relative rounded-xl overflow-hidden bg-black mx-auto"
-                style={{ aspectRatio: aspectRatio.ratio }}
-              >
-                {!videoSrc && (
-                  <div className="pointer-events-none absolute top-4 left-4 z-10 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
-                    <VideoOptionSelect
-                      value={videoOption.videoSrc}
-                      onChange={(value) => {
-                        const option = videoOptions.find(
-                          (candidate) => candidate.videoSrc === value
-                        );
-                        if (option) {
-                          setVideoOption(option);
-                        }
-                      }}
-                    />
-                  </div>
-                )}
-                <video
-                  playsInline
-                  disablePictureInPicture
-                  disableRemotePlayback
-                  key={videoSrc || videoOption.videoSrc}
-                  ref={videoRef}
-                  src={videoSrc || videoOption.videoSrc}
-                  controls
-                  className="h-full w-full bg-black"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex flex-col gap-4">
+            <Card className="flex flex-1 flex-col overflow-hidden">
+              <CardContent className="p-0 xl:p-6 flex flex-1 flex-col gap-4 overflow-hidden relative">
+                <div
+                  className="group relative rounded-xl overflow-hidden bg-black mx-auto"
+                  style={{ aspectRatio: aspectRatio.ratio }}
+                >
+                  {!videoSrc && (
+                    <div className="pointer-events-none absolute top-4 left-4 z-10 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+                      <VideoOptionSelect
+                        value={videoOption.videoSrc}
+                        onChange={(value) => {
+                          const option = videoOptions.find(
+                            (candidate) => candidate.videoSrc === value
+                          );
+                          if (option) {
+                            setVideoOption(option);
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
+                  <video
+                    playsInline
+                    disablePictureInPicture
+                    disableRemotePlayback
+                    key={videoSrc || videoOption.videoSrc}
+                    ref={videoRef}
+                    src={videoSrc || videoOption.videoSrc}
+                    controls
+                    className="h-full w-full bg-black"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+            <CaptionsList
+              className={` ${captionsListClassName || ""}`}
+              onCaptionsChange={setCaptions}
+              captions={captions}
+              readonly={captionsReadonly}
+            />
+          </div>
           <Card className="flex flex-col overflow-hidden">
             <CardContent className="p-6 flex flex-col h-full">
               <Tabs defaultValue="font" className="flex flex-col h-full">
