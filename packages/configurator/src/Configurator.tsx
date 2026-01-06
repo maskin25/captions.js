@@ -334,11 +334,11 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
             </CardContent>
           </Card>
           <div className="flex min-h-0 flex-1 flex-col gap-2">
-            <Card className="flex flex-2 flex-col overflow-hidden">
+            <Card className="flex flex-col overflow-hidden">
               <CardContent className="relative flex flex-1 flex-col gap-4 overflow-hidden p-0 xl:p-6">
                 <div
                   className="group relative rounded-xl overflow-hidden bg-black mx-auto"
-                  style={{ aspectRatio: aspectRatio.ratio }}
+                  /*  style={{ aspectRatio: aspectRatio.ratio }} */
                 >
                   {!videoSrc && (
                     <div className="pointer-events-none absolute top-4 left-4 z-10 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
