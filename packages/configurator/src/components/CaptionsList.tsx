@@ -19,9 +19,10 @@ export const CaptionsList = ({
   readonly?: boolean;
   currentTime?: number | null;
 }) => {
+  const autoScrollTimeoutRef = useRef<number | null>(null);
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const wordRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const selectedCaption = useMemo(() => {
     if (selectedIndex === null) return null;
     return captions[selectedIndex] ?? null;
@@ -59,20 +60,45 @@ export const CaptionsList = ({
   }, [captions, currentTime]);
 
   useEffect(() => {
+    if (!autoScrollEnabled) return;
     if (activeIndex < 0) return;
-    const node = wordRefs.current[activeIndex];
+    const node = document.getElementById(`caption-word-${activeIndex}`);
     if (!node) return;
     node.scrollIntoView({
-      block: "nearest",
-      inline: "nearest",
+      block: "center",
       behavior: "smooth",
     });
-  }, [activeIndex]);
+  }, [activeIndex, autoScrollEnabled]);
+
+  useEffect(
+    () => () => {
+      if (autoScrollTimeoutRef.current !== null) {
+        window.clearTimeout(autoScrollTimeoutRef.current);
+      }
+    },
+    []
+  );
+
+  const handleManualScroll = () => {
+    if (autoScrollTimeoutRef.current !== null) {
+      window.clearTimeout(autoScrollTimeoutRef.current);
+    }
+    setAutoScrollEnabled(false);
+    autoScrollTimeoutRef.current = window.setTimeout(() => {
+      setAutoScrollEnabled(true);
+      autoScrollTimeoutRef.current = null;
+    }, 10000);
+  };
 
   return (
     <>
       <div className={`flex min-h-0 flex-1 flex-col ${className ?? ""}`}>
-        <ScrollArea className="min-h-0 flex-1">
+        <ScrollArea
+          className="min-h-0 flex-1"
+          onWheel={handleManualScroll}
+          onTouchMove={handleManualScroll}
+          onPointerDown={handleManualScroll}
+        >
           <div className="group relative w-full flex flex-wrap items-start p-3">
             <CopyButton
               className="absolute top-0 right-2 opacity-0 transition-opacity group-hover:opacity-100"
@@ -84,11 +110,9 @@ export const CaptionsList = ({
             {captions.map((caption, index) => (
               <button
                 key={`${caption.word}-${caption.startTime}-${index}`}
+                id={`caption-word-${index}`}
                 type="button"
                 onClick={readonly ? undefined : () => handleOpen(index)}
-                ref={(element) => {
-                  wordRefs.current[index] = element;
-                }}
                 className={`rounded border border-transparent px-1 py-0 text-sm text-foreground transition ${
                   readonly
                     ? "cursor-default"
