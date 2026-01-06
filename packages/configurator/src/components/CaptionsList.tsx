@@ -92,21 +92,28 @@ export const CaptionsList = ({
 
   return (
     <>
-      <div className={`flex min-h-0 flex-1 flex-col ${className ?? ""}`}>
+      <div
+        className={`relative group flex min-h-0 flex-1 flex-col ${
+          className ?? ""
+        }`}
+      >
+        <div className="absolute top-2 right-4 z-10">
+          <CopyButton
+            animate
+            className="opacity-0 transition-opacity group-hover:opacity-100"
+            content={captionsJson}
+            size="sm"
+            variant="ghost"
+            aria-label="Copy captions"
+          />
+        </div>
         <ScrollArea
           className="min-h-0 flex-1"
           onWheel={handleManualScroll}
           onTouchMove={handleManualScroll}
           onPointerDown={handleManualScroll}
         >
-          <div className="group relative w-full flex flex-wrap items-start p-3">
-            <CopyButton
-              className="absolute top-0 right-2 opacity-0 transition-opacity group-hover:opacity-100"
-              content={captionsJson}
-              size="sm"
-              variant="outline"
-              aria-label="Copy captions"
-            />
+          <div className="w-full flex flex-wrap items-start px-3 py-6">
             {captions.map((caption, index) => (
               <button
                 key={`${caption.word}-${caption.startTime}-${index}`}
@@ -136,6 +143,8 @@ export const CaptionsList = ({
             ))}
           </div>
         </ScrollArea>
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-linear-to-b from-background via-background/80 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-linear-to-t from-background via-background/80 to-transparent" />
       </div>
       <CaptionForm
         open={isFormOpen}

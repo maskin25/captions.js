@@ -93,6 +93,7 @@ type ConfiguratorProps = {
 
 export type ConfiguratorHandle = {
   getCaptionsSettings: () => ConfiguratorCaptionsSettings;
+  getCaptions: () => Caption[];
 };
 
 const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
@@ -150,8 +151,9 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       ref,
       () => ({
         getCaptionsSettings: () => clone(settings),
+        getCaptions: () => clone(captions),
       }),
-      [settings]
+      [captions, settings]
     );
 
     useEffect(() => {
@@ -369,7 +371,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
             <CaptionsList
               className={`min-h-0 flex-1 ${captionsListClassName || ""}`}
               onCaptionsChange={setCaptions}
-              captions={captions}
+              captions={captions.slice(0, 600)}
               readonly={captionsReadonly}
               currentTime={currentTime}
             />
