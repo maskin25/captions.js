@@ -72,8 +72,8 @@ export const CaptionsList = ({
   return (
     <>
       <div className={`flex min-h-0 flex-1 flex-col ${className ?? ""}`}>
-        <ScrollArea className="min-h-0 flex-1 p-3">
-          <div className="group relative w-full flex flex-wrap items-start">
+        <ScrollArea className="min-h-0 flex-1">
+          <div className="group relative w-full flex flex-wrap items-start p-3">
             <CopyButton
               className="absolute top-0 right-2 opacity-0 transition-opacity group-hover:opacity-100"
               content={captionsJson}
