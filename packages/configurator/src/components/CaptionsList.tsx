@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Caption } from "captions.js";
 import { ScrollArea } from "ui/scroll-area";
 import { CaptionForm } from "./CaptionForm";
@@ -10,15 +10,18 @@ export const CaptionsList = ({
   onCaptionsChange,
   className,
   readonly = false,
+  currentTime,
 }: {
   captions: Caption[];
   onCaptionChange?: (caption: Caption, index: number) => void;
   onCaptionsChange?: (captions: Caption[]) => void;
   className?: string;
   readonly?: boolean;
+  currentTime?: number | null;
 }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const wordRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const selectedCaption = useMemo(() => {
     if (selectedIndex === null) return null;
     return captions[selectedIndex] ?? null;
@@ -47,41 +50,66 @@ export const CaptionsList = ({
     () => captions.map((caption) => caption.word).join(" "),
     [captions]
   );
+  const activeIndex = useMemo(() => {
+    if (currentTime === null || currentTime === undefined) return -1;
+    return captions.findIndex(
+      (caption) =>
+        currentTime >= caption.startTime && currentTime <= caption.endTime
+    );
+  }, [captions, currentTime]);
+
+  useEffect(() => {
+    if (activeIndex < 0) return;
+    const node = wordRefs.current[activeIndex];
+    if (!node) return;
+    node.scrollIntoView({
+      block: "nearest",
+      inline: "nearest",
+      behavior: "smooth",
+    });
+  }, [activeIndex]);
 
   return (
     <>
       <div className={`flex min-h-0 flex-1 flex-col ${className ?? ""}`}>
-        <ScrollArea className="min-h-0 flex-1 px-3">
+        <ScrollArea className="min-h-0 flex-1 p-3">
           <div className="group relative w-full flex flex-wrap items-start">
-          <CopyButton
-            className="absolute top-0 right-2 opacity-0 transition-opacity group-hover:opacity-100"
-            content={captionsJson}
-            size="sm"
-            variant="outline"
-            aria-label="Copy captions"
-          />
-          {captions.map((caption, index) => (
-            <button
-              key={`${caption.word}-${caption.startTime}-${index}`}
-              type="button"
-              onClick={readonly ? undefined : () => handleOpen(index)}
-              className={`rounded border border-transparent px-1 py-0 text-sm text-foreground transition ${
-                readonly
-                  ? "cursor-default"
-                  : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
-              }`}
-              style={
-                caption.highlightColor
-                  ? {
-                      backgroundColor: `${caption.highlightColor}99`,
-                      borderColor: caption.highlightColor,
-                    }
-                  : undefined
-              }
-            >
-              {caption.word}
-            </button>
-          ))}
+            <CopyButton
+              className="absolute top-0 right-2 opacity-0 transition-opacity group-hover:opacity-100"
+              content={captionsJson}
+              size="sm"
+              variant="outline"
+              aria-label="Copy captions"
+            />
+            {captions.map((caption, index) => (
+              <button
+                key={`${caption.word}-${caption.startTime}-${index}`}
+                type="button"
+                onClick={readonly ? undefined : () => handleOpen(index)}
+                ref={(element) => {
+                  wordRefs.current[index] = element;
+                }}
+                className={`rounded border border-transparent px-1 py-0 text-sm text-foreground transition ${
+                  readonly
+                    ? "cursor-default"
+                    : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
+                } ${
+                  index === activeIndex
+                    ? "border-dashed border-muted-foreground/50 bg-muted ring-1 ring-muted-foreground/50"
+                    : ""
+                }`}
+                style={
+                  caption.highlightColor
+                    ? {
+                        backgroundColor: `${caption.highlightColor}99`,
+                        borderColor: caption.highlightColor,
+                      }
+                    : undefined
+                }
+              >
+                {caption.word}
+              </button>
+            ))}
           </div>
         </ScrollArea>
       </div>

@@ -141,6 +141,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       aspectRatioOptions[0]
     );
     const [captions, setCaptions] = useState<Caption[]>(captionsProp || []);
+    const [currentTime, setCurrentTime] = useState(0);
     const [isJsonOpen, setIsJsonOpen] = useState(false);
 
     const jsonRef = useRef<HTMLDivElement | null>(null);
@@ -161,6 +162,17 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const captionsInstance = useRef<ReturnType<typeof captionsjs> | null>(null);
+
+    useEffect(() => {
+      const video = videoRef.current;
+      if (!video) return;
+      const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+      video.addEventListener("timeupdate", handleTimeUpdate);
+      handleTimeUpdate();
+      return () => {
+        video.removeEventListener("timeupdate", handleTimeUpdate);
+      };
+    }, [videoSrc, videoOption.videoSrc]);
 
     const presetOptions = useMemo(
       () =>
@@ -319,7 +331,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               </div>
             </CardContent>
           </Card>
-          <div className="flex min-h-0 flex-1 flex-col gap-4">
+          <div className="flex min-h-0 flex-1 flex-col gap-2">
             <Card className="flex flex-2 flex-col overflow-hidden">
               <CardContent className="relative flex flex-1 flex-col gap-4 overflow-hidden p-0 xl:p-6">
                 <div
@@ -359,6 +371,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               onCaptionsChange={setCaptions}
               captions={captions}
               readonly={captionsReadonly}
+              currentTime={currentTime}
             />
           </div>
           <Card className="flex flex-col overflow-hidden">
