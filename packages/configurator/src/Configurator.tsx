@@ -371,7 +371,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
             <CaptionsList
               className={`min-h-0 flex-1 ${captionsListClassName || ""}`}
               onCaptionsChange={setCaptions}
-              captions={captions.slice(0, 600)}
+              captions={captions}
               readonly={captionsReadonly}
               currentTime={currentTime}
             />
