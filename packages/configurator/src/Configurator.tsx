@@ -319,9 +319,9 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               </div>
             </CardContent>
           </Card>
-          <div className="flex flex-col gap-4">
-            <Card className="flex flex-1 flex-col overflow-hidden">
-              <CardContent className="p-0 xl:p-6 flex flex-1 flex-col gap-4 overflow-hidden relative">
+          <div className="flex min-h-0 flex-1 flex-col gap-4">
+            <Card className="flex flex-2 flex-col overflow-hidden">
+              <CardContent className="relative flex flex-1 flex-col gap-4 overflow-hidden p-0 xl:p-6">
                 <div
                   className="group relative rounded-xl overflow-hidden bg-black mx-auto"
                   style={{ aspectRatio: aspectRatio.ratio }}
@@ -355,7 +355,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               </CardContent>
             </Card>
             <CaptionsList
-              className={` ${captionsListClassName || ""}`}
+              className={`min-h-0 flex-1 ${captionsListClassName || ""}`}
               onCaptionsChange={setCaptions}
               captions={captions}
               readonly={captionsReadonly}

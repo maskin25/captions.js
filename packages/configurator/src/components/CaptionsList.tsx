@@ -50,8 +50,9 @@ export const CaptionsList = ({
 
   return (
     <>
-      <ScrollArea className={`px-3 ${className ?? ""}`}>
-        <div className="group relative w-full flex flex-wrap items-start">
+      <div className={`flex min-h-0 flex-1 flex-col ${className ?? ""}`}>
+        <ScrollArea className="min-h-0 flex-1 px-3">
+          <div className="group relative w-full flex flex-wrap items-start">
           <CopyButton
             className="absolute top-0 right-2 opacity-0 transition-opacity group-hover:opacity-100"
             content={captionsJson}
@@ -81,8 +82,9 @@ export const CaptionsList = ({
               {caption.word}
             </button>
           ))}
-        </div>
-      </ScrollArea>
+          </div>
+        </ScrollArea>
+      </div>
       <CaptionForm
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
