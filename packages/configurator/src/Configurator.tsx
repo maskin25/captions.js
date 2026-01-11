@@ -334,7 +334,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
             </CardContent>
           </Card>
           <div className="flex min-h-0 flex-1 flex-col gap-2">
-            <Card className="flex flex-col overflow-hidden">
+            <Card className="flex flex-col overflow-hidden xl:max-h-[60%]">
               <CardContent className="relative flex flex-1 flex-col gap-4 overflow-hidden p-0 xl:p-6">
                 <div
                   className="group relative rounded-xl overflow-hidden bg-black mx-auto"
