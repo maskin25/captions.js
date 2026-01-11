@@ -64,7 +64,7 @@ export async function loadGoogleFont2(fontFamily: string) {
   // 4. Force update Konva layers (if necessary)
   Konva.stages?.forEach((stage) => stage.batchDraw());
 
-  console.log(
+  /*  console.log(
     `[loadGoogleFont] Font "${fontFamily}" loaded and ready for Konva.`
-  );
+  ); */
 }

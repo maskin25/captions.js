@@ -135,15 +135,21 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           .captionsSettings.style.name
       )
     );
-    const [videoOption, setVideoOption] = useState<VideoOption>(
-      videoOptions[0]
+    const [videoOption, setVideoOption] = useState<VideoOption | undefined>(
+      videoSrc ? undefined : videoOptions[0]
     );
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>(
       aspectRatioOptions[0]
     );
-    const [captions, setCaptions] = useState<Caption[]>(captionsProp || []);
+    const [captions, setCaptions] = useState<Caption[]>(
+      () => captionsProp || []
+    );
     const [currentTime, setCurrentTime] = useState(0);
     const [isJsonOpen, setIsJsonOpen] = useState(false);
+
+    useEffect(() => {
+      setCaptions(captionsProp || []);
+    }, [captionsProp]);
 
     const jsonRef = useRef<HTMLDivElement | null>(null);
 
@@ -174,7 +180,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       return () => {
         video.removeEventListener("timeupdate", handleTimeUpdate);
       };
-    }, [videoSrc, videoOption.videoSrc]);
+    }, [videoRef.current]);
 
     const presetOptions = useMemo(
       () =>
@@ -224,7 +230,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
         instance.destroy();
         captionsInstance.current = null;
       };
-    }, [videoOption.videoSrc]);
+    }, [videoOption?.videoSrc, captions]);
 
     useEffect(() => {
       captionsInstance.current?.preset({
@@ -238,10 +244,18 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     }, [captions]);
 
     useEffect(() => {
+      if (!videoOption?.captionsSrc) {
+        return;
+      }
+
       let cancelled = false;
       setCaptions([]);
 
       const loadCaptions = async () => {
+        if (!videoOption?.captionsSrc) {
+          return;
+        }
+
         try {
           const response = await fetch(videoOption.captionsSrc);
           if (!response.ok) {
@@ -275,7 +289,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       return () => {
         cancelled = true;
       };
-    }, [videoOption.captionsSrc]);
+    }, [videoOption?.captionsSrc]);
 
     const updateSettingValue = (path: (string | number)[], value: unknown) => {
       setSettings((prev) => {
@@ -343,7 +357,8 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                   {!videoSrc && (
                     <div className="pointer-events-none absolute top-4 left-4 z-10 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
                       <VideoOptionSelect
-                        value={videoOption.videoSrc}
+                        // @ts-expect-error it can not be null
+                        value={videoOption?.videoSrc}
                         onChange={(value) => {
                           const option = videoOptions.find(
                             (candidate) => candidate.videoSrc === value
@@ -359,9 +374,9 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                     playsInline
                     disablePictureInPicture
                     disableRemotePlayback
-                    key={videoSrc || videoOption.videoSrc}
+                    key={videoSrc || videoOption?.videoSrc}
                     ref={videoRef}
-                    src={videoSrc || videoOption.videoSrc}
+                    src={videoSrc || videoOption?.videoSrc}
                     controls
                     className="h-full w-full bg-black"
                   />
