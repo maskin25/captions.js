@@ -39,11 +39,20 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./ui/collapsible";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import { CopyButton } from "./ui/shadcn-io/copy-button";
+import { Button } from "./ui/button";
 import { twMerge } from "tailwind-merge";
 import { STYLE_FIELDS } from "Configurator.config";
 import PresetsCarousel from "components/PresetsCarousel";
 import { CaptionsList } from "components/CaptionsList";
+import useMediaQuery from "./hooks/use-media-query";
 
 type ConfiguratorCaptionsSettings =
   (typeof stylePresets)[number]["captionsSettings"];
@@ -145,7 +154,12 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       () => captionsProp || []
     );
     const [currentTime, setCurrentTime] = useState(0);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
     const [isJsonOpen, setIsJsonOpen] = useState(false);
+    const [isCaptionsDialogOpen, setIsCaptionsDialogOpen] = useState(false);
+    const isDesktop = useMediaQuery("(min-width: 1280px)");
+    const isShortHeight = useMediaQuery("(max-height: 800px)");
+    const shouldUseCaptionsDialog = !isDesktop || isShortHeight;
 
     useEffect(() => {
       setCaptions(captionsProp || []);
@@ -175,10 +189,19 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       const video = videoRef.current;
       if (!video) return;
       const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+      const handlePlay = () => setIsVideoPlaying(true);
+      const handlePause = () => setIsVideoPlaying(false);
       video.addEventListener("timeupdate", handleTimeUpdate);
+      video.addEventListener("play", handlePlay);
+      video.addEventListener("pause", handlePause);
+      video.addEventListener("ended", handlePause);
+      setIsVideoPlaying(!video.paused && !video.ended);
       handleTimeUpdate();
       return () => {
         video.removeEventListener("timeupdate", handleTimeUpdate);
+        video.removeEventListener("play", handlePlay);
+        video.removeEventListener("pause", handlePause);
+        video.removeEventListener("ended", handlePause);
       };
     }, [videoRef.current]);
 
@@ -347,8 +370,12 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               </div>
             </CardContent>
           </Card>
-          <div className="flex min-h-0 flex-1 flex-col gap-2">
-            <Card className="flex flex-col overflow-hidden xl:max-h-[60%]">
+          <div className="flex min-h-0 flex-1 flex-col gap-4">
+            <Card
+              className={`flex flex-col overflow-hidden ${
+                !shouldUseCaptionsDialog ? "xl:max-h-[60%]" : ""
+              }`}
+            >
               <CardContent className="relative flex flex-1 flex-col gap-4 overflow-hidden p-0 xl:p-6">
                 <div
                   className="group relative rounded-xl overflow-hidden bg-black mx-auto"
@@ -383,15 +410,45 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                 </div>
               </CardContent>
             </Card>
-            <div className="hidden min-h-0 flex-1 xl:flex">
+            {shouldUseCaptionsDialog && (
+              <div className="flex items-center justify-end">
+                <Dialog
+                  open={isCaptionsDialogOpen}
+                  onOpenChange={setIsCaptionsDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      {captionsReadonly ? "View captions" : "Edit captions"}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="flex h-[80vh] max-w-[calc(100%-1.5rem)] flex-col gap-3 p-4 sm:h-[75vh] sm:max-w-4xl">
+                    <DialogHeader>
+                      <DialogTitle>Captions</DialogTitle>
+                    </DialogHeader>
+                    <CaptionsList
+                      className={`min-h-0 flex-1 ${
+                        captionsListClassName || ""
+                      }`}
+                      onCaptionsChange={setCaptions}
+                      captions={captions}
+                      readonly={captionsReadonly}
+                      currentTime={currentTime}
+                      isPlaying={isVideoPlaying}
+                    />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
+            {!shouldUseCaptionsDialog && (
               <CaptionsList
                 className={`min-h-0 flex-1 ${captionsListClassName || ""}`}
                 onCaptionsChange={setCaptions}
                 captions={captions}
                 readonly={captionsReadonly}
                 currentTime={currentTime}
+                isPlaying={isVideoPlaying}
               />
-            </div>
+            )}
           </div>
           <Card className="flex flex-col overflow-hidden">
             <CardContent className="p-6 flex flex-col h-full">

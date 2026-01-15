@@ -117,26 +117,27 @@ export function Navbar() {
             </Button> */}
 
             {/* GitHub Stars */}
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-              className="hidden sm:flex bg-transparent"
-            >
-              <a
-                href="https://github.com/maskin25/captions.js/stargazers"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2"
+            {stars && (
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="hidden sm:flex bg-transparent"
               >
-                <Star className="h-4 w-4" />
-                {stars !== null && (
+                <a
+                  href="https://github.com/maskin25/captions.js/stargazers"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Star className="h-4 w-4" />
+
                   <span className="text-xs font-medium">
                     {stars.toLocaleString()}
                   </span>
-                )}
-              </a>
-            </Button>
+                </a>
+              </Button>
+            )}
 
             {/* Theme Switcher */}
             {mounted && (

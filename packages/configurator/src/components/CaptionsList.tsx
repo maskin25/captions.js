@@ -11,6 +11,7 @@ export const CaptionsList = ({
   className,
   readonly = false,
   currentTime,
+  isPlaying = false,
 }: {
   captions: Caption[];
   onCaptionChange?: (caption: Caption, index: number) => void;
@@ -18,6 +19,7 @@ export const CaptionsList = ({
   className?: string;
   readonly?: boolean;
   currentTime?: number | null;
+  isPlaying?: boolean;
 }) => {
   const autoScrollTimeoutRef = useRef<number | null>(null);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
@@ -60,6 +62,7 @@ export const CaptionsList = ({
   }, [captions, currentTime]);
 
   useEffect(() => {
+    if (!isPlaying) return;
     if (!autoScrollEnabled) return;
     if (activeIndex < 0) return;
     const node = document.getElementById(`caption-word-${activeIndex}`);
@@ -68,7 +71,7 @@ export const CaptionsList = ({
       block: "center",
       behavior: "smooth",
     });
-  }, [activeIndex, autoScrollEnabled]);
+  }, [activeIndex, autoScrollEnabled, isPlaying]);
 
   useEffect(
     () => () => {
@@ -143,8 +146,8 @@ export const CaptionsList = ({
             ))}
           </div>
         </ScrollArea>
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-linear-to-b from-background via-background/80 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-linear-to-t from-background via-background/80 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 -top-1 h-8 bg-linear-to-b from-background via-background/80 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 -bottom-1 h-8 bg-linear-to-t from-background via-background/80 to-transparent" />
       </div>
       <CaptionForm
         open={isFormOpen}
