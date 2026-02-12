@@ -32,7 +32,7 @@ export interface BurnCaptionsParams {
 export const burnCaptions = async (params: BurnCaptionsParams) => {
   const presetConfig =
     stylePresets.find(
-      (preset: any) => preset.captionsSettings.style.name === params.preset
+      (preset: any) => preset.captionsSettings.style.name === params.preset,
     ) || stylePresets[0];
   const { captionsSettings } = presetConfig;
 
@@ -58,7 +58,7 @@ export const burnCaptions = async (params: BurnCaptionsParams) => {
       path.dirname(params.video),
       `${path.parse(params.video).name}-captions-${
         params.preset
-      }-${Date.now()}${path.parse(params.video).ext}`
+      }-${Date.now()}${path.parse(params.video).ext}`,
     );
   }
 
@@ -72,7 +72,7 @@ export const burnCaptions = async (params: BurnCaptionsParams) => {
     captionsSettings as CaptionsSettings,
     [width, height],
     [0, duration],
-    1
+    1,
   );
   console.timeEnd("Burn captions time");
   console.log("Output video saved to:", params.output);
@@ -85,7 +85,7 @@ const addCanvasCaptionsToVideo = async (
   captionsSettings: CaptionsSettings,
   targetSize: [number, number],
   timeRange: [number, number],
-  toCoef?: number
+  toCoef?: number,
 ) => {
   const [width, height] = targetSize;
   const [timeStart, timeEnd] = timeRange;
@@ -97,7 +97,7 @@ const addCanvasCaptionsToVideo = async (
     path.join(__dirname, "assets", "fonts"),
     fontFamily,
     fontWeight,
-    italic
+    italic,
   );
 
   registerFont(fontPath, {
@@ -153,7 +153,7 @@ const addCanvasCaptionsToVideo = async (
             outputs: "output",
           },
         ],
-        "output"
+        "output",
       )
       .output(outputVideo)
       .on("error", (err, stdout, stderr) => {
@@ -192,7 +192,7 @@ const addCanvasCaptionsToVideo = async (
           targetSize,
           layer,
           toCoef,
-          undefined
+          undefined,
         );
 
         //@ts-ignore
@@ -228,7 +228,7 @@ const getDimensions = async (videoPath: string): Promise<[number, number]> => {
       }
 
       const videoStream = metadata.streams.find(
-        (stream) => stream.codec_type === "video"
+        (stream) => stream.codec_type === "video",
       );
       const rotation = videoStream?.rotation ? Number(videoStream.rotation) : 0;
 

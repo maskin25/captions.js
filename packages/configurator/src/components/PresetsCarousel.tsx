@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "ui/carousel";
 
-import { StylePreset, stylePresets } from "captions.js";
+import { type StylePreset, stylePresets } from "captions.js";
 import StylePresetPreview from "components/CaptionsStylePreview";
 import type { CarouselApi } from "ui/carousel";
 

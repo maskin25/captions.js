@@ -3,11 +3,11 @@ import { googleFontsList } from "./googleFonts.config";
 
 export async function loadGoogleFont(
   fontName: (typeof googleFontsList)[number],
-  weights = ["400"]
+  weights = ["400"],
 ) {
   const family = fontName.replace(/ /g, "+");
   const fontUrl = `https://fonts.googleapis.com/css2?family=${family}:wght@${weights.join(
-    ";"
+    ";",
   )}&display=swap`;
 
   // 1️⃣ Load Google Fonts CSS
@@ -59,7 +59,7 @@ export async function loadGoogleFont2(fontFamily: string) {
     console.warn(`[loadGoogleFont] failed to load font "${fontFamily}":`, err);
   }
 
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // 4. Force update Konva layers (if necessary)
   Konva.stages?.forEach((stage) => stage.batchDraw());
