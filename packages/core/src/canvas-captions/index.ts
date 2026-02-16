@@ -28,7 +28,7 @@ const drawDebugBoundingBox = (
   width: number,
   height: number,
   stroke: string,
-  dash: number[] = [6, 4]
+  dash: number[] = [6, 4],
 ) => {
   const rect = new Konva.Rect({
     x: 0,
@@ -53,7 +53,7 @@ export const renderFrame: RenderFrameFn = (
   targetSize: [number, number],
   layer: Konva.Layer,
   toCoef?: number,
-  debug?: boolean
+  debug?: boolean,
 ) => {
   const [width, height] = targetSize;
   const targetFontSize = captionsSettings.style.font.fontSize * (toCoef ?? 1);
@@ -82,7 +82,7 @@ export const renderFrame: RenderFrameFn = (
       fontFamily: captionsSettings.style.font.fontFamily,
       fontStyle: fontWeightToFontStyle(
         captionsSettings.style.font.fontWeight,
-        captionsSettings.style.font.italic
+        captionsSettings.style.font.italic,
       ),
       stroke: captionsSettings.style.font.fontStrokeColor,
       strokeWidth: captionsSettings.style.font.fontStrokeWidth
@@ -98,7 +98,7 @@ export const renderFrame: RenderFrameFn = (
       layer.getWidth()!,
       alphabetText.getWidth(),
       alphabet.length,
-      captionsSettings
+      captionsSettings,
     );
 
     memo[hash] = totalSymbolInLine;
@@ -120,13 +120,13 @@ export const renderFrame: RenderFrameFn = (
   const chunks = splitCaptionsBytotalWordsToDisplay(
     captions,
     totalSymbolInLine,
-    captionsSettings.linesPerPage
+    captionsSettings.linesPerPage,
   );
 
   const currentChunk = chunks.find(
     (chunk) =>
       chunk[0].startTime <= currentTime &&
-      chunk[chunk.length - 1].endTime >= currentTime
+      chunk[chunk.length - 1].endTime >= currentTime,
   );
 
   const xOffset = targetFontSize * 0.1;
@@ -169,7 +169,7 @@ export const renderFrame: RenderFrameFn = (
         caption,
         isCurrentCaption,
         isPastCaption,
-        captionsSettings
+        captionsSettings,
       );
 
       const isLastWordInLine =
@@ -192,7 +192,7 @@ export const renderFrame: RenderFrameFn = (
         targetFontSize: number,
         captionsSettings: CaptionsSettings,
         fillColor: string,
-        trim: boolean
+        trim: boolean,
       ) => {
         return new Konva.Text({
           text: trim ? word?.trim() : word,
@@ -203,7 +203,7 @@ export const renderFrame: RenderFrameFn = (
           fontFamily: captionsSettings.style.font.fontFamily,
           fontStyle: fontWeightToFontStyle(
             captionsSettings.style.font.fontWeight,
-            captionsSettings.style.font.italic
+            captionsSettings.style.font.italic,
           ),
           stroke: captionsSettings.style.font.fontStrokeColor,
           strokeWidth: captionsSettings.style.font.fontStrokeWidth
@@ -232,7 +232,7 @@ export const renderFrame: RenderFrameFn = (
         targetFontSize,
         captionsSettings,
         fillColor,
-        false
+        false,
       );
       text.fillAfterStrokeEnabled(true);
 
@@ -244,7 +244,7 @@ export const renderFrame: RenderFrameFn = (
               targetFontSize,
               captionsSettings,
               fillColor,
-              true
+              true,
             )
           : null;
 
@@ -298,7 +298,7 @@ export const renderFrame: RenderFrameFn = (
 
     const progress = Math.min(
       1,
-      (currentTime - currentChunk[0].startTime) / 0.2
+      (currentTime - currentChunk[0].startTime) / 0.2,
     );
 
     group.offsetX(maxGroupWidth / 2);
@@ -312,8 +312,8 @@ export const renderFrame: RenderFrameFn = (
         height,
         captionsSettings.position,
         captionsSettings.positionTopOffset ?? 0,
-        toCoef ?? 1
-      )
+        toCoef ?? 1,
+      ),
     );
 
     animate(
@@ -324,7 +324,7 @@ export const renderFrame: RenderFrameFn = (
         width: maxGroupWidth,
         height: groupHeight,
       },
-      current
+      current,
     );
 
     if (showDebugBoundingBoxes) {
@@ -347,7 +347,7 @@ export const renderFrame: RenderFrameFn = (
 export const trimCaptions = (
   captions: Caption[],
   timeRange: [number, number],
-  includeLast: boolean
+  includeLast: boolean,
 ) => {
   const [startTime, endTime] = timeRange;
   return captions.filter((caption) => {
@@ -362,7 +362,7 @@ export const trimCaptions = (
 
 export const trimLayoutsCaptions = (
   timeline: Timeline,
-  captions: Caption[]
+  captions: Caption[],
 ) => {
   return timeline.layouts
     .map((layout, index, arr) => {
@@ -379,7 +379,7 @@ export const trimLayoutsCaptions = (
 
 export const fillWithGaps = (
   captions: Caption[],
-  timeRange: [number, number]
+  timeRange: [number, number],
 ) => {
   const [startTime, endTime] = timeRange;
   const filledCaptions = [];
@@ -429,7 +429,7 @@ export const renderStylePreset = async (
   stylePreset: StylePreset,
   size: [number, number],
   frames: number[],
-  text: string = "Hello World"
+  text: string = "Hello World",
 ) => {
   const [width, height] = size;
   const containerElement = document.createElement("div");
@@ -443,6 +443,7 @@ export const renderStylePreset = async (
   const layer = new Konva.Layer({ listening: false });
   stage.add(layer);
 
+  const fontSettings = stylePreset.captionsSettings.style.font;
   const fontFamily = stylePreset.captionsSettings.style.font
     .fontFamily as (typeof googleFontsList)[number];
   await loadGoogleFont2(fontFamily);
@@ -475,7 +476,7 @@ export const renderStylePreset = async (
       currentTime,
       size,
       layer,
-      1.3
+      1.3,
     );
     return stage.toDataURL({ pixelRatio: devicePixelRatio });
   };

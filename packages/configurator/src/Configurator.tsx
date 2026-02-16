@@ -118,7 +118,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       hideFooter,
       debug = false,
     },
-    ref
+    ref,
   ) => {
     const clone = <T,>(value: T): T =>
       typeof globalThis.structuredClone === "function"
@@ -126,7 +126,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
         : (JSON.parse(JSON.stringify(value)) as T);
 
     const getPresetSettings = (
-      presetName: string
+      presetName: string,
     ): ConfiguratorCaptionsSettings => {
       const base =
         stylePresets.find((p) => p.captionsSettings.style.name === presetName)
@@ -136,22 +136,22 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
 
     const [selectedPresetName, setSelectedPresetName] = useState(
       stylePresets.find((p) => p.captionsSettings.style.name === "From")!
-        .captionsSettings.style.name
+        .captionsSettings.style.name,
     );
     const [settings, setSettings] = useState<ConfiguratorCaptionsSettings>(() =>
       getPresetSettings(
         stylePresets.find((p) => p.captionsSettings.style.name === "From")!
-          .captionsSettings.style.name
-      )
+          .captionsSettings.style.name,
+      ),
     );
     const [videoOption, setVideoOption] = useState<VideoOption | undefined>(
-      videoSrc ? undefined : videoOptions[0]
+      videoSrc ? undefined : videoOptions[0],
     );
     const [aspectRatio, setAspectRatio] = useState<AspectRatio>(
-      aspectRatioOptions[0]
+      aspectRatioOptions[0],
     );
     const [captions, setCaptions] = useState<Caption[]>(
-      () => captionsProp || []
+      () => captionsProp || [],
     );
     const [currentTime, setCurrentTime] = useState(0);
     const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -173,7 +173,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
         getCaptionsSettings: () => clone(settings),
         getCaptions: () => clone(captions),
       }),
-      [captions, settings]
+      [captions, settings],
     );
 
     useEffect(() => {
@@ -211,11 +211,11 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           id: preset.id,
           label: preset.captionsSettings.style.name,
         })),
-      []
+      [],
     );
     const settingsJson = useMemo(
       () => JSON.stringify(settings, null, 2),
-      [settings]
+      [settings],
     );
     const previewText = useMemo(() => {
       const words = captions
@@ -388,7 +388,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                         value={videoOption?.videoSrc}
                         onChange={(value) => {
                           const option = videoOptions.find(
-                            (candidate) => candidate.videoSrc === value
+                            (candidate) => candidate.videoSrc === value,
                           );
                           if (option) {
                             setVideoOption(option);
@@ -463,7 +463,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                   <div className="px-2">
                     <TabsContent value="font" className="space-y-4">
                       {STYLE_FIELDS.filter((field) =>
-                        String(field.path.join(".")).startsWith("style")
+                        String(field.path.join(".")).startsWith("style"),
                       ).map((field) => (
                         <StyleFieldInput
                           key={field.label}
@@ -477,7 +477,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                     <TabsContent value="layout" className="space-y-4">
                       {STYLE_FIELDS.filter(
                         (field) =>
-                          !String(field.path.join(".")).startsWith("style")
+                          !String(field.path.join(".")).startsWith("style"),
                       ).map((field) => (
                         <StyleFieldInput
                           key={field.label}
@@ -541,7 +541,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 type StyleFieldInputProps = {
