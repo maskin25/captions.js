@@ -1,4 +1,4 @@
-import type { Caption } from "../entities/captions/captions.types";
+import { Caption } from "../captions/captions.types";
 
 export interface DeepgramModelInfoEntry {
   name: string;

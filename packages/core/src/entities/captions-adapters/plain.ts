@@ -1,4 +1,4 @@
-import { Caption } from "../entities/captions/captions.types";
+import { Caption } from "../captions/captions.types";
 
 export type PlainCaptions = Caption[];
 
