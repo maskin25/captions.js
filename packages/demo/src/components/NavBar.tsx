@@ -8,7 +8,6 @@ import {
   Moon,
   Sun,
   ExternalLink,
-  GithubIcon,
   Github,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";

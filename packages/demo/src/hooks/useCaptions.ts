@@ -1,5 +1,6 @@
 import captionsjs, {
   stylePresets,
+  toCaptions,
   type Caption,
   type StylePreset,
 } from "captions.js";
@@ -8,13 +9,13 @@ import { useEffect, useRef, useState } from "react";
 export const useRemoteCaptions = (
   videoRef: React.RefObject<HTMLVideoElement | null>,
   captionsSrc: string,
-  presetName?: StylePreset["captionsSettings"]["style"]["name"]
+  presetName?: StylePreset["captionsSettings"]["style"]["name"],
 ) => {
   const [captions, setCaptions] = useState<Caption[] | undefined>(undefined);
 
   const [preset, setPreset] = useState(
     stylePresets.find((p) => p.captionsSettings.style.name === presetName) ||
-      stylePresets[0]
+      stylePresets[0],
   );
 
   const captionsInstance = useRef<ReturnType<typeof captionsjs> | null>(null);
@@ -41,14 +42,7 @@ export const useRemoteCaptions = (
   useEffect(() => {
     fetch(captionsSrc!)
       .then((res) => res.json())
-      .then((data) => {
-        // convert startTime and endTime to numbers
-        return data.map((caption: any) => ({
-          ...caption,
-          startTime: parseFloat(caption.startTime),
-          endTime: parseFloat(caption.endTime),
-        }));
-      })
+      .then((data) => toCaptions(data))
       .then(setCaptions);
   }, [captionsSrc]);
 
