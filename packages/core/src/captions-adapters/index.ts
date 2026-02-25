@@ -1,4 +1,4 @@
-import type { Caption } from "../captions/captions.types";
+import type { Caption } from "../entities/captions/captions.types";
 import {
   DeepgramParagraph,
   toCaptions as toDeepgramCaptions,
@@ -27,13 +27,8 @@ const isCaptionEntry = (value: unknown): value is Caption => {
 const isPlainCaptions = (value: unknown): value is PlainCaptions =>
   Array.isArray(value) && value.every((entry) => isCaptionEntry(entry));
 
-const isDeepgramResponse = (value: unknown): value is DeepgramResponse => {
-  if (!isObject(value)) return false;
-
-  const result = value.result;
-  if (!isObject(result)) return false;
-
-  const results = result.results;
+const hasDeepgramChannels = (value: Record<string, unknown>): boolean => {
+  const results = value.results;
   if (!isObject(results) || !Array.isArray(results.channels)) return false;
 
   return results.channels.every(
@@ -45,6 +40,17 @@ const isDeepgramResponse = (value: unknown): value is DeepgramResponse => {
           isObject(alternative) && Array.isArray(alternative.words),
       ),
   );
+};
+
+const isDeepgramResponse = (value: unknown): value is DeepgramResponse => {
+  if (!isObject(value)) return false;
+
+  if (hasDeepgramChannels(value)) return true;
+
+  const result = value.result;
+  if (!isObject(result)) return false;
+
+  return hasDeepgramChannels(result);
 };
 
 export const toCaptions = (input: unknown): Caption[] => {

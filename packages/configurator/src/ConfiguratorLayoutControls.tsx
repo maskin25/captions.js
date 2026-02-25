@@ -28,43 +28,42 @@ export type VideoOption = {
 
 export const videoOptions: VideoOption[] = [
   {
-    label: "Product Demo",
-    videoSrc:
-      "https://storage.googleapis.com/shorty-uploads/captions.js/rKpltaOMFdc.mp4",
+    label: "Confidence isn't loud, here's how to find your voice | Nimi Mehta",
+    videoSrc: "https://cdn.shorty.plus/demo/examples/rKpltaOMFdc.mp4",
     captionsSrc:
-      "https://storage.googleapis.com/shorty-uploads/captions.js/rKpltaOMFdc-dg.json",
+      "https://cdn.shorty.plus/demo/examples/rKpltaOMFdc-audio-transcription.json",
   },
   {
-    label: "Promo Clip",
-    videoSrc:
-      "https://storage.googleapis.com/shorty-uploads/captions.js/Mf7HyLkuNS0.mp4",
+    label:
+      "Yanis Varoufakis on Mamdani, Tommy Robinson and resisting fascism | The Prospect Podcast: Part 1",
+    videoSrc: "https://cdn.shorty.plus/demo/examples/Mf7HyLkuNS0.mp4",
     captionsSrc:
-      "https://storage.googleapis.com/shorty-uploads/captions.js/Mf7HyLkuNS0-dg.json",
+      "https://cdn.shorty.plus/demo/examples/Mf7HyLkuNS0-audio-transcription.json",
   },
   {
-    label: "Interview",
-    videoSrc:
-      "https://storage.googleapis.com/shorty-uploads/captions.js/0DOMlNJ9sOk.mp4",
+    label: "London, how many languages do you speak?",
+    videoSrc: "https://cdn.shorty.plus/demo/examples/0DOMlNJ9sOk.mp4",
     captionsSrc:
-      "https://storage.googleapis.com/shorty-uploads/captions.js/0DOMlNJ9sOk-dg.json",
+      "https://cdn.shorty.plus/demo/examples/0DOMlNJ9sOk-audio-transcription.json",
   },
   {
-    label: "Elon Musk Interview",
-    videoSrc:
-      "https://storage.googleapis.com/shorty-uploads/captions.js/Rni7Fz7208c.mp4",
+    label:
+      "Elon Musk: A Different Conversation w/ Nikhil Kamath | Full Episode | People by WTF Ep. 16",
+    videoSrc: "https://cdn.shorty.plus/demo/examples/Rni7Fz7208c.mp4",
     captionsSrc:
-      "https://storage.googleapis.com/shorty-uploads/captions.js/Rni7Fz7208c-dg.json",
+      "https://cdn.shorty.plus/demo/examples/Rni7Fz7208c-audio-transcription.json",
   },
   {
-    label: "Matthew Podcast",
-    videoSrc: "https://storage.googleapis.com/shorty-uploads/matthew.mp4",
+    label: "Matthew McConaughey | Blocks Podcast w/ Neal Brennan",
+    videoSrc: "https://cdn.shorty.plus/demo/examples/Rsol0hQ3IV8.mp4",
     captionsSrc:
-      "https://storage.googleapis.com/shorty-uploads/matthew-dg.json",
+      "https://cdn.shorty.plus/demo/examples/Rsol0hQ3IV8-audio-transcription.json",
   },
   {
-    label: "Margo Interview",
-    videoSrc: "https://storage.googleapis.com/shorty-uploads/margo.mp4",
-    captionsSrc: "https://storage.googleapis.com/shorty-uploads/margo-dg.json",
+    label: "Margot Robbie Answers 73 Questions | Vogue",
+    videoSrc: "https://cdn.shorty.plus/demo/examples/Bl5630CeYFs.mp4",
+    captionsSrc:
+      "https://cdn.shorty.plus/demo/examples/Bl5630CeYFs-audio-transcription.json",
   },
 ];
 

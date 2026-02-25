@@ -44,7 +44,7 @@ export {
 
 export { renderFrame, renderStylePreset } from "./canvas-captions";
 
-export { toCaptions, getParagraphs } from "./entities/captions-adapters";
+export { toCaptions, getParagraphs } from "./captions-adapters";
 
 export { CaptionsSettings } from "./entities/captions/captions.types";
 

@@ -22,6 +22,8 @@ export interface DeepgramWord {
   start: number;
   end: number;
   confidence?: number;
+  speaker?: number;
+  speaker_confidence?: number;
   punctuated_word?: string;
 }
 
@@ -36,6 +38,7 @@ export interface DeepgramParagraph {
   num_words: number;
   start: number;
   end: number;
+  speaker?: number;
 }
 
 export interface DeepgramParagraphs {
@@ -47,6 +50,7 @@ export interface DeepgramAlternative {
   transcript: string;
   confidence: number;
   words: DeepgramWord[];
+  languages?: string[];
   paragraphs?: DeepgramParagraphs;
 }
 
@@ -58,6 +62,18 @@ export interface DeepgramChannel {
 
 export interface DeepgramResults {
   channels: DeepgramChannel[];
+  utterances?: DeepgramUtterance[];
+}
+
+export interface DeepgramUtterance {
+  id: string;
+  transcript: string;
+  start: number;
+  end: number;
+  confidence: number;
+  speaker: number;
+  channel: number;
+  words: DeepgramWord[];
 }
 
 export interface DeepgramResultPayload {
@@ -65,10 +81,24 @@ export interface DeepgramResultPayload {
   results: DeepgramResults;
 }
 
-export interface DeepgramResponse {
+export interface DeepgramResponseEnvelope {
   result: DeepgramResultPayload;
-  error: string | null;
+  error?: string | null;
 }
+
+export type DeepgramResponse = DeepgramResultPayload | DeepgramResponseEnvelope;
+
+const isEnvelope = (value: DeepgramResponse): value is DeepgramResponseEnvelope =>
+  "result" in value;
+
+const toResultPayload = (input: DeepgramResponse): DeepgramResultPayload | null => {
+  if (isEnvelope(input)) {
+    if (input.error) return null;
+    return input.result;
+  }
+
+  return input;
+};
 
 const toFiniteNumber = (value: unknown): number | null => {
   const parsed =
@@ -101,12 +131,13 @@ const toCaptionEntry = (
 };
 
 export const toCaptions = (input: DeepgramResponse): Caption[] => {
-  if (input.error) {
+  const payload = toResultPayload(input);
+  if (!payload) {
     return [];
   }
 
   const captions: Caption[] = [];
-  const channels = input.result.results.channels ?? [];
+  const channels = payload.results.channels ?? [];
 
   channels.forEach((channel) => {
     const bestAlternative = channel.alternatives?.[0];
@@ -144,8 +175,13 @@ export const toCaptions = (input: DeepgramResponse): Caption[] => {
 };
 
 export const getParagraphs = (input: DeepgramResponse): DeepgramParagraph[] => {
+  const payload = toResultPayload(input);
+  if (!payload) {
+    return [];
+  }
+
   const paragraphs: DeepgramParagraph[] = [];
-  const channels = input.result.results.channels ?? [];
+  const channels = payload.results.channels ?? [];
 
   channels.forEach((channel) => {
     const bestAlternative = channel.alternatives?.[0];
