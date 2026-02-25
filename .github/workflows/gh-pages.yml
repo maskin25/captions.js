@@ -37,6 +37,9 @@ jobs:
         run: pnpm --filter @maskin25/captions-configurator build
 
       - name: Build demo
+        env:
+          VITE_PUBLIC_POSTHOG_KEY: ${{ vars.VITE_PUBLIC_POSTHOG_KEY }}
+          VITE_PUBLIC_POSTHOG_HOST: ${{ vars.VITE_PUBLIC_POSTHOG_HOST }}
         run: |
           pnpm --filter demo build
           cp packages/demo/dist/index.html packages/demo/dist/404.html  # ✅ create 404 fallback

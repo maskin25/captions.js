@@ -10,6 +10,7 @@ import captionsjs, {
   type Caption,
   googleFontsList,
   stylePresets,
+  toCaptions,
 } from "captions.js";
 import { ChevronsUpDown } from "lucide-react";
 import {
@@ -288,15 +289,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           const data = await response.json();
           if (cancelled) return;
 
-          const parsed: Caption[] = Array.isArray(data)
-            ? data
-                .map((entry: any) => ({
-                  word: String(entry.word ?? entry.text ?? entry.value ?? ""),
-                  startTime: Number(entry.startTime ?? entry.start ?? 0),
-                  endTime: Number(entry.endTime ?? entry.end ?? 0),
-                }))
-                .filter((item) => item.word)
-            : [];
+          const parsed: Caption[] = toCaptions(data);
 
           setCaptions(parsed);
         } catch (error) {

@@ -6,18 +6,29 @@ import AppLayout from "./layouts/AppLayout.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import TestPage from "./pages/Test.tsx";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
+import { PostHogProvider } from "@posthog/react";
+
+const options = {
+  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+  defaults: "2026-01-30",
+} as const;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path="/test" element={<TestPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
-  </StrictMode>
+    <PostHogProvider
+      apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+      options={options}
+    >
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route index element={<HomePage />} />
+              <Route path="/test" element={<TestPage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </PostHogProvider>
+  </StrictMode>,
 );
