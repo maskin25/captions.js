@@ -109,6 +109,36 @@ type CaptionParagraph = {
   speaker?: number;
 };
 
+const toFiniteNumber = (value: unknown): number | null =>
+  typeof value === "number" && Number.isFinite(value) ? value : null;
+
+const deriveParagraphsFromCaptions = (
+  items: Caption[],
+): CaptionParagraph[] | null => {
+  const byKey = new Map<string, CaptionParagraph>();
+
+  items.forEach((caption) => {
+    const paragraphStart = toFiniteNumber(caption.paragraphStartTime);
+    const paragraphEnd = toFiniteNumber(caption.paragraphEndTime);
+    const sentenceStart = toFiniteNumber(caption.sentenceStartTime);
+    const sentenceEnd = toFiniteNumber(caption.sentenceEndTime);
+
+    const start = paragraphStart ?? sentenceStart;
+    const end = paragraphEnd ?? sentenceEnd;
+    if (start === null || end === null || end < start) return;
+
+    const speaker =
+      typeof caption.speaker === "number" ? caption.speaker : undefined;
+    const key = `${start}|${end}|${speaker ?? ""}`;
+    if (!byKey.has(key)) {
+      byKey.set(key, { start, end, speaker });
+    }
+  });
+
+  const paragraphs = Array.from(byKey.values()).sort((a, b) => a.start - b.start);
+  return paragraphs.length > 0 ? paragraphs : null;
+};
+
 export type ConfiguratorHandle = {
   getCaptionsSettings: () => ConfiguratorCaptionsSettings;
   getCaptions: () => Caption[];
@@ -174,8 +204,9 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     const shouldUseCaptionsDialog = !isDesktop || isShortHeight;
 
     useEffect(() => {
-      setCaptions(captionsProp || []);
-      setCaptionParagraphs(null);
+      const nextCaptions = captionsProp || [];
+      setCaptions(nextCaptions);
+      setCaptionParagraphs(deriveParagraphsFromCaptions(nextCaptions));
     }, [captionsProp]);
 
     const jsonRef = useRef<HTMLDivElement | null>(null);
@@ -325,12 +356,13 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
             end: paragraph.end,
             speaker: paragraph.speaker,
           }));
+          const derivedParagraphs = deriveParagraphsFromCaptions(parsed);
 
           setCaptions(parsed);
           setCaptionParagraphs(
             parsedParagraphs && parsedParagraphs.length > 0
               ? parsedParagraphs
-              : null,
+              : derivedParagraphs,
           );
         } catch (error) {
           console.error(error);

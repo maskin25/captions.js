@@ -1,9 +1,9 @@
 > [!WARNING]
 > 🚧 **Captions.js is nearing its first public release**  
-> The library is under active development and a full-featured version is expected around **January 2026**.
+> The library is under active development and a full-featured version is expected around **April 2026**.
 
-💌 Want to know when Captions.js is released?
-Star or watch the repo on GitHub to get updates!
+> [!TIP]
+> If Captions.js is useful for you, a quick ⭐ on [GitHub](https://github.com/maskin25/captions.js) helps a lot.
 
 # Captions.js
 
@@ -17,10 +17,10 @@ Render styled animated captions on canvas — works both on client and server si
 
 ## Features
 
-- **Easy Integration**: Simple API to add captions to your videos.
-- **Customizable Styles**: Fully customizable caption styles via configurations.
-- **Multiple Formats**: Supports various caption formats including WebVTT and SRT.
-- **Responsive Design**: Captions adapt to different screen sizes and orientations.
+- **Client + Server Rendering**: Use the same captions engine in the browser and in Node.js/FFmpeg pipelines.
+- **Highly Customizable Visuals**: Control fonts, colors, stroke, shadows, positioning, and animation presets.
+- **Word-Level Timing Precision**: Render and highlight captions frame-by-frame with smooth active-word transitions.
+- **Sentence-Aware Output**: Keeps caption display coherent by respecting sentence structure.
 
 ## Installation
 
