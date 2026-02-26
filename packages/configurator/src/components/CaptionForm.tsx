@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Caption } from "captions.js";
+import { XIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,12 +20,6 @@ type CaptionFormProps = {
   index: number;
   captions: Caption[];
   onCaptionsChange?: (nextCaptions: Caption[]) => void;
-};
-
-const clampStartTime = (value: number, endTime: number) => {
-  if (value < 0) return 0;
-  if (value > endTime) return endTime;
-  return value;
 };
 
 export const CaptionForm = ({
@@ -63,47 +58,6 @@ export const CaptionForm = ({
     onOpenChange(false);
   };
 
-  const handleDelete = () => {
-    if (!caption) return;
-    const nextCaptions = captions.slice();
-    const removed = nextCaptions.splice(index, 1)[0];
-    if (!removed) return;
-
-    const previousIndex = index - 1;
-    const nextIndex = index;
-
-    if (previousIndex >= 0) {
-      const previous = nextCaptions[previousIndex];
-      nextCaptions[previousIndex] = {
-        ...previous,
-        endTime: Math.max(previous.startTime, removed.endTime),
-      };
-    }
-
-    if (nextIndex < nextCaptions.length) {
-      const next = nextCaptions[nextIndex];
-      const adjustedStart = clampStartTime(removed.endTime, next.endTime);
-      nextCaptions[nextIndex] = {
-        ...next,
-        startTime: adjustedStart,
-      };
-    }
-
-    if (previousIndex >= 0 && nextIndex < nextCaptions.length) {
-      const previous = nextCaptions[previousIndex];
-      const next = nextCaptions[nextIndex];
-      if (previous.endTime > next.startTime) {
-        nextCaptions[previousIndex] = {
-          ...previous,
-          endTime: next.startTime,
-        };
-      }
-    }
-
-    onCaptionsChange?.(nextCaptions);
-    onOpenChange(false);
-  };
-
   const colorValue = highlightColor || "#000000";
 
   return (
@@ -112,19 +66,32 @@ export const CaptionForm = ({
         <DialogHeader>
           <DialogTitle>Edit caption</DialogTitle>
           <DialogDescription>
-            Update the word and highlight color, or remove the word.
+            Update the word and highlight color. Clear the word to create a gap.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="caption-word">Word</Label>
-            <Input
-              id="caption-word"
-              value={word}
-              onChange={(event) => setWord(event.target.value)}
-              placeholder="Type the caption word"
-            />
+            <div className="relative">
+              <Input
+                id="caption-word"
+                value={word}
+                onChange={(event) => setWord(event.target.value)}
+                placeholder="Type the caption word"
+                className="pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2"
+                onClick={() => setWord("")}
+                aria-label="Clear word"
+              >
+                <XIcon />
+              </Button>
+            </div>
           </div>
 
           <div className="grid gap-2">
@@ -155,9 +122,6 @@ export const CaptionForm = ({
         </div>
 
         <DialogFooter className="gap-2 sm:gap-3">
-          <Button type="button" variant="destructive" onClick={handleDelete}>
-            Delete word
-          </Button>
           <Button
             type="button"
             variant="outline"

@@ -135,7 +135,9 @@ const deriveParagraphsFromCaptions = (
     }
   });
 
-  const paragraphs = Array.from(byKey.values()).sort((a, b) => a.start - b.start);
+  const paragraphs = Array.from(byKey.values()).sort(
+    (a, b) => a.start - b.start,
+  );
   return paragraphs.length > 0 ? paragraphs : null;
 };
 
@@ -514,7 +516,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                 onParagraphSeek={seekToTime}
                 captions={captions}
                 paragraphs={captionParagraphs}
-                readonly={captionsReadonly}
+                readonly={false}
                 currentTime={currentTime}
                 isPlaying={isVideoPlaying}
               />

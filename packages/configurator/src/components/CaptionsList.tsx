@@ -44,6 +44,15 @@ const getParagraphSpeakerStyle = (
   };
 };
 
+const isGapCaption = (caption: Caption): boolean =>
+  caption.word.trim().length === 0;
+
+const getGapDurationLabel = (caption: Caption): string => {
+  const duration = Math.max(0, caption.endTime - caption.startTime);
+  if (!Number.isFinite(duration)) return "Gap";
+  return `Gap ${duration.toFixed(duration >= 10 ? 1 : 2)}s`;
+};
+
 const buildParagraphGroups = (
   captions: Caption[],
   paragraphs: CaptionParagraph[]
@@ -354,6 +363,7 @@ export const CaptionsList = ({
                     {group.indices.map((captionIndex) => {
                       const caption = captions[captionIndex];
                       if (!caption) return null;
+                      const isGap = isGapCaption(caption);
                       return (
                         <button
                           key={`${caption.word}-${caption.startTime}-${captionIndex}`}
@@ -365,7 +375,9 @@ export const CaptionsList = ({
                             handleOpen(captionIndex);
                           }}
                           className={`rounded border border-transparent px-1 py-0 text-sm text-foreground transition ${
-                            readonly
+                            isGap
+                              ? "border-dashed border-muted-foreground/60 bg-muted/50 px-2 py-0.5 text-xs font-medium text-muted-foreground"
+                              : readonly
                               ? "cursor-default"
                               : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
                           } ${
@@ -374,7 +386,7 @@ export const CaptionsList = ({
                               : ""
                           }`}
                           style={
-                            caption.highlightColor
+                            !isGap && caption.highlightColor
                               ? {
                                   backgroundColor: `${caption.highlightColor}99`,
                                   borderColor: caption.highlightColor,
@@ -382,7 +394,7 @@ export const CaptionsList = ({
                               : undefined
                           }
                         >
-                          {caption.word}
+                          {isGap ? getGapDurationLabel(caption) : caption.word}
                         </button>
                       );
                     })}
@@ -392,33 +404,38 @@ export const CaptionsList = ({
             </div>
           ) : (
             <div className="w-full flex flex-wrap items-start px-3 py-6">
-              {captions.map((caption, index) => (
-                <button
-                  key={`${caption.word}-${caption.startTime}-${index}`}
-                  id={`caption-word-${index}`}
-                  type="button"
-                  onClick={readonly ? undefined : () => handleOpen(index)}
-                  className={`rounded border border-transparent px-1 py-0 text-sm text-foreground transition ${
-                    readonly
-                      ? "cursor-default"
-                      : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
-                  } ${
-                    index === activeIndex
-                      ? "border-dashed border-muted-foreground/50 bg-muted ring-1 ring-muted-foreground/50"
-                      : ""
-                  }`}
-                  style={
-                    caption.highlightColor
-                      ? {
-                          backgroundColor: `${caption.highlightColor}99`,
-                          borderColor: caption.highlightColor,
-                        }
-                      : undefined
-                  }
-                >
-                  {caption.word}
-                </button>
-              ))}
+              {captions.map((caption, index) => {
+                const isGap = isGapCaption(caption);
+                return (
+                  <button
+                    key={`${caption.word}-${caption.startTime}-${index}`}
+                    id={`caption-word-${index}`}
+                    type="button"
+                    onClick={readonly ? undefined : () => handleOpen(index)}
+                    className={`rounded border border-transparent px-1 py-0 text-sm text-foreground transition ${
+                      isGap
+                        ? "border-dashed border-muted-foreground/60 bg-muted/50 px-2 py-0.5 text-xs font-medium text-muted-foreground"
+                        : readonly
+                        ? "cursor-default"
+                        : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
+                    } ${
+                      index === activeIndex
+                        ? "border-dashed border-muted-foreground/50 bg-muted ring-1 ring-muted-foreground/50"
+                        : ""
+                    }`}
+                    style={
+                      !isGap && caption.highlightColor
+                        ? {
+                            backgroundColor: `${caption.highlightColor}99`,
+                            borderColor: caption.highlightColor,
+                          }
+                        : undefined
+                    }
+                  >
+                    {isGap ? getGapDurationLabel(caption) : caption.word}
+                  </button>
+                );
+              })}
             </div>
           )}
         </ScrollArea>
