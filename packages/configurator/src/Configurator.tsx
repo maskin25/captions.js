@@ -1,4 +1,5 @@
 import {
+  useCallback,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -196,6 +197,23 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const captionsInstance = useRef<ReturnType<typeof captionsjs> | null>(null);
+    const seekToTime = useCallback((time: number) => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      const normalizedTime = Math.max(0, Number.isFinite(time) ? time : 0);
+      const duration =
+        Number.isFinite(video.duration) && video.duration > 0
+          ? video.duration
+          : null;
+      const safeTime =
+        duration === null
+          ? normalizedTime
+          : Math.min(normalizedTime, Math.max(duration - 0.01, 0));
+
+      video.currentTime = safeTime;
+      setCurrentTime(safeTime);
+    }, []);
 
     useEffect(() => {
       const video = videoRef.current;
@@ -446,6 +464,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                         captionsListClassName || ""
                       }`}
                       onCaptionsChange={setCaptions}
+                      onParagraphSeek={seekToTime}
                       captions={captions}
                       paragraphs={captionParagraphs}
                       readonly={captionsReadonly}
@@ -460,6 +479,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               <CaptionsList
                 className={`min-h-0 flex-1 ${captionsListClassName || ""}`}
                 onCaptionsChange={setCaptions}
+                onParagraphSeek={seekToTime}
                 captions={captions}
                 paragraphs={captionParagraphs}
                 readonly={captionsReadonly}

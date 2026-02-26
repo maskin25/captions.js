@@ -148,6 +148,7 @@ export const CaptionsList = ({
   captions,
   onCaptionChange,
   onCaptionsChange,
+  onParagraphSeek,
   className,
   readonly = false,
   currentTime,
@@ -157,6 +158,7 @@ export const CaptionsList = ({
   captions: Caption[];
   onCaptionChange?: (caption: Caption, index: number) => void;
   onCaptionsChange?: (captions: Caption[]) => void;
+  onParagraphSeek?: (time: number) => void;
   className?: string;
   readonly?: boolean;
   currentTime?: number | null;
@@ -333,11 +335,16 @@ export const CaptionsList = ({
                 <div
                   key={`paragraph-${group.paragraph.start}-${group.paragraph.end}-${groupIndex}`}
                   id={`caption-paragraph-${groupIndex}`}
+                  onClick={
+                    onParagraphSeek
+                      ? () => onParagraphSeek(group.paragraph.start)
+                      : undefined
+                  }
                   className={`rounded-lg border p-3 transition ${
                     groupIndex === activeParagraphIndex
                       ? "ring-1 ring-muted-foreground/40"
                       : "border-border/60"
-                  }`}
+                  } ${onParagraphSeek ? "cursor-pointer" : ""}`}
                   style={getParagraphSpeakerStyle(
                     group.paragraph.speaker,
                     groupIndex === activeParagraphIndex
@@ -352,9 +359,11 @@ export const CaptionsList = ({
                           key={`${caption.word}-${caption.startTime}-${captionIndex}`}
                           id={`caption-word-${captionIndex}`}
                           type="button"
-                          onClick={
-                            readonly ? undefined : () => handleOpen(captionIndex)
-                          }
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            if (readonly) return;
+                            handleOpen(captionIndex);
+                          }}
                           className={`rounded border border-transparent px-1 py-0 text-sm text-foreground transition ${
                             readonly
                               ? "cursor-default"
