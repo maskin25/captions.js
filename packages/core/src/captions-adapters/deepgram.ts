@@ -114,6 +114,7 @@ const toCaptionEntry = (
   word: string | undefined,
   start: unknown,
   end: unknown,
+  extra?: Partial<Caption>,
 ): Caption | null => {
   const text = (word ?? "").trim();
   const startTime = toFiniteNumber(start);
@@ -127,7 +128,85 @@ const toCaptionEntry = (
     word: text,
     startTime,
     endTime,
+    ...extra,
   };
+};
+
+type SentenceBounds = {
+  sentenceStartTime: number;
+  sentenceEndTime: number;
+  paragraphStartTime: number;
+  paragraphEndTime: number;
+  speaker?: number;
+};
+
+const toSentenceBounds = (alternative: DeepgramAlternative): SentenceBounds[] => {
+  const bounds: SentenceBounds[] = [];
+
+  alternative.paragraphs?.paragraphs.forEach((paragraph) => {
+    paragraph.sentences.forEach((sentence) => {
+      const sentenceStartTime = toFiniteNumber(sentence.start);
+      const sentenceEndTime = toFiniteNumber(sentence.end);
+      const paragraphStartTime = toFiniteNumber(paragraph.start);
+      const paragraphEndTime = toFiniteNumber(paragraph.end);
+
+      if (
+        sentenceStartTime === null ||
+        sentenceEndTime === null ||
+        paragraphStartTime === null ||
+        paragraphEndTime === null
+      ) {
+        return;
+      }
+
+      bounds.push({
+        sentenceStartTime,
+        sentenceEndTime,
+        paragraphStartTime,
+        paragraphEndTime,
+        speaker: paragraph.speaker,
+      });
+    });
+  });
+
+  return bounds.sort((a, b) => a.sentenceStartTime - b.sentenceStartTime);
+};
+
+const getSentenceMetaForWord = (
+  sentenceBounds: SentenceBounds[],
+  wordStart: number,
+  cursor: number,
+): { bounds?: SentenceBounds; cursor: number } => {
+  if (!sentenceBounds.length) {
+    return { cursor };
+  }
+
+  let nextCursor = cursor;
+  while (
+    nextCursor < sentenceBounds.length - 1 &&
+    wordStart >= sentenceBounds[nextCursor].sentenceEndTime
+  ) {
+    nextCursor += 1;
+  }
+
+  const candidate = sentenceBounds[nextCursor];
+  if (
+    wordStart >= candidate.sentenceStartTime &&
+    wordStart <= candidate.sentenceEndTime
+  ) {
+    return { bounds: candidate, cursor: nextCursor };
+  }
+
+  const previous = sentenceBounds[nextCursor - 1];
+  if (
+    previous &&
+    wordStart >= previous.sentenceStartTime &&
+    wordStart <= previous.sentenceEndTime
+  ) {
+    return { bounds: previous, cursor: nextCursor };
+  }
+
+  return { cursor: nextCursor };
 };
 
 export const toCaptions = (input: DeepgramResponse): Caption[] => {
@@ -142,13 +221,23 @@ export const toCaptions = (input: DeepgramResponse): Caption[] => {
   channels.forEach((channel) => {
     const bestAlternative = channel.alternatives?.[0];
     if (!bestAlternative) return;
+    const sentenceBounds = toSentenceBounds(bestAlternative);
+    let sentenceCursor = 0;
 
     if (bestAlternative.words.length > 0) {
       bestAlternative.words.forEach((word) => {
+        const wordStart = toFiniteNumber(word.start);
+        const sentenceMeta =
+          wordStart === null
+            ? { cursor: sentenceCursor }
+            : getSentenceMetaForWord(sentenceBounds, wordStart, sentenceCursor);
+        sentenceCursor = sentenceMeta.cursor;
+
         const caption = toCaptionEntry(
           word.punctuated_word ?? word.word,
           word.start,
           word.end,
+          sentenceMeta.bounds,
         );
         if (caption) {
           captions.push(caption);

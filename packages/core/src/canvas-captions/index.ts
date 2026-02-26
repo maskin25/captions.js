@@ -12,7 +12,7 @@ import {
   getAverageSymbolsInLine,
   getCaptionsGroupY,
   getFillColor,
-  splitCaptionsBytotalWordsToDisplay,
+  splitCaptionsBySentenceAwareBlocks,
 } from "./utils";
 
 import objectHash from "object-hash";
@@ -117,7 +117,7 @@ export const renderFrame: RenderFrameFn = (
   const chunks = memoChunks[chunksHash]; */
   // const chunks = splitCaptionsBy(captions, totalWordsToDisplay);
 
-  const chunks = splitCaptionsBytotalWordsToDisplay(
+  const chunks = splitCaptionsBySentenceAwareBlocks(
     captions,
     totalSymbolInLine,
     captionsSettings.linesPerPage,

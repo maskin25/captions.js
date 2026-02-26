@@ -54,4 +54,9 @@ export interface Caption {
   startTime: number;
   endTime: number;
   highlightColor?: string;
+  sentenceStartTime?: number;
+  sentenceEndTime?: number;
+  paragraphStartTime?: number;
+  paragraphEndTime?: number;
+  speaker?: number;
 }

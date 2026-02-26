@@ -83,6 +83,83 @@ export const splitCaptionsBytotalWordsToDisplay = (
   return result;
 };
 
+const hasFiniteTime = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value);
+
+const hasSentenceMetadata = (caption: Caption): boolean =>
+  hasFiniteTime(caption.sentenceStartTime) && hasFiniteTime(caption.sentenceEndTime);
+
+const sameSentence = (left: Caption, right: Caption): boolean => {
+  const leftHas = hasSentenceMetadata(left);
+  const rightHas = hasSentenceMetadata(right);
+
+  if (leftHas && rightHas) {
+    return (
+      left.sentenceStartTime === right.sentenceStartTime &&
+      left.sentenceEndTime === right.sentenceEndTime
+    );
+  }
+
+  if (!leftHas && !rightHas) {
+    return true;
+  }
+
+  return false;
+};
+
+export const splitCaptionsBySentenceAwareBlocks = (
+  captions: Caption[],
+  totalWordsToDisplay: number,
+  linesPerPage: number
+) => {
+  if (!captions.length) return [];
+
+  const containsSentenceData = captions.some((caption) =>
+    hasSentenceMetadata(caption)
+  );
+  if (!containsSentenceData) {
+    return splitCaptionsBytotalWordsToDisplay(
+      captions,
+      totalWordsToDisplay,
+      linesPerPage
+    );
+  }
+
+  const result: Caption[][] = [];
+  let sentenceBlock: Caption[] = [];
+
+  const flushSentenceBlock = () => {
+    if (!sentenceBlock.length) return;
+    const sentenceChunks = splitCaptionsBytotalWordsToDisplay(
+      sentenceBlock,
+      totalWordsToDisplay,
+      linesPerPage
+    );
+    sentenceChunks.forEach((chunk) => result.push(chunk));
+    sentenceBlock = [];
+  };
+
+  captions.forEach((caption, index) => {
+    if (!sentenceBlock.length) {
+      sentenceBlock.push(caption);
+      return;
+    }
+
+    const previous = captions[index - 1];
+    if (previous && sameSentence(previous, caption)) {
+      sentenceBlock.push(caption);
+      return;
+    }
+
+    flushSentenceBlock();
+    sentenceBlock.push(caption);
+  });
+
+  flushSentenceBlock();
+
+  return result;
+};
+
 export const fontWeightToFontStyle = (
   fontWeight: string,
   isItalic: boolean
