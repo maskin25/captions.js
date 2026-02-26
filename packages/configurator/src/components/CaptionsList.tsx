@@ -1,4 +1,11 @@
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Caption } from "captions.js";
 import { ScrollArea } from "ui/scroll-area";
 import { CaptionForm } from "./CaptionForm";
@@ -12,6 +19,12 @@ type CaptionParagraph = {
 };
 
 const PARAGRAPH_ACTIVE_TOLERANCE_SEC = 0.12;
+
+type ParagraphGroup = {
+  paragraph: CaptionParagraph;
+  paragraphIndex: number;
+  indices: number[];
+};
 
 const getParagraphSpeakerStyle = (
   speaker: number | undefined,
@@ -29,6 +42,106 @@ const getParagraphSpeakerStyle = (
       ? `hsla(${hue}, 34%, 46%, 0.38)`
       : `hsla(${hue}, 26%, 54%, 0.24)`,
   };
+};
+
+const buildParagraphGroups = (
+  captions: Caption[],
+  paragraphs: CaptionParagraph[]
+): { groups: ParagraphGroup[]; captionToGroupIndex: number[] } => {
+  if (!captions.length || !paragraphs.length) {
+    return { groups: [], captionToGroupIndex: [] };
+  }
+
+  const tempGroups: ParagraphGroup[] = paragraphs.map((paragraph, paragraphIndex) => ({
+    paragraph,
+    paragraphIndex,
+    indices: [],
+  }));
+
+  const captionToParagraphIndex = new Array<number>(captions.length).fill(-1);
+  let paragraphCursor = 0;
+
+  captions.forEach((caption, captionIndex) => {
+    const time = caption.startTime;
+    while (
+      paragraphCursor < paragraphs.length - 1 &&
+      time >= paragraphs[paragraphCursor].end
+    ) {
+      paragraphCursor += 1;
+    }
+
+    const candidate = paragraphs[paragraphCursor];
+    const isLast = paragraphCursor === paragraphs.length - 1;
+    const matchesCandidate =
+      time >= candidate.start && (isLast ? time <= candidate.end : time < candidate.end);
+
+    if (matchesCandidate) {
+      tempGroups[paragraphCursor].indices.push(captionIndex);
+      captionToParagraphIndex[captionIndex] = paragraphCursor;
+      return;
+    }
+
+    const prevIndex = paragraphCursor - 1;
+    if (prevIndex >= 0) {
+      const prev = paragraphs[prevIndex];
+      const prevIsLast = prevIndex === paragraphs.length - 1;
+      const matchesPrev =
+        time >= prev.start && (prevIsLast ? time <= prev.end : time < prev.end);
+      if (matchesPrev) {
+        tempGroups[prevIndex].indices.push(captionIndex);
+        captionToParagraphIndex[captionIndex] = prevIndex;
+      }
+    }
+  });
+
+  const groups = tempGroups.filter((group) => group.indices.length > 0);
+  const paragraphToGroupIndex = new Map<number, number>();
+  groups.forEach((group, index) => {
+    paragraphToGroupIndex.set(group.paragraphIndex, index);
+  });
+
+  const captionToGroupIndex = captionToParagraphIndex.map((paragraphIndex) =>
+    paragraphIndex < 0 ? -1 : (paragraphToGroupIndex.get(paragraphIndex) ?? -1)
+  );
+
+  return { groups, captionToGroupIndex };
+};
+
+const findParagraphIndexByTime = (
+  groups: ParagraphGroup[],
+  currentTime: number
+): number => {
+  if (!groups.length) return -1;
+
+  let low = 0;
+  let high = groups.length - 1;
+  let candidate = -1;
+
+  while (low <= high) {
+    const mid = (low + high) >> 1;
+    if (groups[mid].paragraph.start <= currentTime) {
+      candidate = mid;
+      low = mid + 1;
+    } else {
+      high = mid - 1;
+    }
+  }
+
+  const matches = (groupIndex: number): boolean => {
+    if (groupIndex < 0 || groupIndex >= groups.length) return false;
+    const group = groups[groupIndex];
+    const isLast = groupIndex === groups.length - 1;
+    const start = group.paragraph.start - PARAGRAPH_ACTIVE_TOLERANCE_SEC;
+    const end =
+      group.paragraph.end + (isLast ? PARAGRAPH_ACTIVE_TOLERANCE_SEC : 0);
+    return currentTime >= start && currentTime <= end;
+  };
+
+  if (matches(candidate)) return candidate;
+  if (matches(candidate + 1)) return candidate + 1;
+  if (matches(candidate - 1)) return candidate - 1;
+
+  return -1;
 };
 
 export const CaptionsList = ({
@@ -75,11 +188,11 @@ export const CaptionsList = ({
     return captions[selectedIndex] ?? null;
   }, [captions, selectedIndex]);
 
-  const handleOpen = (index: number) => {
+  const handleOpen = useCallback((index: number) => {
     if (readonly) return;
     setSelectedIndex(index);
     setIsFormOpen(true);
-  };
+  }, [readonly]);
 
   const handleCaptionsChange = (nextCaptions: Caption[]) => {
     onCaptionsChange?.(nextCaptions);
@@ -106,52 +219,25 @@ export const CaptionsList = ({
     );
   }, [captions, currentTime]);
 
-  const paragraphGroups = useMemo(() => {
-    if (!paragraphs?.length) return [];
-    const baseGroups = paragraphs.map((paragraph, paragraphIndex) => ({
-      paragraph,
-      paragraphIndex,
-      indices: [] as number[],
-    }));
-
-    captions.forEach((caption, captionIndex) => {
-      const ownerParagraphIndex = paragraphs.findIndex((paragraph, index) => {
-        const isLast = index === paragraphs.length - 1;
-        return isLast
-          ? caption.startTime >= paragraph.start &&
-              caption.startTime <= paragraph.end
-          : caption.startTime >= paragraph.start &&
-              caption.startTime < paragraph.end;
-      });
-
-      if (ownerParagraphIndex >= 0) {
-        baseGroups[ownerParagraphIndex].indices.push(captionIndex);
-      }
-    });
-
-    return baseGroups.filter((group) => group.indices.length > 0);
-  }, [captions, paragraphs]);
+  const { groups: paragraphGroups, captionToGroupIndex } = useMemo(
+    () => buildParagraphGroups(captions, paragraphs ?? []),
+    [captions, paragraphs]
+  );
 
   const activeParagraphIndex = useMemo(() => {
     if (currentTime !== null && currentTime !== undefined) {
-      const timeBasedIndex = paragraphGroups.findIndex((group, index) => {
-        const isLast = index === paragraphGroups.length - 1;
-        const start = group.paragraph.start - PARAGRAPH_ACTIVE_TOLERANCE_SEC;
-        const end =
-          group.paragraph.end +
-          (isLast ? PARAGRAPH_ACTIVE_TOLERANCE_SEC : 0);
-        return currentTime >= start && currentTime <= end;
-      });
+      const timeBasedIndex = findParagraphIndexByTime(
+        paragraphGroups,
+        currentTime
+      );
       if (timeBasedIndex >= 0) {
         return timeBasedIndex;
       }
     }
 
     if (activeIndex < 0) return -1;
-    return paragraphGroups.findIndex((group) =>
-      group.indices.includes(activeIndex)
-    );
-  }, [activeIndex, currentTime, paragraphGroups]);
+    return captionToGroupIndex[activeIndex] ?? -1;
+  }, [activeIndex, captionToGroupIndex, currentTime, paragraphGroups]);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -186,7 +272,7 @@ export const CaptionsList = ({
     []
   );
 
-  const handleManualScroll = () => {
+  const handleManualScroll = useCallback(() => {
     if (autoScrollTimeoutRef.current !== null) {
       window.clearTimeout(autoScrollTimeoutRef.current);
     }
@@ -195,7 +281,7 @@ export const CaptionsList = ({
       setAutoScrollEnabled(true);
       autoScrollTimeoutRef.current = null;
     }, 10000);
-  };
+  }, []);
 
   return (
     <>
