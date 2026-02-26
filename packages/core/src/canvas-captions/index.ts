@@ -15,13 +15,186 @@ import {
   splitCaptionsBySentenceAwareBlocks,
 } from "./utils";
 
-import objectHash from "object-hash";
 import { Timeline } from "../entities/timeline/timeline.types";
 import { fonts } from "./fonts.config";
 import { StylePreset } from "../stylePresets/stylePresets.config";
 import { loadGoogleFont2 } from "../fonts/googleFonts.helpers";
 import { googleFontsList } from "../fonts/googleFonts.config";
-let memo: { [hash: string]: number } = {};
+
+type ChunkRange = {
+  start: number;
+  end: number;
+  chunk: Caption[];
+};
+
+type ChunkCacheEntry = {
+  chunks: Caption[][];
+  ranges: ChunkRange[];
+};
+
+type ActiveCaptionRenderState = {
+  caption: Caption;
+  text: Konva.Text;
+  progress: number;
+  textTrim?: Konva.Text | null;
+};
+
+const wordPriorityAnimations = new Set<CaptionsSettings["animation"]>([
+  "bounce",
+  "box-word",
+]);
+
+const symbolsPerLineCache = new WeakMap<CaptionsSettings, Map<string, number>>();
+const chunkCache = new WeakMap<Caption[], Map<string, ChunkCacheEntry>>();
+
+const getSymbolsPerLineCacheKey = (
+  layerWidth: number,
+  targetFontSize: number,
+  captionsSettings: CaptionsSettings,
+) => {
+  const font = captionsSettings.style.font;
+  return [
+    layerWidth,
+    targetFontSize,
+    font.fontFamily,
+    font.fontWeight,
+    font.italic ? 1 : 0,
+    font.fontStrokeWidth || 0,
+    font.fontCapitalize ? 1 : 0,
+    captionsSettings.animation,
+    captionsSettings.linesPerPage,
+  ].join("|");
+};
+
+const getTotalSymbolInLineCached = (
+  captionsSettings: CaptionsSettings,
+  captions: Caption[],
+  layer: Konva.Layer,
+  targetFontSize: number,
+) => {
+  const layerWidth = layer.getWidth()!;
+  const cacheKey = getSymbolsPerLineCacheKey(
+    layerWidth,
+    targetFontSize,
+    captionsSettings,
+  );
+
+  let cacheByKey = symbolsPerLineCache.get(captionsSettings);
+  if (!cacheByKey) {
+    cacheByKey = new Map<string, number>();
+    symbolsPerLineCache.set(captionsSettings, cacheByKey);
+  }
+
+  const cached = cacheByKey.get(cacheKey);
+  if (typeof cached === "number") {
+    return cached;
+  }
+
+  const textForDetectAlphabet = captions
+    .slice(0, 10)
+    .map((x) => x.word)
+    .join("");
+
+  const alphabetKind = detectAlphabetKind(textForDetectAlphabet);
+  const alphabet = getAlphabet(alphabetKind);
+
+  const alphabetText = new Konva.Text({
+    text: captionsSettings.style.font.fontCapitalize
+      ? alphabet.toUpperCase()
+      : alphabet,
+    x: 0,
+    y: 0,
+    fontSize: targetFontSize,
+    fontFamily: captionsSettings.style.font.fontFamily,
+    fontStyle: fontWeightToFontStyle(
+      captionsSettings.style.font.fontWeight,
+      captionsSettings.style.font.italic,
+    ),
+    stroke: captionsSettings.style.font.fontStrokeColor,
+    strokeWidth: captionsSettings.style.font.fontStrokeWidth
+      ? captionsSettings.style.font.fontStrokeWidth / 10
+      : 0,
+    textDecoration: captionsSettings.style.font.underline ? "underline" : "",
+    fill: "black",
+  });
+
+  alphabetText.fillAfterStrokeEnabled(true);
+
+  const totalSymbolInLine = getAverageSymbolsInLine(
+    layerWidth,
+    alphabetText.getWidth(),
+    alphabet.length,
+    captionsSettings,
+  );
+
+  cacheByKey.set(cacheKey, totalSymbolInLine);
+  return totalSymbolInLine;
+};
+
+const getChunkCacheKey = (
+  totalSymbolInLine: number,
+  linesPerPage: number,
+) => `${totalSymbolInLine}|${linesPerPage}`;
+
+const getChunksCached = (
+  captions: Caption[],
+  totalSymbolInLine: number,
+  linesPerPage: number,
+): ChunkCacheEntry => {
+  const cacheKey = getChunkCacheKey(totalSymbolInLine, linesPerPage);
+
+  let cacheByKey = chunkCache.get(captions);
+  if (!cacheByKey) {
+    cacheByKey = new Map<string, ChunkCacheEntry>();
+    chunkCache.set(captions, cacheByKey);
+  }
+
+  const cached = cacheByKey.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const chunks = splitCaptionsBySentenceAwareBlocks(
+    captions,
+    totalSymbolInLine,
+    linesPerPage,
+  );
+  const ranges: ChunkRange[] = chunks.map((chunk) => ({
+    start: chunk[0].startTime,
+    end: chunk[chunk.length - 1].endTime,
+    chunk,
+  }));
+
+  const next: ChunkCacheEntry = { chunks, ranges };
+  cacheByKey.set(cacheKey, next);
+  return next;
+};
+
+const findChunkByTime = (
+  ranges: ChunkRange[],
+  currentTime: number,
+): Caption[] | undefined => {
+  let low = 0;
+  let high = ranges.length - 1;
+
+  while (low <= high) {
+    const mid = (low + high) >> 1;
+    const range = ranges[mid];
+
+    if (currentTime < range.start) {
+      high = mid - 1;
+      continue;
+    }
+    if (currentTime > range.end) {
+      low = mid + 1;
+      continue;
+    }
+
+    return range.chunk;
+  }
+
+  return undefined;
+};
 
 const drawDebugBoundingBox = (
   parent: Konva.Group,
@@ -58,76 +231,18 @@ export const renderFrame: RenderFrameFn = (
   const [width, height] = targetSize;
   const targetFontSize = captionsSettings.style.font.fontSize * (toCoef ?? 1);
   const showDebugBoundingBoxes = Boolean(debug);
-  let totalSymbolInLine = 0;
-  const hash = objectHash({ captionsSettings });
-
-  if (memo[hash]) {
-    totalSymbolInLine = memo[hash];
-  } else {
-    const textForDetectAlphabet = captions
-      .slice(0, 10)
-      .map((x) => x.word)
-      .join("");
-
-    const alphabetKind = detectAlphabetKind(textForDetectAlphabet);
-    const alphabet = getAlphabet(alphabetKind);
-
-    const alphabetText = new Konva.Text({
-      text: captionsSettings.style.font.fontCapitalize
-        ? alphabet.toUpperCase()
-        : alphabet,
-      x: 0,
-      y: 0,
-      fontSize: targetFontSize,
-      fontFamily: captionsSettings.style.font.fontFamily,
-      fontStyle: fontWeightToFontStyle(
-        captionsSettings.style.font.fontWeight,
-        captionsSettings.style.font.italic,
-      ),
-      stroke: captionsSettings.style.font.fontStrokeColor,
-      strokeWidth: captionsSettings.style.font.fontStrokeWidth
-        ? captionsSettings.style.font.fontStrokeWidth / 10
-        : 0,
-      textDecoration: captionsSettings.style.font.underline ? "underline" : "",
-      fill: "black",
-    });
-
-    alphabetText.fillAfterStrokeEnabled(true);
-
-    totalSymbolInLine = getAverageSymbolsInLine(
-      layer.getWidth()!,
-      alphabetText.getWidth(),
-      alphabet.length,
-      captionsSettings,
-    );
-
-    memo[hash] = totalSymbolInLine;
-  }
-
-  /* const chunksHash = objectHash({ captions, totalWordsToDisplay });
-  if (memoChunks[chunksHash]) {
-    console.log('exist in memo');
-  } else {
-    console.log('NOT exist in memo');
-  }
-  if (!memoChunks[chunksHash]) {
-    memoChunks[chunksHash] = splitCaptionsBy(captions, totalWordsToDisplay);
-  }
-
-  const chunks = memoChunks[chunksHash]; */
-  // const chunks = splitCaptionsBy(captions, totalWordsToDisplay);
-
-  const chunks = splitCaptionsBySentenceAwareBlocks(
+  const totalSymbolInLine = getTotalSymbolInLineCached(
+    captionsSettings,
+    captions,
+    layer,
+    targetFontSize,
+  );
+  const { ranges } = getChunksCached(
     captions,
     totalSymbolInLine,
     captionsSettings.linesPerPage,
   );
-
-  const currentChunk = chunks.find(
-    (chunk) =>
-      chunk[0].startTime <= currentTime &&
-      chunk[chunk.length - 1].endTime >= currentTime,
-  );
+  const currentChunk = findChunkByTime(ranges, currentTime);
 
   const xOffset = targetFontSize * 0.1;
   const wordSpacing =
@@ -150,14 +265,7 @@ export const renderFrame: RenderFrameFn = (
     });
     let currentSymbolsLength = 0;
 
-    let current:
-      | {
-          caption: Caption;
-          text: Konva.Text;
-          progress: number;
-          textTrim?: Konva.Text | null;
-        }
-      | undefined = undefined;
+    let activeCaptionState: ActiveCaptionRenderState | undefined = undefined;
 
     currentChunk.forEach((caption, index) => {
       const isCurrentCaption =
@@ -249,7 +357,7 @@ export const renderFrame: RenderFrameFn = (
           : null;
 
       if (isCurrentCaption) {
-        current = {
+        activeCaptionState = {
           caption,
           text,
           progress:
@@ -324,7 +432,7 @@ export const renderFrame: RenderFrameFn = (
         width: maxGroupWidth,
         height: groupHeight,
       },
-      current,
+      activeCaptionState,
     );
 
     if (showDebugBoundingBoxes) {
@@ -334,8 +442,10 @@ export const renderFrame: RenderFrameFn = (
       });
     }
 
-    if ((current as any)?.text && captionsSettings.animation === "box-word") {
-      current!.text?.zIndex(10);
+    const currentText = activeCaptionState?.text;
+    if (currentText && wordPriorityAnimations.has(captionsSettings.animation)) {
+      currentText.parent?.moveToTop();
+      currentText.moveToTop();
     }
 
     layer.add(group);

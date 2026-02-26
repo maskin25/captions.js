@@ -29,37 +29,19 @@ export const splitCaptionsBytotalWordsToDisplay = (
   totalWordsToDisplay: number,
   linesPerPage: number
 ) => {
-  const result = [];
+  const result: Caption[][] = [];
   let currentCaptionIndex = 0;
   let currentSymbolsLength = 0;
-  let currentBlock = [];
+  let currentBlock: Caption[] = [];
   let currentLine = 1;
-
-  const maxWordGapSec = 1;
-
-  const isValidBlockGap = (currentBlock: Caption[], caption: Caption) => {
-    return true;
-    return (
-      (currentBlock.length > 0 &&
-        caption.startTime - currentBlock[currentBlock.length - 1].endTime <
-          maxWordGapSec) ||
-      currentBlock.length === 0
-    );
-  };
 
   while (currentCaptionIndex < captions.length) {
     const caption = captions[currentCaptionIndex];
-    if (
-      currentSymbolsLength + caption.word.length + 1 <= totalWordsToDisplay &&
-      isValidBlockGap(currentBlock, caption)
-    ) {
+    if (currentSymbolsLength + caption.word.length + 1 <= totalWordsToDisplay) {
       currentBlock.push(caption);
       currentSymbolsLength += caption.word.length + 1;
       currentCaptionIndex++;
-    } else if (
-      linesPerPage > currentLine &&
-      isValidBlockGap(currentBlock, caption)
-    ) {
+    } else if (linesPerPage > currentLine) {
       currentBlock.push(caption);
       currentCaptionIndex++;
       currentSymbolsLength = caption.word.length;
