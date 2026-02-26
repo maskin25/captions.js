@@ -34,8 +34,7 @@ export const videoOptions: VideoOption[] = [
       "https://cdn.shorty.plus/demo/examples/rKpltaOMFdc-audio-transcription.json",
   },
   {
-    label:
-      "Yanis Varoufakis on Mamdani, Tommy Robinson and resisting fascism | The Prospect Podcast: Part 1",
+    label: "Yanis Varoufakis on Mamdani, Tommy Robinson and resisting fascism",
     videoSrc: "https://cdn.shorty.plus/demo/examples/Mf7HyLkuNS0.mp4",
     captionsSrc:
       "https://cdn.shorty.plus/demo/examples/Mf7HyLkuNS0-audio-transcription.json",
@@ -47,8 +46,7 @@ export const videoOptions: VideoOption[] = [
       "https://cdn.shorty.plus/demo/examples/0DOMlNJ9sOk-audio-transcription.json",
   },
   {
-    label:
-      "Elon Musk: A Different Conversation w/ Nikhil Kamath | Full Episode | People by WTF Ep. 16",
+    label: "Elon Musk: A Different Conversation w/ Nikhil Kamath",
     videoSrc: "https://cdn.shorty.plus/demo/examples/Rni7Fz7208c.mp4",
     captionsSrc:
       "https://cdn.shorty.plus/demo/examples/Rni7Fz7208c-audio-transcription.json",
@@ -75,7 +73,7 @@ type VideoSelectProps = {
 export const VideoOptionSelect = ({ value, onChange }: VideoSelectProps) => (
   <Field>
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
+      <SelectTrigger className="max-w-[320px] border-white/25 bg-black/35 text-white shadow-none backdrop-blur-sm hover:border-white/40 focus-visible:border-white/45 focus-visible:ring-white/25 data-[placeholder]:text-white/75">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
