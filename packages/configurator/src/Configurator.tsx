@@ -11,6 +11,7 @@ import captionsjs, {
   googleFontsList,
   stylePresets,
   toCaptions,
+  getParagraphs,
 } from "captions.js";
 import { ChevronsUpDown } from "lucide-react";
 import {
@@ -101,6 +102,12 @@ type ConfiguratorProps = {
   debug?: boolean;
 };
 
+type CaptionParagraph = {
+  start: number;
+  end: number;
+  speaker?: number;
+};
+
 export type ConfiguratorHandle = {
   getCaptionsSettings: () => ConfiguratorCaptionsSettings;
   getCaptions: () => Caption[];
@@ -154,6 +161,9 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     const [captions, setCaptions] = useState<Caption[]>(
       () => captionsProp || [],
     );
+    const [captionParagraphs, setCaptionParagraphs] = useState<
+      CaptionParagraph[] | null
+    >(null);
     const [currentTime, setCurrentTime] = useState(0);
     const [isVideoPlaying, setIsVideoPlaying] = useState(false);
     const [isJsonOpen, setIsJsonOpen] = useState(false);
@@ -164,6 +174,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
 
     useEffect(() => {
       setCaptions(captionsProp || []);
+      setCaptionParagraphs(null);
     }, [captionsProp]);
 
     const jsonRef = useRef<HTMLDivElement | null>(null);
@@ -274,6 +285,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
 
       let cancelled = false;
       setCaptions([]);
+      setCaptionParagraphs(null);
 
       const loadCaptions = async () => {
         if (!videoOption?.captionsSrc) {
@@ -290,12 +302,23 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           if (cancelled) return;
 
           const parsed: Caption[] = toCaptions(data);
+          const parsedParagraphs = getParagraphs(data)?.map((paragraph) => ({
+            start: paragraph.start,
+            end: paragraph.end,
+            speaker: paragraph.speaker,
+          }));
 
           setCaptions(parsed);
+          setCaptionParagraphs(
+            parsedParagraphs && parsedParagraphs.length > 0
+              ? parsedParagraphs
+              : null,
+          );
         } catch (error) {
           console.error(error);
           if (!cancelled) {
             setCaptions([]);
+            setCaptionParagraphs(null);
           }
         }
       };
@@ -424,6 +447,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                       }`}
                       onCaptionsChange={setCaptions}
                       captions={captions}
+                      paragraphs={captionParagraphs}
                       readonly={captionsReadonly}
                       currentTime={currentTime}
                       isPlaying={isVideoPlaying}
@@ -437,6 +461,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                 className={`min-h-0 flex-1 ${captionsListClassName || ""}`}
                 onCaptionsChange={setCaptions}
                 captions={captions}
+                paragraphs={captionParagraphs}
                 readonly={captionsReadonly}
                 currentTime={currentTime}
                 isPlaying={isVideoPlaying}
