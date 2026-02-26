@@ -55,6 +55,7 @@ import { twMerge } from "tailwind-merge";
 import { STYLE_FIELDS } from "Configurator.config";
 import PresetsCarousel from "components/PresetsCarousel";
 import { CaptionsList } from "components/CaptionsList";
+import { type Edits } from "components/caption-edits";
 import useMediaQuery from "./hooks/use-media-query";
 
 type ConfiguratorCaptionsSettings =
@@ -101,6 +102,7 @@ type ConfiguratorProps = {
   captionsReadonly?: boolean;
   hideFooter?: boolean;
   debug?: boolean;
+  onEditsChange?: (edits: Edits) => void;
 };
 
 type CaptionParagraph = {
@@ -158,6 +160,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       captionsReadonly,
       hideFooter,
       debug = false,
+      onEditsChange,
     },
     ref,
   ) => {
@@ -194,6 +197,9 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     const [captions, setCaptions] = useState<Caption[]>(
       () => captionsProp || [],
     );
+    const [baseCaptionsForEdits, setBaseCaptionsForEdits] = useState<Caption[]>(
+      () => captionsProp || [],
+    );
     const [captionParagraphs, setCaptionParagraphs] = useState<
       CaptionParagraph[] | null
     >(null);
@@ -208,6 +214,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     useEffect(() => {
       const nextCaptions = captionsProp || [];
       setCaptions(nextCaptions);
+      setBaseCaptionsForEdits(nextCaptions);
       setCaptionParagraphs(deriveParagraphsFromCaptions(nextCaptions));
     }, [captionsProp]);
 
@@ -336,6 +343,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
 
       let cancelled = false;
       setCaptions([]);
+      setBaseCaptionsForEdits([]);
       setCaptionParagraphs(null);
 
       const loadCaptions = async () => {
@@ -361,6 +369,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           const derivedParagraphs = deriveParagraphsFromCaptions(parsed);
 
           setCaptions(parsed);
+          setBaseCaptionsForEdits(parsed);
           setCaptionParagraphs(
             parsedParagraphs && parsedParagraphs.length > 0
               ? parsedParagraphs
@@ -370,6 +379,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           console.error(error);
           if (!cancelled) {
             setCaptions([]);
+            setBaseCaptionsForEdits([]);
             setCaptionParagraphs(null);
           }
         }
@@ -500,10 +510,12 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                       onCaptionsChange={setCaptions}
                       onParagraphSeek={seekToTime}
                       captions={captions}
+                      baseCaptions={baseCaptionsForEdits}
                       paragraphs={captionParagraphs}
                       readonly={captionsReadonly}
                       currentTime={currentTime}
                       isPlaying={isVideoPlaying}
+                      onEditsChange={onEditsChange}
                     />
                   </DialogContent>
                 </Dialog>
@@ -515,10 +527,12 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                 onCaptionsChange={setCaptions}
                 onParagraphSeek={seekToTime}
                 captions={captions}
+                baseCaptions={baseCaptionsForEdits}
                 paragraphs={captionParagraphs}
                 readonly={false}
                 currentTime={currentTime}
                 isPlaying={isVideoPlaying}
+                onEditsChange={onEditsChange}
               />
             )}
           </div>

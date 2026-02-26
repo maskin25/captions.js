@@ -11,6 +11,7 @@ import { ScrollArea } from "ui/scroll-area";
 import { CaptionForm } from "./CaptionForm";
 import { CopyButton } from "ui/shadcn-io/copy-button";
 import { Button } from "ui/button";
+import { buildEdits, type Edits } from "./caption-edits";
 
 type CaptionParagraph = {
   start: number;
@@ -28,7 +29,7 @@ type ParagraphGroup = {
 
 const getParagraphSpeakerStyle = (
   speaker: number | undefined,
-  isActive: boolean
+  isActive: boolean,
 ): CSSProperties | undefined => {
   if (typeof speaker !== "number") return undefined;
 
@@ -55,17 +56,19 @@ const getGapDurationLabel = (caption: Caption): string => {
 
 const buildParagraphGroups = (
   captions: Caption[],
-  paragraphs: CaptionParagraph[]
+  paragraphs: CaptionParagraph[],
 ): { groups: ParagraphGroup[]; captionToGroupIndex: number[] } => {
   if (!captions.length || !paragraphs.length) {
     return { groups: [], captionToGroupIndex: [] };
   }
 
-  const tempGroups: ParagraphGroup[] = paragraphs.map((paragraph, paragraphIndex) => ({
-    paragraph,
-    paragraphIndex,
-    indices: [],
-  }));
+  const tempGroups: ParagraphGroup[] = paragraphs.map(
+    (paragraph, paragraphIndex) => ({
+      paragraph,
+      paragraphIndex,
+      indices: [],
+    }),
+  );
 
   const captionToParagraphIndex = new Array<number>(captions.length).fill(-1);
   let paragraphCursor = 0;
@@ -82,7 +85,8 @@ const buildParagraphGroups = (
     const candidate = paragraphs[paragraphCursor];
     const isLast = paragraphCursor === paragraphs.length - 1;
     const matchesCandidate =
-      time >= candidate.start && (isLast ? time <= candidate.end : time < candidate.end);
+      time >= candidate.start &&
+      (isLast ? time <= candidate.end : time < candidate.end);
 
     if (matchesCandidate) {
       tempGroups[paragraphCursor].indices.push(captionIndex);
@@ -110,7 +114,7 @@ const buildParagraphGroups = (
   });
 
   const captionToGroupIndex = captionToParagraphIndex.map((paragraphIndex) =>
-    paragraphIndex < 0 ? -1 : (paragraphToGroupIndex.get(paragraphIndex) ?? -1)
+    paragraphIndex < 0 ? -1 : (paragraphToGroupIndex.get(paragraphIndex) ?? -1),
   );
 
   return { groups, captionToGroupIndex };
@@ -118,7 +122,7 @@ const buildParagraphGroups = (
 
 const findParagraphIndexByTime = (
   groups: ParagraphGroup[],
-  currentTime: number
+  currentTime: number,
 ): number => {
   if (!groups.length) return -1;
 
@@ -163,6 +167,8 @@ export const CaptionsList = ({
   currentTime,
   isPlaying = false,
   paragraphs = null,
+  baseCaptions,
+  onEditsChange,
 }: {
   captions: Caption[];
   onCaptionChange?: (caption: Caption, index: number) => void;
@@ -173,6 +179,8 @@ export const CaptionsList = ({
   currentTime?: number | null;
   isPlaying?: boolean;
   paragraphs?: CaptionParagraph[] | null;
+  baseCaptions?: Caption[];
+  onEditsChange?: (edits: Edits) => void;
 }) => {
   const autoScrollTimeoutRef = useRef<number | null>(null);
   const hadParagraphsRef = useRef(false);
@@ -181,7 +189,7 @@ export const CaptionsList = ({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const hasParagraphs = Boolean(paragraphs && paragraphs.length > 0);
   const [viewMode, setViewMode] = useState<"words" | "paragraphs">(
-    hasParagraphs ? "paragraphs" : "words"
+    hasParagraphs ? "paragraphs" : "words",
   );
 
   useEffect(() => {
@@ -199,11 +207,14 @@ export const CaptionsList = ({
     return captions[selectedIndex] ?? null;
   }, [captions, selectedIndex]);
 
-  const handleOpen = useCallback((index: number) => {
-    if (readonly) return;
-    setSelectedIndex(index);
-    setIsFormOpen(true);
-  }, [readonly]);
+  const handleOpen = useCallback(
+    (index: number) => {
+      if (readonly) return;
+      setSelectedIndex(index);
+      setIsFormOpen(true);
+    },
+    [readonly],
+  );
 
   const handleCaptionsChange = (nextCaptions: Caption[]) => {
     onCaptionsChange?.(nextCaptions);
@@ -220,26 +231,30 @@ export const CaptionsList = ({
   };
   const captionsJson = useMemo(
     () => captions.map((caption) => caption.word).join(" "),
-    [captions]
+    [captions],
+  );
+  const edits = useMemo(
+    () => buildEdits(baseCaptions ?? captions, captions),
+    [baseCaptions, captions],
   );
   const activeIndex = useMemo(() => {
     if (currentTime === null || currentTime === undefined) return -1;
     return captions.findIndex(
       (caption) =>
-        currentTime >= caption.startTime && currentTime <= caption.endTime
+        currentTime >= caption.startTime && currentTime <= caption.endTime,
     );
   }, [captions, currentTime]);
 
   const { groups: paragraphGroups, captionToGroupIndex } = useMemo(
     () => buildParagraphGroups(captions, paragraphs ?? []),
-    [captions, paragraphs]
+    [captions, paragraphs],
   );
 
   const activeParagraphIndex = useMemo(() => {
     if (currentTime !== null && currentTime !== undefined) {
       const timeBasedIndex = findParagraphIndexByTime(
         paragraphGroups,
-        currentTime
+        currentTime,
       );
       if (timeBasedIndex >= 0) {
         return timeBasedIndex;
@@ -257,8 +272,8 @@ export const CaptionsList = ({
       viewMode === "paragraphs" && activeParagraphIndex >= 0
         ? `caption-paragraph-${activeParagraphIndex}`
         : activeIndex >= 0
-        ? `caption-word-${activeIndex}`
-        : null;
+          ? `caption-word-${activeIndex}`
+          : null;
     if (!targetId) return;
     const node = document.getElementById(targetId);
     if (!node) return;
@@ -280,7 +295,7 @@ export const CaptionsList = ({
         window.clearTimeout(autoScrollTimeoutRef.current);
       }
     },
-    []
+    [],
   );
 
   const handleManualScroll = useCallback(() => {
@@ -293,6 +308,10 @@ export const CaptionsList = ({
       autoScrollTimeoutRef.current = null;
     }, 10000);
   }, []);
+
+  useEffect(() => {
+    onEditsChange?.(edits);
+  }, [edits, onEditsChange]);
 
   return (
     <>
@@ -356,7 +375,7 @@ export const CaptionsList = ({
                   } ${onParagraphSeek ? "cursor-pointer" : ""}`}
                   style={getParagraphSpeakerStyle(
                     group.paragraph.speaker,
-                    groupIndex === activeParagraphIndex
+                    groupIndex === activeParagraphIndex,
                   )}
                 >
                   <div className="flex flex-wrap items-start">
@@ -378,8 +397,8 @@ export const CaptionsList = ({
                             isGap
                               ? "border-dashed border-muted-foreground/60 bg-muted/50 px-2 py-0.5 text-xs font-medium text-muted-foreground"
                               : readonly
-                              ? "cursor-default"
-                              : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
+                                ? "cursor-default"
+                                : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
                           } ${
                             captionIndex === activeIndex
                               ? "border-dashed border-muted-foreground/50 bg-muted ring-1 ring-muted-foreground/50"
@@ -416,8 +435,8 @@ export const CaptionsList = ({
                       isGap
                         ? "border-dashed border-muted-foreground/60 bg-muted/50 px-2 py-0.5 text-xs font-medium text-muted-foreground"
                         : readonly
-                        ? "cursor-default"
-                        : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
+                          ? "cursor-default"
+                          : "hover:border-dashed hover:border-muted-foreground/50 hover:bg-muted"
                     } ${
                       index === activeIndex
                         ? "border-dashed border-muted-foreground/50 bg-muted ring-1 ring-muted-foreground/50"
