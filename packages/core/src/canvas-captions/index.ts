@@ -266,6 +266,7 @@ export const renderFrame: RenderFrameFn = (
     let currentSymbolsLength = 0;
 
     let activeCaptionState: ActiveCaptionRenderState | undefined = undefined;
+    let activeCaptionText: Konva.Text | null = null;
 
     currentChunk.forEach((caption, index) => {
       const isCurrentCaption =
@@ -366,6 +367,7 @@ export const renderFrame: RenderFrameFn = (
           textTrim: textTrim,
           //progress: Math.min(1, (currentTime - caption.start_time) / 0.5),
         };
+        activeCaptionText = text;
       }
 
       x += text.width() + wordSpacing;
@@ -442,8 +444,8 @@ export const renderFrame: RenderFrameFn = (
       });
     }
 
-    const currentText = activeCaptionState?.text;
-    if (currentText && wordPriorityAnimations.has(captionsSettings.animation)) {
+    const currentText = activeCaptionText as Konva.Text | null;
+    if (currentText !== null && wordPriorityAnimations.has(captionsSettings.animation)) {
       currentText.parent?.moveToTop();
       currentText.moveToTop();
     }

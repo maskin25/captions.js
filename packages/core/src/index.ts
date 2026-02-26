@@ -46,6 +46,8 @@ export { renderFrame, renderStylePreset } from "./canvas-captions";
 
 export { toCaptions, getParagraphs } from "./captions-adapters";
 
+export type {}
+
 export { CaptionsSettings } from "./entities/captions/captions.types";
 
 /** Default export is the `captionsjs()` factory for ergonomic imports. */
