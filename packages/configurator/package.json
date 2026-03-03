@@ -1,6 +1,6 @@
 {
   "name": "@maskin25/captions-configurator",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "private": false,
   "type": "module",
   "files": [
@@ -13,8 +13,14 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./caption-edits": {
+      "types": "./dist/caption-edits.d.ts",
+      "import": "./dist/caption-edits.js",
+      "require": "./dist/caption-edits.cjs"
     },
     "./styles.css": "./styles.css"
   },
@@ -44,6 +50,7 @@
     "cmdk": "^1.1.1",
     "embla-carousel-react": "^8.6.0",
     "embla-carousel-wheel-gestures": "^8.1.0",
+    "i18next": "^25.8.13",
     "lucide-react": "^0.545.0",
     "motion": "^12.23.24",
     "tailwind-merge": "^3.3.1"

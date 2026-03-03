@@ -12,6 +12,7 @@ import { CaptionForm } from "./CaptionForm";
 import { CopyButton } from "ui/shadcn-io/copy-button";
 import { Button } from "ui/button";
 import { buildEdits, type Edits } from "./caption-edits";
+import { type ConfiguratorLang, t } from "../i18n";
 
 type CaptionParagraph = {
   start: number;
@@ -50,8 +51,8 @@ const isGapCaption = (caption: Caption): boolean =>
 
 const getGapDurationLabel = (caption: Caption): string => {
   const duration = Math.max(0, caption.endTime - caption.startTime);
-  if (!Number.isFinite(duration)) return "Gap";
-  return `Gap ${duration.toFixed(duration >= 10 ? 1 : 2)}s`;
+  if (!Number.isFinite(duration)) return "0s";
+  return `${duration.toFixed(duration >= 10 ? 1 : 2)}s`;
 };
 
 const buildParagraphGroups = (
@@ -169,6 +170,7 @@ export const CaptionsList = ({
   paragraphs = null,
   baseCaptions,
   onEditsChange,
+  lang = "en",
 }: {
   captions: Caption[];
   onCaptionChange?: (caption: Caption, index: number) => void;
@@ -181,6 +183,7 @@ export const CaptionsList = ({
   paragraphs?: CaptionParagraph[] | null;
   baseCaptions?: Caption[];
   onEditsChange?: (edits: Edits) => void;
+  lang?: ConfiguratorLang;
 }) => {
   const autoScrollTimeoutRef = useRef<number | null>(null);
   const hadParagraphsRef = useRef(false);
@@ -330,7 +333,7 @@ export const CaptionsList = ({
                   className="h-7 px-2 text-xs"
                   onClick={() => setViewMode("paragraphs")}
                 >
-                  Paragraphs
+                  {t(lang, "captionsListParagraphs")}
                 </Button>
                 <Button
                   size="sm"
@@ -338,7 +341,7 @@ export const CaptionsList = ({
                   className="h-7 px-2 text-xs"
                   onClick={() => setViewMode("words")}
                 >
-                  Words
+                  {t(lang, "captionsListWords")}
                 </Button>
               </div>
             )}
@@ -347,7 +350,7 @@ export const CaptionsList = ({
               content={captionsJson}
               size="sm"
               variant="ghost"
-              aria-label="Copy captions"
+              aria-label={t(lang, "copyCaptionsAria")}
             />
           </div>
         </div>
@@ -389,8 +392,8 @@ export const CaptionsList = ({
                           id={`caption-word-${captionIndex}`}
                           type="button"
                           onClick={(event) => {
-                            event.stopPropagation();
                             if (readonly) return;
+                            event.stopPropagation();
                             handleOpen(captionIndex);
                           }}
                           className={`rounded border border-transparent px-1 py-0 text-sm text-foreground transition ${
@@ -468,6 +471,7 @@ export const CaptionsList = ({
         index={selectedIndex ?? 0}
         captions={captions}
         onCaptionsChange={handleCaptionsChange}
+        lang={lang}
       />
     </>
   );

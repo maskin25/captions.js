@@ -12,6 +12,7 @@ import {
 import { Button } from "ui/button";
 import { Input } from "ui/input";
 import { Label } from "ui/label";
+import { type ConfiguratorLang, t } from "../i18n";
 
 type CaptionFormProps = {
   open: boolean;
@@ -20,6 +21,7 @@ type CaptionFormProps = {
   index: number;
   captions: Caption[];
   onCaptionsChange?: (nextCaptions: Caption[]) => void;
+  lang?: ConfiguratorLang;
 };
 
 export const CaptionForm = ({
@@ -29,6 +31,7 @@ export const CaptionForm = ({
   index,
   captions,
   onCaptionsChange,
+  lang = "en",
 }: CaptionFormProps) => {
   const [word, setWord] = useState("");
   const [highlightColor, setHighlightColor] = useState("");
@@ -64,21 +67,21 @@ export const CaptionForm = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit caption</DialogTitle>
+          <DialogTitle>{t(lang, "captionFormTitle")}</DialogTitle>
           <DialogDescription>
-            Update the word and highlight color. Clear the word to create a gap.
+            {t(lang, "captionFormDescription")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="caption-word">Word</Label>
+            <Label htmlFor="caption-word">{t(lang, "captionFormWord")}</Label>
             <div className="relative">
               <Input
                 id="caption-word"
                 value={word}
                 onChange={(event) => setWord(event.target.value)}
-                placeholder="Type the caption word"
+                placeholder={t(lang, "captionFormWordPlaceholder")}
                 className="pr-10"
               />
               <Button
@@ -87,7 +90,7 @@ export const CaptionForm = ({
                 size="icon-sm"
                 className="absolute right-1 top-1/2 -translate-y-1/2"
                 onClick={() => setWord("")}
-                aria-label="Clear word"
+                aria-label={t(lang, "captionFormClearWordAria")}
               >
                 <XIcon />
               </Button>
@@ -95,7 +98,9 @@ export const CaptionForm = ({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="caption-highlight">Highlight color</Label>
+            <Label htmlFor="caption-highlight">
+              {t(lang, "captionFormHighlightColor")}
+            </Label>
             <div className="flex items-center gap-3">
               <Input
                 id="caption-highlight"
@@ -103,7 +108,7 @@ export const CaptionForm = ({
                 className="h-9 w-12 cursor-pointer p-1"
                 value={colorValue}
                 onChange={(event) => setHighlightColor(event.target.value)}
-                aria-label="Highlight color"
+                aria-label={t(lang, "captionFormHighlightColorAria")}
               />
               <Input
                 value={highlightColor}
@@ -115,7 +120,7 @@ export const CaptionForm = ({
                 variant="ghost"
                 onClick={() => setHighlightColor("")}
               >
-                Clear
+                {t(lang, "clear")}
               </Button>
             </div>
           </div>
@@ -127,10 +132,10 @@ export const CaptionForm = ({
             variant="outline"
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {t(lang, "cancel")}
           </Button>
           <Button type="button" onClick={handleSave} disabled={!isDirty}>
-            Save changes
+            {t(lang, "saveChanges")}
           </Button>
         </DialogFooter>
       </DialogContent>

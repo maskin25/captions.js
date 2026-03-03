@@ -40,8 +40,10 @@ The package ships raw Tailwind CSS directives so the consuming app can keep usin
    import { Configurator } from "@maskin25/captions-configurator";
 
    export function Page() {
-     return <Configurator />;
+     return <Configurator lang="ru" />;
    }
    ```
+
+`lang` supports `"en"` and `"ru"` (default: `"en"`).
 
 With the `content` glob and stylesheet import in place, all Tailwind utilities used inside the Configurator (including arbitrary responsive classes) are generated in your application bundle.

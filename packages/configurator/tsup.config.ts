@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig(({ watch }) => ({
-  entry: ["src/index.ts"],
+  entry: ["src/index.ts", "src/caption-edits.ts"],
   format: ["esm", "cjs"],
   dts: true,
   watch: watch
