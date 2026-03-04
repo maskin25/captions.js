@@ -100,7 +100,7 @@ const resources = {
       captionsListParagraphs: "Параграфы",
       captionsListWords: "Слова",
       copyCaptionsAria: "Скопировать субтитры",
-      captionFormTitle: "Редактировать субтитр",
+      captionFormTitle: "Редактировать субтитры",
       captionFormDescription:
         "Измените слово и цвет подсветки. Очистите слово, чтобы создать паузу.",
       captionFormWord: "Слово",
