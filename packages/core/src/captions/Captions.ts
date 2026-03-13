@@ -223,7 +223,7 @@ export class Captions {
 
     this.layer.destroyChildren();
     const currentVideoHeight = this.video.videoHeight || this.videoHeight;
-    const toCoef = currentVideoHeight > 0 ? currentVideoHeight / 320 : 1;
+    const toCoef = currentVideoHeight > 0 ? currentVideoHeight / 480 : 1;
 
     renderFrame(
       this.presetState.captionsSettings as any,
