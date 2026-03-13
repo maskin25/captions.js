@@ -268,7 +268,7 @@ export const stylePresets: StylePreset[] = [
             fontShadowOffsetX: 0,
             fontShadowOffsetY: 2,
           },
-          fontSize: 24,
+          fontSize: 30,
           fontColor: "#d7fbffff",
           underline: false,
           fontFamily: "Amatic SC",
