@@ -222,6 +222,8 @@ export class Captions {
     }
 
     this.layer.destroyChildren();
+    const currentVideoWidth = this.video.videoWidth || this.videoWidth;
+    const toCoef = currentVideoWidth > 0 ? currentVideoWidth / 480 : 1;
 
     renderFrame(
       this.presetState.captionsSettings as any,
@@ -230,8 +232,8 @@ export class Captions {
       this.video.currentTime,
       [this.videoWidth, this.videoHeight],
       this.layer,
-      2,
-      this.debug
+      toCoef,
+      this.debug,
     );
   }
 
