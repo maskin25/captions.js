@@ -1,6 +1,6 @@
-import Konva from 'konva';
-import { Caption, CaptionsSettings } from '../entities/captions/captions.types';
-import { Ease, mapEaseToFn } from './easing';
+import Konva from "konva";
+import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
+import { Ease, mapEaseToFn } from "./easing";
 
 export const animate = (
   captionsSettings: CaptionsSettings,
@@ -15,12 +15,12 @@ export const animate = (
     text: Konva.Text;
     progress: number;
     textTrim?: Konva.Text | null;
-  }
+  },
 ) => {
   const easeFn = mapEaseToFn[Ease.inQuint];
   const slideOffset = 7;
   switch (captionsSettings.animation) {
-    case 'bounce':
+    case "bounce":
       if (current) {
         current.text.offsetX(current.text.width() / 2);
         current.text.offsetY(current.text.height() / 2);
@@ -43,7 +43,7 @@ export const animate = (
         });
       }
       break;
-    case 'underline':
+    case "underline":
       if (current) {
         const underline = new Konva.Line({
           points: [
@@ -52,17 +52,17 @@ export const animate = (
             current.text.x() + current.text.width() * easeFn(1),
             current.text.height(),
           ],
-          lineCap: 'round',
+          lineCap: "round",
           stroke: current.caption.highlightColor
             ? current.caption.highlightColor
             : captionsSettings.style.aplifiedWordColor,
-          strokeWidth: 5,
+          strokeWidth: 8,
           //opacity: easeFn(current.progress),
         });
         current.text.parent?.add(underline);
       }
       break;
-    case 'box':
+    case "box":
       const xOffset = 12;
       const yOffset = 5;
       const cornerRadius = 6;
@@ -77,17 +77,17 @@ export const animate = (
       chunk.group.add(box);
       box.moveToBottom();
       break;
-    case 'box-word':
+    case "box-word":
       if (current) {
         const underline = new Konva.Line({
-          id: 'box-word',
+          id: "box-word",
           points: [
             current.text!.x() + 6,
             current.text!.height() - current.text!.height() / 2,
             current.text!.x() + (current.textTrim!.width() - 6) * easeFn(1),
             current.text!.height() - current.text!.height() / 2,
           ],
-          lineCap: 'round',
+          lineCap: "round",
           stroke: captionsSettings.style.backgroundColor,
           strokeWidth: current.textTrim!.height() + 2,
         });
@@ -95,14 +95,14 @@ export const animate = (
         current.text?.parent?.add(underline);
       }
       break;
-    case 'pop':
+    case "pop":
       const scaleFactor = 0.5 + 0.5 * mapEaseToFn[Ease.outBack](progress);
       chunk.group.scale({
         x: scaleFactor,
         y: scaleFactor,
       });
       break;
-    case 'scale':
+    case "scale":
       const scaleFactor2 = 0.4 + 0.6 * mapEaseToFn[Ease.linear](progress);
       chunk.group.scale({
         x: scaleFactor2,
@@ -110,26 +110,26 @@ export const animate = (
       });
       break;
 
-    case 'slide-down':
+    case "slide-down":
       chunk.group.y(
         chunk.group.y() -
           slideOffset +
-          slideOffset * mapEaseToFn[Ease.linear](progress)
+          slideOffset * mapEaseToFn[Ease.linear](progress),
       );
       break;
 
-    case 'slide-up':
+    case "slide-up":
       chunk.group.y(
         chunk.group.y() +
           slideOffset -
-          slideOffset * mapEaseToFn[Ease.linear](progress)
+          slideOffset * mapEaseToFn[Ease.linear](progress),
       );
       break;
-    case 'slide-left':
+    case "slide-left":
       chunk.group.x(
         chunk.group.x() +
           slideOffset -
-          slideOffset * mapEaseToFn[Ease.linear](progress)
+          slideOffset * mapEaseToFn[Ease.linear](progress),
       );
       break;
 

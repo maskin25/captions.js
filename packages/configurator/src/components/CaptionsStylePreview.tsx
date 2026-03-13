@@ -18,6 +18,7 @@ export default function StylePresetPreview({
   isSelected,
   text,
 }: StylePresetPreviewProps) {
+  const presetName = stylePreset.captionsSettings.style.name;
   const [frames, setFrames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
@@ -56,7 +57,7 @@ export default function StylePresetPreview({
           },
           [width, height],
           [0, 0.6, 1.2, 1.8, 2.4, 3],
-          text ?? "The quick brown fox jumps over the lazy dog."
+          text ?? "The quick brown fox jumps over the lazy dog.",
         );
         if (!cancelled) {
           setFrames(images);
@@ -115,7 +116,7 @@ export default function StylePresetPreview({
   const activeFrameIndex =
     isHovering && frames.length > 0
       ? hoverFrameIndex % frames.length
-      : restingFrameIndex ?? 0;
+      : (restingFrameIndex ?? 0);
   const previewSrc = frames[activeFrameIndex];
 
   return (
@@ -124,7 +125,7 @@ export default function StylePresetPreview({
         width: `${width}px`,
         height: `${height}px`,
       }}
-      className={`flex items-center justify-center px-2 py-3`}
+      className={`relative flex items-center justify-center px-2 py-3`}
       onMouseEnter={handleHoverStart}
       onMouseLeave={handleHoverEnd}
       onFocus={handleHoverStart}
@@ -141,11 +142,21 @@ export default function StylePresetPreview({
             previewSrc ? "opacity-100" : "opacity-50"
           } ${isSelected ? "drop-shadow-[0_0_8px_rgba(59,130,246,0.35)]" : ""}`}
           src={previewSrc ?? ""}
-          alt={`${stylePreset.captionsSettings.style.name} preview`}
+          alt={`${presetName} preview`}
           width={width}
           height={height}
         />
       )}
+      {/* <span
+        className={`pointer-events-none absolute bottom-1 left-1/2 max-w-[88%] -translate-x-1/2 truncate rounded-full px-2 py-0.5 text-[11px] font-medium tracking-[0.01em] transition-colors ${
+          isSelected
+            ? "bg-white/85 text-slate-900 shadow-sm"
+            : "bg-black/35 text-white/90"
+        }`}
+        title={presetName}
+      >
+        {presetName}
+      </span> */}
     </div>
   );
 }
