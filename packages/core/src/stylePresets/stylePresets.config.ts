@@ -26,6 +26,7 @@ export type StylePresetName =
   | "Lovly"
   | "Marvel"
   | "Marker"
+  | "Neon Pulse"
   | "Beasty"
   | "Crazy"
   | "Safari"
@@ -41,7 +42,9 @@ export type StylePresetName =
   | "Classic"
   | "Classic Big"
   | "Old Money"
-  | "Cinema";
+  | "Cinema"
+  | "Midnight Serif"
+  | "Aurora Ink";
 
 /**
  * Curated set of presets that ship with captions.js out of the box.
@@ -259,6 +262,44 @@ export const stylePresets: StylePreset[] = [
       style: {
         font: {
           italic: false,
+          shadow: {
+            fontShadowBlur: 6,
+            fontShadowColor: "#001c2fff",
+            fontShadowOffsetX: 0,
+            fontShadowOffsetY: 2,
+          },
+          fontSize: 24,
+          fontColor: "#d7fbffff",
+          underline: false,
+          fontFamily: "Poppins",
+          fontWeight: "black",
+          fontCapitalize: false,
+          fontStrokeColor: "#091319ff",
+          fontStrokeWidth: 10,
+        },
+        name: "Neon Pulse",
+        backgroundColor: "#00000000",
+        verticalCoverImg:
+          "https://cdn.shorty.plus/captions-preview/popline_preview.png",
+        aplifiedWordColor: "#5fffb0ff",
+      },
+      position: "bottom",
+      animation: "slide-up",
+      linesPerPage: 2,
+      positionTopOffset: 0,
+    },
+    layoutSettings: {
+      aspectRatio: "9:16",
+      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
+      fitLayoutAspectRatio: "original",
+    },
+  },
+  {
+    id: 8,
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
           fontSize: 25,
           fontColor: "#ffffffFF",
           underline: false,
@@ -285,7 +326,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 8,
+    id: 9,
     captionsSettings: {
       style: {
         font: {
@@ -317,7 +358,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 9,
+    id: 10,
     captionsSettings: {
       style: {
         font: {
@@ -348,7 +389,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 10,
+    id: 11,
     captionsSettings: {
       style: {
         font: {
@@ -379,7 +420,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 11,
+    id: 12,
     captionsSettings: {
       style: {
         font: {
@@ -410,7 +451,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 12,
+    id: 13,
     captionsSettings: {
       style: {
         font: {
@@ -441,7 +482,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 13,
+    id: 14,
     captionsSettings: {
       style: {
         font: {
@@ -472,7 +513,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 14,
+    id: 15,
     captionsSettings: {
       style: {
         font: {
@@ -503,7 +544,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 15,
+    id: 16,
     captionsSettings: {
       style: {
         font: {
@@ -534,7 +575,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 16,
+    id: 17,
     captionsSettings: {
       style: {
         font: {
@@ -565,7 +606,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 17,
+    id: 18,
     captionsSettings: {
       style: {
         font: {
@@ -596,7 +637,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 18,
+    id: 19,
     captionsSettings: {
       style: {
         font: {
@@ -633,7 +674,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 19,
+    id: 20,
     captionsSettings: {
       style: {
         font: {
@@ -664,7 +705,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 20,
+    id: 21,
     captionsSettings: {
       style: {
         font: {
@@ -695,7 +736,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 21,
+    id: 22,
     captionsSettings: {
       style: {
         font: {
@@ -733,7 +774,7 @@ export const stylePresets: StylePreset[] = [
     },
   },
   {
-    id: 22,
+    id: 23,
     captionsSettings: {
       style: {
         font: {
@@ -756,6 +797,82 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "none",
       linesPerPage: 2,
+    },
+    layoutSettings: {
+      aspectRatio: "9:16",
+      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
+      fitLayoutAspectRatio: "original",
+    },
+  },
+  {
+    id: 24,
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          shadow: {
+            fontShadowBlur: 0,
+            fontShadowColor: "#0f1324ff",
+            fontShadowOffsetX: 1,
+            fontShadowOffsetY: 1,
+          },
+          fontSize: 23,
+          fontColor: "#f7f4edff",
+          underline: false,
+          fontFamily: "Playfair Display",
+          fontWeight: "bold",
+          fontCapitalize: false,
+          fontStrokeColor: "#0f1324ff",
+          fontStrokeWidth: 6,
+        },
+        name: "Midnight Serif",
+        backgroundColor: "#00000000",
+        verticalCoverImg:
+          "https://cdn.shorty.plus/captions-preview/captions-deep-diver-b&w.png",
+        aplifiedWordColor: "#f3ca72ff",
+      },
+      position: "bottom",
+      animation: "box",
+      linesPerPage: 2,
+      positionTopOffset: 0,
+    },
+    layoutSettings: {
+      aspectRatio: "9:16",
+      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
+      fitLayoutAspectRatio: "original",
+    },
+  },
+  {
+    id: 25,
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          shadow: {
+            fontShadowBlur: 12,
+            fontShadowColor: "#2a0834ff",
+            fontShadowOffsetX: 0,
+            fontShadowOffsetY: 3,
+          },
+          fontSize: 26,
+          fontColor: "#fff6d9ff",
+          underline: false,
+          fontFamily: "Oswald",
+          fontWeight: "bold",
+          fontCapitalize: true,
+          fontStrokeColor: "#3a1240ff",
+          fontStrokeWidth: 18,
+        },
+        name: "Aurora Ink",
+        backgroundColor: "#00000000",
+        verticalCoverImg:
+          "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
+        aplifiedWordColor: "#67f9ffff",
+      },
+      position: "bottom",
+      animation: "underline",
+      linesPerPage: 2,
+      positionTopOffset: 0,
     },
     layoutSettings: {
       aspectRatio: "9:16",
