@@ -867,7 +867,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#00000000",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
-        aplifiedWordColor: "#67f9ffff",
+        aplifiedWordColor: "#ff7b00",
       },
       position: "bottom",
       animation: "underline",

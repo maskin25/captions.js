@@ -221,13 +221,15 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
         stylePresets.find((p) => p.captionsSettings.style.name === "From")!
           .captionsSettings.style.name,
     );
-    const [settings, setSettings] = useState<ConfiguratorCaptionsSettings>(() =>
-      styleProp?.captionsSettings
-        ? clone(styleProp.captionsSettings)
-        : getPresetSettings(
-            stylePresets.find((p) => p.captionsSettings.style.name === "From")!
-              .captionsSettings.style.name,
-          ),
+    const [settings, setSettings] = useState<ConfiguratorCaptionsSettings>(
+      () =>
+        styleProp?.captionsSettings
+          ? clone(styleProp.captionsSettings)
+          : getPresetSettings(
+              stylePresets.find(
+                (p) => p.captionsSettings.style.name === "From",
+              )!.captionsSettings.style.name,
+            ),
     );
     const [videoOption, setVideoOption] = useState<VideoOption | undefined>(
       videoSrc ? undefined : videoOptions[0],
@@ -617,10 +619,12 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               <Tabs defaultValue="font" className="flex flex-col h-full">
                 <TabsList className="grid grid-cols-2 mb-2 w-full">
                   <TabsTrigger value="font">{t(lang, "tabFont")}</TabsTrigger>
-                  <TabsTrigger value="layout">{t(lang, "tabLayout")}</TabsTrigger>
+                  <TabsTrigger value="layout">
+                    {t(lang, "tabLayout")}
+                  </TabsTrigger>
                 </TabsList>
                 <ScrollArea
-                  className={`-m-4 p-4 min-h-120 xl:min-h-none flex-1 ${scrollAreaClassName}`}
+                  className={`-m-4 p-4 min-h-60 flex-1 ${scrollAreaClassName}`}
                 >
                   <div className="px-2">
                     <TabsContent value="font" className="space-y-4">
