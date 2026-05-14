@@ -1,40 +1,76 @@
 import { googleFontsList } from "captions.js";
 
 export const POSITION_OPTIONS = ["auto", "top", "middle", "bottom"] as const;
+export const FONT_WEIGHT_OPTIONS = [
+  "thin",
+  "light",
+  "regular",
+  "medium",
+  "bold",
+  "black",
+] as const;
+export const ANIMATION_OPTIONS = [
+  "none",
+  "bounce",
+  "underline",
+  "box",
+  "box-word",
+  "pop",
+  "scale",
+  "slide-left",
+  "slide-up",
+  "slide-down",
+] as const;
 
-type BaseStyleField = {
+export type BaseStyleField = {
   path: (string | number)[];
   label: string;
 };
 
-type TextStyleField = BaseStyleField & {
+export type TextStyleField = BaseStyleField & {
   type: "text" | "color";
 };
 
-type NumberStyleField = BaseStyleField & {
+export type NumberStyleField = BaseStyleField & {
   type: "number";
   min?: number;
   max?: number;
   step?: number;
 };
 
-type SelectStyleField = BaseStyleField & {
+export type SelectStyleField = BaseStyleField & {
   type: "select";
   options: readonly string[];
 };
 
-type SwitchStyleField = BaseStyleField & {
+export type SwitchStyleField = BaseStyleField & {
   type: "switch";
 };
 
-type StyleField =
+export type ShadowStyleField = BaseStyleField & {
+  type: "shadow";
+};
+
+export type StrokeStyleField = BaseStyleField & {
+  type: "stroke";
+};
+
+export type StyleField =
   | TextStyleField
   | NumberStyleField
   | SelectStyleField
-  | SwitchStyleField;
+  | SwitchStyleField
+  | ShadowStyleField
+  | StrokeStyleField;
 
 export const STYLE_FIELDS: StyleField[] = [
   /* { path: ["style", "name"], label: "Preset Name", type: "text" }, */
+  {
+    path: ["animation"],
+    label: "Animation",
+    type: "select",
+    options: ANIMATION_OPTIONS,
+  },
   {
     path: ["style", "font", "fontFamily"],
     label: "Font Family",
@@ -50,58 +86,15 @@ export const STYLE_FIELDS: StyleField[] = [
     step: 1,
   },
   {
+    path: ["style", "font", "fontWeight"],
+    label: "Font Weight",
+    type: "select",
+    options: FONT_WEIGHT_OPTIONS,
+  },
+  {
     path: ["style", "font", "fontColor"],
     label: "Font Color",
     type: "color",
-  },
-  {
-    path: ["style", "font", "fontStrokeColor"],
-    label: "Stroke Color",
-    type: "color",
-  },
-  {
-    path: ["style", "font", "fontStrokeWidth"],
-    label: "Stroke Width",
-    type: "number",
-    min: 0,
-    max: 10,
-    step: 1,
-  },
-  {
-    path: ["style", "font", "fontCapitalize"],
-    label: "Capitalize",
-    type: "switch",
-  },
-  { path: ["style", "font", "italic"], label: "Italic", type: "switch" },
-  { path: ["style", "font", "underline"], label: "Underline", type: "switch" },
-  {
-    path: ["style", "font", "shadow", "fontShadowColor"],
-    label: "Shadow Color",
-    type: "color",
-  },
-  {
-    path: ["style", "font", "shadow", "fontShadowBlur"],
-    label: "Shadow Blur",
-    type: "number",
-    min: 0,
-    max: 40,
-    step: 1,
-  },
-  {
-    path: ["style", "font", "shadow", "fontShadowOffsetX"],
-    label: "Shadow X Offset",
-    type: "number",
-    min: -20,
-    max: 20,
-    step: 1,
-  },
-  {
-    path: ["style", "font", "shadow", "fontShadowOffsetY"],
-    label: "Shadow Y Offset",
-    type: "number",
-    min: -20,
-    max: 20,
-    step: 1,
   },
   {
     path: ["style", "aplifiedWordColor"],
@@ -114,6 +107,23 @@ export const STYLE_FIELDS: StyleField[] = [
     type: "color",
   },
   {
+    path: ["style", "font", "fontCapitalize"],
+    label: "Capitalize",
+    type: "switch",
+  },
+  { path: ["style", "font", "italic"], label: "Italic", type: "switch" },
+  { path: ["style", "font", "underline"], label: "Underline", type: "switch" },
+  {
+    path: ["style", "font"],
+    label: "Stroke",
+    type: "stroke",
+  },
+  {
+    path: ["style", "font", "shadow"],
+    label: "Shadow",
+    type: "shadow",
+  },
+  {
     path: ["position"],
     label: "Position",
     type: "select",
@@ -123,8 +133,9 @@ export const STYLE_FIELDS: StyleField[] = [
     path: ["positionTopOffset"],
     label: "Top Offset",
     type: "number",
-    min: 0,
-    max: 200,
+    min: -240,
+    max: 240,
+    step: 1,
   },
   {
     path: ["linesPerPage"],
@@ -132,5 +143,13 @@ export const STYLE_FIELDS: StyleField[] = [
     type: "number",
     min: 1,
     max: 4,
+  },
+  {
+    path: ["lineSpacing"],
+    label: "Line Spacing",
+    type: "number",
+    min: 0,
+    max: 80,
+    step: 1,
   },
 ];

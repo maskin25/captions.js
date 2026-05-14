@@ -79,20 +79,20 @@ export const animate = (
       break;
     case "box-word":
       if (current) {
-        const underline = new Konva.Line({
+        const boxPaddingX = 6;
+        const boxPaddingY = 1;
+        const cornerRadius = 4;
+        const box = new Konva.Rect({
           id: "box-word",
-          points: [
-            current.text!.x() + 6,
-            current.text!.height() - current.text!.height() / 2,
-            current.text!.x() + (current.textTrim!.width() - 6) * easeFn(1),
-            current.text!.height() - current.text!.height() / 2,
-          ],
-          lineCap: "round",
-          stroke: captionsSettings.style.backgroundColor,
-          strokeWidth: current.textTrim!.height() + 2,
+          x: current.text.x() - boxPaddingX,
+          y: -boxPaddingY,
+          width: current.textTrim!.width() + boxPaddingX * 2,
+          height: current.textTrim!.height() + boxPaddingY * 2,
+          fill: captionsSettings.style.backgroundColor,
+          cornerRadius,
         });
-        underline.zIndex(4);
-        current.text?.parent?.add(underline);
+        current.text.parent?.add(box);
+        box.moveToBottom();
       }
       break;
     case "pop":

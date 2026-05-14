@@ -10,34 +10,18 @@ import {
 import captionsjs, {
   type Caption,
   type StylePreset,
-  googleFontsList,
   stylePresets,
   toCaptions,
   getParagraphs,
 } from "captions.js";
 import { ChevronsUpDown } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { Input } from "./ui/input";
-import { Switch } from "./ui/switch";
-import { Slider } from "./ui/slider";
 import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Field, FieldLabel } from "./ui/field";
 import {
-  type AspectRatio,
   VideoOptionSelect,
-  aspectRatioOptions,
   videoOptions,
   type VideoOption,
 } from "./ConfiguratorLayoutControls";
-import { ScrollArea } from "./ui/scroll-area";
 import {
   Collapsible,
   CollapsibleContent,
@@ -53,53 +37,19 @@ import {
 import { CopyButton } from "./ui/shadcn-io/copy-button";
 import { Button } from "./ui/button";
 import { twMerge } from "tailwind-merge";
-import { STYLE_FIELDS } from "Configurator.config";
 import PresetsCarousel from "components/PresetsCarousel";
 import { CaptionsList } from "components/CaptionsList";
+import CaptionsSettings from "components/CaptionsSettings";
 import { type Edits } from "components/caption-edits";
 import useMediaQuery from "./hooks/use-media-query";
-import {
-  type ConfiguratorLang,
-  t,
-  translatePositionOption,
-  translateStyleFieldLabel,
-} from "./i18n";
+import { type ConfiguratorLang, t } from "./i18n";
 
+export type ConfiguratorStylePreset = StylePreset;
 type ConfiguratorCaptionsSettings =
-  (typeof stylePresets)[number]["captionsSettings"];
+  ConfiguratorStylePreset["captionsSettings"];
+type ConfiguratorLayoutSettings = ConfiguratorStylePreset["layoutSettings"];
 
-type BaseStyleField = {
-  path: (string | number)[];
-  label: string;
-};
-
-type TextStyleField = BaseStyleField & {
-  type: "text" | "color";
-};
-
-type NumberStyleField = BaseStyleField & {
-  type: "number";
-  min?: number;
-  max?: number;
-  step?: number;
-};
-
-type SelectStyleField = BaseStyleField & {
-  type: "select";
-  options: readonly string[];
-};
-
-type SwitchStyleField = BaseStyleField & {
-  type: "switch";
-};
-
-type StyleField =
-  | TextStyleField
-  | NumberStyleField
-  | SelectStyleField
-  | SwitchStyleField;
-
-type ConfiguratorProps = {
+export type ConfiguratorProps = {
   captions?: Caption[];
   style?: StylePreset;
   videoSrc?: string;
@@ -112,6 +62,7 @@ type ConfiguratorProps = {
   hideFooter?: boolean;
   debug?: boolean;
   onEditsChange?: (edits: Edits) => void;
+  onChange?: (style: ConfiguratorStylePreset) => void;
   onStyleChange?: (style: StylePreset) => void;
 };
 
@@ -161,8 +112,16 @@ const DEFAULT_LAYOUT_SETTINGS: StylePreset["layoutSettings"] = {
 
 export type ConfiguratorHandle = {
   getCaptionsSettings: () => ConfiguratorCaptionsSettings;
+  getSettings: () => ConfiguratorStylePreset;
+  getStyle: () => ConfiguratorStylePreset;
+  getStylePreset: () => ConfiguratorStylePreset;
   getCaptions: () => Caption[];
 };
+
+const clone = <T,>(value: T): T =>
+  typeof globalThis.structuredClone === "function"
+    ? globalThis.structuredClone(value)
+    : (JSON.parse(JSON.stringify(value)) as T);
 
 const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
   (
@@ -179,63 +138,61 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       hideFooter,
       debug = false,
       onEditsChange,
+      onChange,
       onStyleChange,
     },
     ref,
   ) => {
-    const clone = <T,>(value: T): T =>
-      typeof globalThis.structuredClone === "function"
-        ? globalThis.structuredClone(value)
-        : (JSON.parse(JSON.stringify(value)) as T);
-
-    const getPresetSettings = (
-      presetName: string,
-    ): ConfiguratorCaptionsSettings => {
+    const getPresetStyle = (presetName: string): ConfiguratorStylePreset => {
       const base =
         stylePresets.find((p) => p.captionsSettings.style.name === presetName)
-          ?.captionsSettings || stylePresets[0]?.captionsSettings;
-      return clone(base) as ConfiguratorCaptionsSettings;
+          ?? stylePresets[0];
+      return clone(base) as ConfiguratorStylePreset;
     };
 
     const buildStylePreset = useCallback(
-      (captionsSettings: ConfiguratorCaptionsSettings): StylePreset => {
-        const nameFromSettings = captionsSettings.style.name;
-        const matchedPreset =
-          stylePresets.find(
-            (preset) => preset.captionsSettings.style.name === nameFromSettings,
-          ) ?? stylePresets[0];
-
+      (
+        id: number,
+        captionsSettings: ConfiguratorCaptionsSettings,
+        nextLayoutSettings: ConfiguratorLayoutSettings,
+      ): ConfiguratorStylePreset => {
         return {
-          id: matchedPreset?.id ?? 0,
+          id,
           captionsSettings: clone(captionsSettings),
-          layoutSettings: clone(
-            matchedPreset?.layoutSettings ?? DEFAULT_LAYOUT_SETTINGS,
-          ),
+          layoutSettings: clone(nextLayoutSettings),
         };
       },
       [],
     );
+    const defaultPresetName =
+      stylePresets.find((p) => p.captionsSettings.style.name === "From")
+        ?.captionsSettings.style.name ??
+      stylePresets[0]?.captionsSettings.style.name ??
+      "";
 
     const [selectedPresetName, setSelectedPresetName] = useState(
-      styleProp?.captionsSettings.style.name ??
-        stylePresets.find((p) => p.captionsSettings.style.name === "From")!
-          .captionsSettings.style.name,
+      styleProp?.captionsSettings.style.name ?? defaultPresetName,
     );
     const [settings, setSettings] = useState<ConfiguratorCaptionsSettings>(
       () =>
         styleProp?.captionsSettings
           ? clone(styleProp.captionsSettings)
-          : getPresetSettings(
-              stylePresets.find(
-                (p) => p.captionsSettings.style.name === "From",
-              )!.captionsSettings.style.name,
-            ),
+          : getPresetStyle(defaultPresetName).captionsSettings,
     );
+    const [styleId, setStyleId] = useState(
+      () => styleProp?.id ?? getPresetStyle(defaultPresetName).id ?? 0,
+    );
+    const [layoutSettings, setLayoutSettings] =
+      useState<ConfiguratorLayoutSettings>(() =>
+        styleProp?.layoutSettings
+          ? clone(styleProp.layoutSettings)
+          : (getPresetStyle(
+              styleProp?.captionsSettings.style.name ?? defaultPresetName,
+            ).layoutSettings ??
+            clone(DEFAULT_LAYOUT_SETTINGS)),
+      );
     const [videoOption, setVideoOption] = useState<VideoOption | undefined>(
       videoSrc ? undefined : videoOptions[0],
-    );
-    const [aspectRatio, setAspectRatio] = useState<AspectRatio>(
-      aspectRatioOptions[0],
     );
     const [captions, setCaptions] = useState<Caption[]>(
       () => captionsProp || [],
@@ -279,17 +236,42 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
 
         return clone(styleProp.captionsSettings);
       });
+      setStyleId(
+        styleProp.id ??
+          getPresetStyle(styleProp.captionsSettings.style.name).id ??
+          0,
+      );
+      setLayoutSettings((prev) => {
+        const nextLayoutSettings =
+          styleProp.layoutSettings ??
+          getPresetStyle(styleProp.captionsSettings.style.name).layoutSettings ??
+          DEFAULT_LAYOUT_SETTINGS;
+        const prevSerialized = JSON.stringify(prev);
+        const nextSerialized = JSON.stringify(nextLayoutSettings);
+        if (prevSerialized === nextSerialized) {
+          return prev;
+        }
+
+        return clone(nextLayoutSettings);
+      });
     }, [styleProp]);
 
     const jsonRef = useRef<HTMLDivElement | null>(null);
+    const currentStyle = useMemo(
+      () => buildStylePreset(styleId, settings, layoutSettings),
+      [buildStylePreset, layoutSettings, settings, styleId],
+    );
 
     useImperativeHandle(
       ref,
       () => ({
         getCaptionsSettings: () => clone(settings),
+        getSettings: () => clone(currentStyle),
+        getStyle: () => clone(currentStyle),
+        getStylePreset: () => clone(currentStyle),
         getCaptions: () => clone(captions),
       }),
-      [captions, settings],
+      [captions, currentStyle, settings],
     );
 
     useEffect(() => {
@@ -347,8 +329,8 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       [],
     );
     const settingsJson = useMemo(
-      () => JSON.stringify(settings, null, 2),
-      [settings],
+      () => JSON.stringify(currentStyle, null, 2),
+      [currentStyle],
     );
     const previewText = useMemo(() => {
       const words = captions
@@ -396,15 +378,15 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     }, [settings]);
 
     useEffect(() => {
-      if (!onStyleChange) return;
+      if (!onChange && !onStyleChange) return;
 
-      const nextStyle = buildStylePreset(settings);
-      const serialized = JSON.stringify(nextStyle);
+      const serialized = JSON.stringify(currentStyle);
       if (serialized === lastEmittedStyleRef.current) return;
 
       lastEmittedStyleRef.current = serialized;
-      onStyleChange(nextStyle);
-    }, [buildStylePreset, onStyleChange, settings]);
+      onChange?.(clone(currentStyle));
+      onStyleChange?.(clone(currentStyle));
+    }, [currentStyle, onChange, onStyleChange]);
 
     useEffect(() => {
       captionsInstance.current?.captions(captions);
@@ -475,7 +457,12 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           cursor[key] = cursor[key] ?? {};
           cursor = cursor[key];
         }
-        cursor[path[path.length - 1]] = value;
+        const lastKey = path[path.length - 1];
+        if (value === undefined) {
+          delete cursor[lastKey];
+        } else {
+          cursor[lastKey] = value;
+        }
         return next;
       });
     };
@@ -515,8 +502,11 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                   value={selectedPresetName}
                   previewText={previewText}
                   onSelect={(presetName) => {
+                    const nextStyle = getPresetStyle(presetName);
                     setSelectedPresetName(presetName);
-                    setSettings(getPresetSettings(presetName));
+                    setStyleId(nextStyle.id);
+                    setSettings(nextStyle.captionsSettings);
+                    setLayoutSettings(nextStyle.layoutSettings);
                   }}
                 />
               </div>
@@ -614,52 +604,12 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
               />
             )}
           </div>
-          <Card className="flex flex-col overflow-hidden">
-            <CardContent className="p-6 flex flex-col h-full">
-              <Tabs defaultValue="font" className="flex flex-col h-full">
-                <TabsList className="grid grid-cols-2 mb-2 w-full">
-                  <TabsTrigger value="font">{t(lang, "tabFont")}</TabsTrigger>
-                  <TabsTrigger value="layout">
-                    {t(lang, "tabLayout")}
-                  </TabsTrigger>
-                </TabsList>
-                <ScrollArea
-                  className={`-m-4 p-4 min-h-60 flex-1 ${scrollAreaClassName}`}
-                >
-                  <div className="px-2">
-                    <TabsContent value="font" className="space-y-4">
-                      {STYLE_FIELDS.filter((field) =>
-                        String(field.path.join(".")).startsWith("style"),
-                      ).map((field) => (
-                        <StyleFieldInput
-                          key={field.label}
-                          field={field}
-                          settings={settings}
-                          onChange={updateSettingValue}
-                          lang={lang}
-                        />
-                      ))}
-                    </TabsContent>
-
-                    <TabsContent value="layout" className="space-y-4">
-                      {STYLE_FIELDS.filter(
-                        (field) =>
-                          !String(field.path.join(".")).startsWith("style"),
-                      ).map((field) => (
-                        <StyleFieldInput
-                          key={field.label}
-                          field={field}
-                          settings={settings}
-                          onChange={updateSettingValue}
-                          lang={lang}
-                        />
-                      ))}
-                    </TabsContent>
-                  </div>
-                </ScrollArea>
-              </Tabs>
-            </CardContent>
-          </Card>
+          <CaptionsSettings
+            settings={settings}
+            lang={lang}
+            scrollAreaClassName={scrollAreaClassName}
+            onChange={updateSettingValue}
+          />
         </div>
         {!hideFooter && (
           <Collapsible
@@ -715,123 +665,5 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     );
   },
 );
-
-type StyleFieldInputProps = {
-  field: StyleField;
-  settings: ConfiguratorCaptionsSettings;
-  onChange: (path: (string | number)[], value: unknown) => void;
-  lang: ConfiguratorLang;
-};
-
-const StyleFieldInput = ({
-  field,
-  settings,
-  onChange,
-  lang,
-}: StyleFieldInputProps) => {
-  const value = field.path.reduce<any>((acc, key) => acc?.[key], settings);
-  const parseHexColor = (color: unknown) => {
-    if (typeof color !== "string") return null;
-    const match = color.match(/^#([0-9a-fA-F]{6})([0-9a-fA-F]{2})?$/);
-    if (!match) return null;
-    return {
-      hex: `#${match[1]}`,
-      alpha: match[2]?.toUpperCase(),
-    };
-  };
-  const parsedColor = field.type === "color" ? parseHexColor(value) : null;
-
-  if (field.type === "switch") {
-    return (
-      <Field className="rounded-md border border-border px-3 py-2">
-        <div className="flex items-center justify-between">
-          <FieldLabel>{translateStyleFieldLabel(field.label, lang)}</FieldLabel>
-          <Switch
-            checked={Boolean(value)}
-            onCheckedChange={(checked) => onChange(field.path, checked)}
-          />
-        </div>
-      </Field>
-    );
-  }
-
-  if (field.type === "number") {
-    return (
-      <Field>
-        <FieldLabel>{translateStyleFieldLabel(field.label, lang)}</FieldLabel>
-        <Slider
-          className="mb-2"
-          value={[Number(value) || 0]}
-          min={field.min ?? 0}
-          max={field.max ?? 100}
-          step={field.step ?? 1}
-          onValueChange={([next]) => onChange(field.path, next)}
-        />
-        <Input
-          type="number"
-          value={value ?? ""}
-          onChange={(event) => onChange(field.path, Number(event.target.value))}
-        />
-      </Field>
-    );
-  }
-
-  if (field.type === "color") {
-    const colorValue = parsedColor?.hex ?? "#000000";
-    const alphaSuffix = parsedColor?.alpha ?? "FF";
-
-    return (
-      <Field>
-        <FieldLabel>{translateStyleFieldLabel(field.label, lang)}</FieldLabel>
-        <Input
-          type="color"
-          value={colorValue}
-          onChange={(event) =>
-            onChange(field.path, `${event.target.value}${alphaSuffix}`)
-          }
-        />
-      </Field>
-    );
-  }
-
-  if (field.type === "select") {
-    const isPositionField = String(field.path.join(".")) === "position";
-    return (
-      <Field>
-        <FieldLabel>{translateStyleFieldLabel(field.label, lang)}</FieldLabel>
-        <Select
-          value={typeof value === "string" ? value : undefined}
-          onValueChange={(nextValue) => onChange(field.path, nextValue)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t(lang, "selectFontFamilyPlaceholder")} />
-          </SelectTrigger>
-          <SelectContent>
-            {field.options.map((option) => (
-              <SelectItem key={option} value={option}>
-                {isPositionField
-                  ? translatePositionOption(option, lang)
-                  : option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
-    );
-  }
-
-  const inputValue = value ?? "";
-
-  return (
-    <Field>
-      <FieldLabel>{translateStyleFieldLabel(field.label, lang)}</FieldLabel>
-      <Input
-        type={field.type}
-        value={inputValue}
-        onChange={(event) => onChange(field.path, event.target.value)}
-      />
-    </Field>
-  );
-};
 
 export default Configurator;

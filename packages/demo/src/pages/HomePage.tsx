@@ -19,7 +19,7 @@ function HomePage() {
       ref={configuratorRef}
       className="xl:h-[calc(100vh-9rem+2px)]"
       carouselContentClassName="h-[calc(100vh-320px)]"
-      debug={import.meta.env.DEV}
+      //debug={import.meta.env.DEV}
       captionsReadonly={true}
     />
   );

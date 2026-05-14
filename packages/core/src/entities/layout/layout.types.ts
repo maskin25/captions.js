@@ -5,17 +5,17 @@ export interface Crop {
 }
 
 export enum LayoutType {
-  'Fill' = 'fill',
-  'Fit' = 'fit',
-  'Split' = 'split',
-  'Three' = 'three',
-  'Four' = 'four',
-  'ScreenShare' = 'screenShare',
+  "Fill" = "fill",
+  "Fit" = "fit",
+  "Split" = "split",
+  "Three" = "three",
+  "Four" = "four",
+  "ScreenShare" = "screenShare",
 }
 
 export enum LayoutCropTypes {
-  'Auto' = 'auto',
-  'Manual' = 'manual',
+  "Auto" = "auto",
+  "Manual" = "manual",
 }
 
 export interface Layout {
@@ -27,12 +27,12 @@ export interface Layout {
   layoutCropType: LayoutCropTypes;
   rightGap?: boolean;
   position?: {
-    type: 'auto' | 'top' | 'middle' | 'bottom';
+    type: "auto" | "top" | "middle" | "bottom";
     positionTopOffset?: number;
   };
 }
 
-export type AspectRatioType = typeof aspectRatios[number];
+export type AspectRatioType = (typeof aspectRatios)[number];
 
 export interface LayoutSettings {
   aspectRatio: AspectRatioType;
@@ -40,7 +40,7 @@ export interface LayoutSettings {
   fitLayoutCropAspectRatio: AspectRatioType;
 }
 
-export const aspectRatios = ['1:1', /*  '1.25:1', */ '9:16', '16:9'] as const;
+export const aspectRatios = ["1:1", "4:5", "9:16", "16:9"] as const;
 
 export const layoutTypes: LayoutType[] = [
   LayoutType.Fill,
@@ -52,8 +52,8 @@ export const layoutTypes: LayoutType[] = [
 ];
 
 export const aspectRatioNamesMap = {
-  '1:1': 'Instagram',
+  "1:1": "Instagram",
   /*   '1.25:1': 'Twitter', */
-  '9:16': 'TikTok / Reels / Shorts',
-  '16:9': 'YouTube',
+  "9:16": "TikTok / Reels / Shorts",
+  "16:9": "YouTube",
 };

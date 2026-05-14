@@ -21,6 +21,7 @@ export interface StylePreset {
 
 export type StylePresetName =
   | "Karaoke"
+  | "Focus Box"
   | "Banger"
   | "Acid"
   | "Lovly"
@@ -79,6 +80,45 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "bounce",
       linesPerPage: 2,
+    },
+    layoutSettings: {
+      aspectRatio: "9:16",
+      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
+      fitLayoutAspectRatio: "original",
+    },
+  },
+  {
+    id: 26,
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          shadow: {
+            fontShadowBlur: 12,
+            fontShadowColor: "#00000066",
+            fontShadowOffsetX: 0,
+            fontShadowOffsetY: 3,
+          },
+          fontSize: 28,
+          fontColor: "#F8FAFCFF",
+          underline: false,
+          fontFamily: "Kanit",
+          fontWeight: "black",
+          fontCapitalize: true,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Focus Box",
+        backgroundColor: "#C7FF2EFF",
+        verticalCoverImg:
+          "https://cdn.shorty.plus/captions-preview/popline_preview.png",
+        aplifiedWordColor: "#101318FF",
+      },
+      position: "bottom",
+      animation: "box-word",
+      linesPerPage: 1,
+      lineSpacing: 6,
+      positionTopOffset: 0,
     },
     layoutSettings: {
       aspectRatio: "9:16",
