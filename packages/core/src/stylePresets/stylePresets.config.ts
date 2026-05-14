@@ -96,7 +96,7 @@ export const stylePresets: StylePreset[] = [
           fontSize: 28,
           fontColor: "#F8FAFCFF",
           underline: false,
-          fontFamily: "Kanit",
+          fontFamily: "Montserrat",
           fontWeight: "black",
           fontCapitalize: true,
           fontStrokeColor: "#00000000",
