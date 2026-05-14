@@ -45,9 +45,8 @@ import useMediaQuery from "./hooks/use-media-query";
 import { type ConfiguratorLang, t } from "./i18n";
 
 export type ConfiguratorStylePreset = StylePreset;
-type ConfiguratorCaptionsSettings =
+export type ConfiguratorCaptionsSettings =
   ConfiguratorStylePreset["captionsSettings"];
-type ConfiguratorLayoutSettings = ConfiguratorStylePreset["layoutSettings"];
 
 export type ConfiguratorProps = {
   captions?: Caption[];
@@ -62,8 +61,8 @@ export type ConfiguratorProps = {
   hideFooter?: boolean;
   debug?: boolean;
   onEditsChange?: (edits: Edits) => void;
-  onChange?: (style: ConfiguratorStylePreset) => void;
-  onStyleChange?: (style: StylePreset) => void;
+  onChange?: (settings: ConfiguratorCaptionsSettings) => void;
+  onStyleChange?: (style: ConfiguratorStylePreset) => void;
 };
 
 type CaptionParagraph = {
@@ -112,9 +111,8 @@ const DEFAULT_LAYOUT_SETTINGS: StylePreset["layoutSettings"] = {
 
 export type ConfiguratorHandle = {
   getCaptionsSettings: () => ConfiguratorCaptionsSettings;
-  getSettings: () => ConfiguratorStylePreset;
-  getStyle: () => ConfiguratorStylePreset;
-  getStylePreset: () => ConfiguratorStylePreset;
+  getSettings: () => ConfiguratorCaptionsSettings;
+  getStyle: () => ConfiguratorCaptionsSettings;
   getCaptions: () => Caption[];
 };
 
@@ -151,19 +149,24 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     };
 
     const buildStylePreset = useCallback(
-      (
-        id: number,
-        captionsSettings: ConfiguratorCaptionsSettings,
-        nextLayoutSettings: ConfiguratorLayoutSettings,
-      ): ConfiguratorStylePreset => {
+      (captionsSettings: ConfiguratorCaptionsSettings): ConfiguratorStylePreset => {
+        const matchedPreset =
+          stylePresets.find(
+            (preset) =>
+              preset.captionsSettings.style.name === captionsSettings.style.name,
+          ) ?? stylePresets[0];
+
         return {
-          id,
+          id: matchedPreset?.id ?? 0,
           captionsSettings: clone(captionsSettings),
-          layoutSettings: clone(nextLayoutSettings),
+          layoutSettings: clone(
+            matchedPreset?.layoutSettings ?? DEFAULT_LAYOUT_SETTINGS,
+          ),
         };
       },
       [],
     );
+
     const defaultPresetName =
       stylePresets.find((p) => p.captionsSettings.style.name === "From")
         ?.captionsSettings.style.name ??
@@ -179,18 +182,6 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
           ? clone(styleProp.captionsSettings)
           : getPresetStyle(defaultPresetName).captionsSettings,
     );
-    const [styleId, setStyleId] = useState(
-      () => styleProp?.id ?? getPresetStyle(defaultPresetName).id ?? 0,
-    );
-    const [layoutSettings, setLayoutSettings] =
-      useState<ConfiguratorLayoutSettings>(() =>
-        styleProp?.layoutSettings
-          ? clone(styleProp.layoutSettings)
-          : (getPresetStyle(
-              styleProp?.captionsSettings.style.name ?? defaultPresetName,
-            ).layoutSettings ??
-            clone(DEFAULT_LAYOUT_SETTINGS)),
-      );
     const [videoOption, setVideoOption] = useState<VideoOption | undefined>(
       videoSrc ? undefined : videoOptions[0],
     );
@@ -207,7 +198,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     const [isVideoPlaying, setIsVideoPlaying] = useState(false);
     const [isJsonOpen, setIsJsonOpen] = useState(false);
     const [isCaptionsDialogOpen, setIsCaptionsDialogOpen] = useState(false);
-    const lastEmittedStyleRef = useRef<string | null>(null);
+    const lastEmittedSettingsRef = useRef<string | null>(null);
     const isDesktop = useMediaQuery("(min-width: 1280px)");
     const isShortHeight = useMediaQuery("(max-height: 800px)");
     const shouldUseCaptionsDialog = !isDesktop || isShortHeight;
@@ -236,42 +227,19 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
 
         return clone(styleProp.captionsSettings);
       });
-      setStyleId(
-        styleProp.id ??
-          getPresetStyle(styleProp.captionsSettings.style.name).id ??
-          0,
-      );
-      setLayoutSettings((prev) => {
-        const nextLayoutSettings =
-          styleProp.layoutSettings ??
-          getPresetStyle(styleProp.captionsSettings.style.name).layoutSettings ??
-          DEFAULT_LAYOUT_SETTINGS;
-        const prevSerialized = JSON.stringify(prev);
-        const nextSerialized = JSON.stringify(nextLayoutSettings);
-        if (prevSerialized === nextSerialized) {
-          return prev;
-        }
-
-        return clone(nextLayoutSettings);
-      });
     }, [styleProp]);
 
     const jsonRef = useRef<HTMLDivElement | null>(null);
-    const currentStyle = useMemo(
-      () => buildStylePreset(styleId, settings, layoutSettings),
-      [buildStylePreset, layoutSettings, settings, styleId],
-    );
 
     useImperativeHandle(
       ref,
       () => ({
         getCaptionsSettings: () => clone(settings),
-        getSettings: () => clone(currentStyle),
-        getStyle: () => clone(currentStyle),
-        getStylePreset: () => clone(currentStyle),
+        getSettings: () => clone(settings),
+        getStyle: () => clone(settings),
         getCaptions: () => clone(captions),
       }),
-      [captions, currentStyle, settings],
+      [captions, settings],
     );
 
     useEffect(() => {
@@ -329,8 +297,8 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
       [],
     );
     const settingsJson = useMemo(
-      () => JSON.stringify(currentStyle, null, 2),
-      [currentStyle],
+      () => JSON.stringify(settings, null, 2),
+      [settings],
     );
     const previewText = useMemo(() => {
       const words = captions
@@ -380,13 +348,13 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
     useEffect(() => {
       if (!onChange && !onStyleChange) return;
 
-      const serialized = JSON.stringify(currentStyle);
-      if (serialized === lastEmittedStyleRef.current) return;
+      const serialized = JSON.stringify(settings);
+      if (serialized === lastEmittedSettingsRef.current) return;
 
-      lastEmittedStyleRef.current = serialized;
-      onChange?.(clone(currentStyle));
-      onStyleChange?.(clone(currentStyle));
-    }, [currentStyle, onChange, onStyleChange]);
+      lastEmittedSettingsRef.current = serialized;
+      onChange?.(clone(settings));
+      onStyleChange?.(buildStylePreset(settings));
+    }, [buildStylePreset, settings, onChange, onStyleChange]);
 
     useEffect(() => {
       captionsInstance.current?.captions(captions);
@@ -504,9 +472,7 @@ const Configurator = forwardRef<ConfiguratorHandle, ConfiguratorProps>(
                   onSelect={(presetName) => {
                     const nextStyle = getPresetStyle(presetName);
                     setSelectedPresetName(presetName);
-                    setStyleId(nextStyle.id);
                     setSettings(nextStyle.captionsSettings);
-                    setLayoutSettings(nextStyle.layoutSettings);
                   }}
                 />
               </div>

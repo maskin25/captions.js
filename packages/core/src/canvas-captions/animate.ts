@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
 import { Ease, mapEaseToFn } from "./easing";
+import { getBoxWordBackgroundColor } from "./utils";
 
 export const animate = (
   captionsSettings: CaptionsSettings,
@@ -88,7 +89,7 @@ export const animate = (
           y: -boxPaddingY,
           width: current.textTrim!.width() + boxPaddingX * 2,
           height: current.textTrim!.height() + boxPaddingY * 2,
-          fill: captionsSettings.style.backgroundColor,
+          fill: getBoxWordBackgroundColor(current.caption, captionsSettings),
           cornerRadius,
         });
         current.text.parent?.add(box);

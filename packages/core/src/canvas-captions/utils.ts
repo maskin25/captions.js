@@ -201,6 +201,18 @@ export const getTotalSymbolInLine = (
   return total > 0 ? total : 0;
 };
 
+export const isVisibleColor = (color: unknown) => {
+  if (typeof color !== "string") return false;
+
+  const normalized = color.trim().toLowerCase();
+  if (!normalized || normalized === "transparent") return false;
+
+  const hexMatch = normalized.match(/^#[0-9a-f]{6}([0-9a-f]{2})?$/);
+  if (hexMatch?.[1] === "00") return false;
+
+  return true;
+};
+
 export const getFillColor = (
   caption: Caption,
   isCurrentCaption: boolean,
@@ -225,12 +237,26 @@ export const getFillColor = (
     return caption.highlightColor || captionsSettings.style.aplifiedWordColor;
   }
 
+  if (captionsSettings.animation === "box-word" && isCurrentCaption) {
+    return isVisibleColor(captionsSettings.style.backgroundColor)
+      ? caption.highlightColor || captionsSettings.style.aplifiedWordColor
+      : captionsSettings.style.font.fontColor;
+  }
+
   if (isCurrentCaption) {
     return caption.highlightColor || captionsSettings.style.aplifiedWordColor;
   }
 
   return captionsSettings.style.font.fontColor;
 };
+
+export const getBoxWordBackgroundColor = (
+  caption: Caption,
+  captionsSettings: CaptionsSettings
+) =>
+  isVisibleColor(captionsSettings.style.backgroundColor)
+    ? captionsSettings.style.backgroundColor
+    : caption.highlightColor || captionsSettings.style.aplifiedWordColor;
 
 export const getCaptionsGroupY = (
   groupHeight: number,

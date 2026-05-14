@@ -268,9 +268,35 @@ export const renderFrame: RenderFrameFn = (
     let activeCaptionState: ActiveCaptionRenderState | undefined = undefined;
     let activeCaptionText: Konva.Text | null = null;
 
+    const activeBoxWordCaptionIndex =
+      captionsSettings.animation === "box-word"
+        ? currentChunk.reduce((activeIndex, caption, index) => {
+            if (
+              caption.startTime > currentTime ||
+              caption.endTime < currentTime
+            ) {
+              return activeIndex;
+            }
+
+            if (activeIndex === -1) {
+              return index;
+            }
+
+            const activeCaption = currentChunk[activeIndex];
+            return caption.startTime >= activeCaption.startTime
+              ? index
+              : activeIndex;
+          }, -1)
+        : -1;
+
     currentChunk.forEach((caption, index) => {
-      const isCurrentCaption =
+      const isCaptionAtCurrentTime =
         caption.startTime <= currentTime && caption.endTime >= currentTime;
+
+      const isCurrentCaption =
+        captionsSettings.animation === "box-word"
+          ? index === activeBoxWordCaptionIndex
+          : isCaptionAtCurrentTime;
 
       const isPastCaption = caption.endTime < currentTime;
 

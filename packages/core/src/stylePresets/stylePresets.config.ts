@@ -93,12 +93,6 @@ export const stylePresets: StylePreset[] = [
       style: {
         font: {
           italic: false,
-          shadow: {
-            fontShadowBlur: 12,
-            fontShadowColor: "#00000066",
-            fontShadowOffsetX: 0,
-            fontShadowOffsetY: 3,
-          },
           fontSize: 28,
           fontColor: "#F8FAFCFF",
           underline: false,
