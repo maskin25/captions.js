@@ -1,9 +1,9 @@
-> [!WARNING]
-> 🚧 **Captions.js is nearing its first public release**  
-> The library is under active development and a full-featured version is expected around **July 2026**.
-
-> [!TIP]
-> If Captions.js is useful for you, a quick ⭐ on [GitHub](https://github.com/maskin25/captions.js) helps a lot.
+> **Status:** Captions.js is nearing its first public release. The library is
+> under active development and a full-featured version is expected around
+> **July 2026**.
+>
+> If Captions.js is useful for you, a quick ⭐ on
+> [GitHub](https://github.com/maskin25/captions.js) helps a lot.
 
 # Captions.js
 
