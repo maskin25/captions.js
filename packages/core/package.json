@@ -1,6 +1,6 @@
 {
   "name": "captions.js",
-  "version": "1.1.1",
+  "version": "1.0.8",
   "private": false,
   "license": "MIT",
   "repository": {
@@ -19,7 +19,8 @@
   ],
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "scripts/postinstall.cjs"
   ],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -33,6 +34,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "postinstall": "node scripts/postinstall.cjs",
     "prepublishOnly": "cp ../../README.md ./README.md && pnpm run build",
     "postpublish": "rm -f README.md"
   },
