@@ -37,7 +37,7 @@ type GoogleFontFaceEntry = {
   unicodeRange?: string;
 };
 
-type LoadGoogleFontOptions = {
+export type LoadGoogleFontOptions = {
   weights?: string[];
   text?: string;
   // true => load every subset returned by Google CSS. This avoids late lazy fetches.
@@ -118,18 +118,63 @@ const unicodeRangeIntersectsText = (
   return false;
 };
 
+const FALLBACK_WEIGHTS = ["400", "700"];
+
 /**
  * Bullet-proof browser preload for Google Fonts:
  * 1) Fetches Google CSS
  * 2) Parses every returned @font-face
  * 3) Loads each selected .woff2 via FontFace.load()
  * 4) Registers in document.fonts
+ *
+ * If the exact requested weights are not available for the family (Google
+ * Fonts CSS2 API responds with 400 in that case, e.g. "PT Sans" + 900 or
+ * "Pacifico" + 500), falls back to loading 400/700 so the family is still
+ * registered and the canvas can resolve the closest available weight.
  */
 export async function loadGoogleFont2(
   fontFamily: string,
   options: LoadGoogleFontOptions = {},
 ) {
-  const { weights = ["400", "700"], text, preloadAllSubsets = true } = options;
+  const { weights = FALLBACK_WEIGHTS, ...rest } = options;
+
+  try {
+    await loadGoogleFontExactWeights(fontFamily, { ...rest, weights });
+    return;
+  } catch (err) {
+    const uniqueWeights = [...new Set(weights)].sort();
+    const isAlreadyFallback =
+      uniqueWeights.join(";") === FALLBACK_WEIGHTS.join(";");
+
+    if (isAlreadyFallback) {
+      console.warn(
+        `[loadGoogleFont2] failed to load font "${fontFamily}":`,
+        err,
+      );
+      throw err;
+    }
+
+    console.warn(
+      `[loadGoogleFont2] weights [${uniqueWeights.join(", ")}] unavailable for "${fontFamily}", falling back to [${FALLBACK_WEIGHTS.join(", ")}]`,
+    );
+  }
+
+  try {
+    await loadGoogleFontExactWeights(fontFamily, {
+      ...rest,
+      weights: FALLBACK_WEIGHTS,
+    });
+  } catch (err) {
+    console.warn(`[loadGoogleFont2] failed to load font "${fontFamily}":`, err);
+    throw err;
+  }
+}
+
+async function loadGoogleFontExactWeights(
+  fontFamily: string,
+  options: LoadGoogleFontOptions = {},
+) {
+  const { weights = FALLBACK_WEIGHTS, text, preloadAllSubsets = true } = options;
 
   const uniqueWeights = [...new Set(weights)].sort();
   const cacheKey = JSON.stringify({
@@ -146,7 +191,13 @@ export async function loadGoogleFont2(
   }
 
   const loadPromise = (async () => {
-    if (typeof document === "undefined") return;
+    if (
+      typeof document === "undefined" ||
+      typeof FontFace === "undefined" ||
+      !document.fonts
+    ) {
+      return;
+    }
 
     const familyForUrl = fontFamily.replace(/\s+/g, "+");
     const cssUrlBase = `https://fonts.googleapis.com/css2?family=${familyForUrl}:wght@${uniqueWeights.join(";")}&display=block`;
@@ -187,7 +238,7 @@ export async function loadGoogleFont2(
     const probeText = text ?? "BESbswy0123456789";
     await Promise.all(
       uniqueWeights.map((weight) =>
-        document.fonts.load(`16px "${fontFamily}"`, probeText),
+        document.fonts.load(`${weight} 16px "${fontFamily}"`, probeText),
       ),
     );
     await document.fonts.ready;
@@ -201,7 +252,8 @@ export async function loadGoogleFont2(
     await loadPromise;
   } catch (err) {
     fontLoadCache.delete(cacheKey);
-    console.warn(`[loadGoogleFont2] failed to load font "${fontFamily}":`, err);
     throw err;
   }
 }
+
+export const preloadGoogleFont = loadGoogleFont2;

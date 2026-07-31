@@ -18,6 +18,10 @@ export function renderCaptions(ctx: CanvasRenderingContext2D, text: string) {
 
 /** Collection of Google Fonts that captions.js knows how to load on demand. */
 export { googleFontsList } from "./fonts/googleFonts.config";
+export {
+  preloadGoogleFont,
+  type LoadGoogleFontOptions,
+} from "./fonts/googleFonts.helpers";
 
 /** Predefined caption appearance presets and their strong typings. */
 export {
