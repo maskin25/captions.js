@@ -7,13 +7,22 @@
     "type": "git",
     "url": "https://github.com/maskin25/captions.js"
   },
-  "description": "Render styled animated captions on canvas — works both on client and server side using Node.js and FFmpeg.",
+  "description": "The same caption renderer in your live browser preview and in your FFmpeg pipeline — word-level animated captions on canvas, pixel-identical, no headless browser.",
   "keywords": [
     "captions",
     "subtitles",
     "video",
     "transcription",
     "ffmpeg",
+    "canvas",
+    "konva",
+    "burn-in",
+    "animated-captions",
+    "kinetic-typography",
+    "word-level",
+    "shorts",
+    "reels",
+    "tiktok",
     "client-side",
     "server-side"
   ],
