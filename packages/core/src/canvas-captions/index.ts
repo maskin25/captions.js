@@ -36,6 +36,7 @@ type ActiveCaptionRenderState = {
   caption: Caption;
   text: Konva.Text;
   progress: number;
+  elapsed: number;
   textTrim?: Konva.Text | null;
 };
 
@@ -388,10 +389,18 @@ export const renderFrame: RenderFrameFn = (
           caption,
           text,
           progress:
-            (currentTime - caption.startTime) /
-            (caption.endTime - caption.startTime),
+            caption.endTime > caption.startTime
+              ? Math.min(
+                  1,
+                  Math.max(
+                    0,
+                    (currentTime - caption.startTime) /
+                      (caption.endTime - caption.startTime),
+                  ),
+                )
+              : 1,
+          elapsed: Math.max(0, currentTime - caption.startTime),
           textTrim: textTrim,
-          //progress: Math.min(1, (currentTime - caption.start_time) / 0.5),
         };
         activeCaptionText = text;
       }

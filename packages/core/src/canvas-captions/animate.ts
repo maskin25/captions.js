@@ -3,6 +3,24 @@ import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
 import { Ease, mapEaseToFn } from "./easing";
 import { getBoxWordBackgroundColor } from "./utils";
 
+const BOUNCE_ATTACK_SEC = 0.15;
+const UNDERLINE_DRAW_SEC = 0.25;
+
+const clamp01 = (value: number) =>
+  Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 1;
+
+/**
+ * Normalised 0..1 progress of a word's entry animation. Falls back to the
+ * word-relative progress when `elapsed` is not provided.
+ */
+const wordAttack = (
+  current: { progress: number; elapsed?: number },
+  durationSec: number,
+) =>
+  typeof current.elapsed === "number"
+    ? clamp01(current.elapsed / durationSec)
+    : clamp01(current.progress);
+
 export const animate = (
   captionsSettings: CaptionsSettings,
   progress: number,
@@ -15,42 +33,52 @@ export const animate = (
     caption: Caption;
     text: Konva.Text;
     progress: number;
+    /** Seconds since the active word started. */
+    elapsed?: number;
     textTrim?: Konva.Text | null;
   },
 ) => {
-  const easeFn = mapEaseToFn[Ease.inQuint];
   const slideOffset = 7;
   switch (captionsSettings.animation) {
     case "bounce":
       if (current) {
+        // Quick pop-in with a small overshoot when the word becomes active,
+        // then hold. Driven by time since word start, not by word duration,
+        // so short and long words feel the same.
+        const t = wordAttack(current, BOUNCE_ATTACK_SEC);
+        const e = mapEaseToFn[Ease.outBack](t);
         current.text.offsetX(current.text.width() / 2);
         current.text.offsetY(current.text.height() / 2);
         current.text.x(current.text.x() + current.text.width() / 2);
         current.text.y(current.text.y() + current.text.height() / 2);
         current.text.scale({
-          x: 1 + 0.3 * easeFn(1),
-          y: 1 + 0.3 * easeFn(1),
+          x: 1 + 0.3 * e,
+          y: 1 + 0.3 * e,
         });
 
-        const offsetModule = captionsSettings.style.font.fontSize * 0.3;
+        // The word grows by 30% around its centre; push neighbours on the
+        // same line aside by half of that growth so they never overlap.
+        const offsetModule = (current.text.width() * 0.3) / 2;
         const curreentChildIndex =
           current.text.parent?.children.indexOf(current.text) || 0;
         current.text.parent?.children.forEach((child, index) => {
           if (index !== curreentChildIndex) {
             const offset =
               index < curreentChildIndex ? -offsetModule : offsetModule;
-            child.x(child.x() + offset * easeFn(1));
+            child.x(child.x() + offset * e);
           }
         });
       }
       break;
     case "underline":
       if (current) {
+        const t = wordAttack(current, UNDERLINE_DRAW_SEC);
+        const e = mapEaseToFn[Ease.outCubic](t);
         const underline = new Konva.Line({
           points: [
             current.text.x(),
             current.text.height(),
-            current.text.x() + current.text.width() * easeFn(1),
+            current.text.x() + current.text.width() * e,
             current.text.height(),
           ],
           lineCap: "round",
@@ -58,7 +86,7 @@ export const animate = (
             ? current.caption.highlightColor
             : captionsSettings.style.aplifiedWordColor,
           strokeWidth: 8,
-          //opacity: easeFn(current.progress),
+          opacity: Math.min(1, t * 2),
         });
         current.text.parent?.add(underline);
       }
