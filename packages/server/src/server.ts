@@ -4,7 +4,7 @@ import { env } from "./config/env.js";
 import { logger } from "./utils/logger.js";
 import { burnCaptions } from "./render/burnCaptions.js";
 
-export const createApp = () => {
+export const createApp = (): express.Express => {
   const app = express();
   app.use(express.json());
 
@@ -52,6 +52,8 @@ export const createApp = () => {
         video: payload.video_uri,
         captions: payload.captions_uri,
         output: payload.output_uri,
+        // Legacy job format: keep the historical 1x font scale.
+        scale: 1,
       });
     } catch (error) {
       console.error("Error burning captions:", error);

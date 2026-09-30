@@ -28,12 +28,16 @@
   ],
   "files": [
     "dist",
+    "bin",
     "README.md",
     "LICENSE"
   ],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "bin": {
+    "captions.js": "bin/captions.cjs"
+  },
   "exports": {
     ".": {
       "import": {
