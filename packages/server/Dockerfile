@@ -5,13 +5,25 @@ FROM node:22-slim AS base
 RUN corepack enable
 WORKDIR /app
 
-FROM base AS build
+# 1. Compile TypeScript once, natively on the build machine: the JS output is
+#    the same for every architecture, and tsup/esbuild are slow and flaky under
+#    QEMU/Rosetta emulation.
+FROM --platform=$BUILDPLATFORM node:22-slim AS build
+RUN corepack enable
+WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
 RUN pnpm install --frozen-lockfile --filter "@captionsjs/server..."
-RUN pnpm --filter captions.js build \
- && pnpm --filter @captionsjs/server build \
- && pnpm deploy --filter @captionsjs/server --prod /app/deploy \
+RUN pnpm --filter captions.js build && pnpm --filter @captionsjs/server build
+
+# 2. Install production dependencies for the *target* architecture
+#    (skia-canvas ships a native binary per platform). No compilation here.
+FROM base AS deploy
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages ./packages
+COPY --from=build /app/packages/core/dist ./packages/core/dist
+COPY --from=build /app/packages/server/dist ./packages/server/dist
+RUN pnpm deploy --filter @captionsjs/server --prod /app/deploy \
  && cp -R packages/server/assets /app/deploy/assets
 
 FROM base AS runner
@@ -22,7 +34,7 @@ ENV NODE_ENV=production \
     PORT=4000 \
     CAPTIONSJS_CACHE_DIR=/tmp/captionsjs
 WORKDIR /app
-COPY --from=build /app/deploy/ ./
+COPY --from=deploy /app/deploy/ ./
 USER node
 EXPOSE 4000
 LABEL org.opencontainers.image.title="captions.js render" \
