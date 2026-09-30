@@ -47,9 +47,22 @@ const { output } = await burnCaptions({
 Font size follows the browser overlay rule (`videoHeight / 480`), so what you tune in
 the preview is what you get in the file. Pass `scale` to override.
 
-## HTTP service / Docker
+## Docker
 
-`node dist/index.js` with no arguments starts the Express service used in production
-(`POST /burnCaptions`, Pub/Sub push envelope). See the Dockerfile in this folder.
+Multi-arch image (`linux/amd64`, `linux/arm64`) with FFmpeg and all preset fonts baked in —
+works offline.
+
+```bash
+# CLI: mount a folder, burn, done
+docker run --rm -v "$PWD:/data" maskin25/captions.js-render \
+  burn /data/talk.mp4 /data/words.json --preset Karaoke -o /data/out.mp4
+
+# HTTP service on :4000 (GET /health, POST /burnCaptions)
+docker run -p 4000:4000 maskin25/captions.js-render
+```
+
+The HTTP endpoint currently takes the Pub/Sub push envelope used by Shorty.plus
+(`{ message: { data: base64({ preset, video_uri, captions_uri, output_uri }) } }`).
+A simpler upload-and-download API is planned.
 
 MIT © maskin25
