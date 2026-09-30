@@ -354,7 +354,6 @@ export const generateAICrops = (
     const [left, top, width, height] = ratio.split(':').map(token => {
       if (token.startsWith('w')) {
         const [, divider = '1'] = token.split('/');
-        console.log('divider', divider, Number(divider));
         return targetWidth / Number(divider);
       }
       if (token.startsWith('h')) {
@@ -400,13 +399,6 @@ export const generateAICrops = (
         cropsArrangementByLayoutTypeAndAspectRatio[
           getClosestRatio(targetWidth, targetHeight)
         ][layoutType];
-
-      console.log(
-        'cropsArr',
-        getClosestRatio(targetWidth, targetHeight),
-        layoutType,
-        cropsArr
-      );
 
       return {
         crops: cropsArr.map((x, i) =>

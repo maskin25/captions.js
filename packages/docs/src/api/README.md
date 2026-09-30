@@ -29,7 +29,6 @@
 ## Functions
 
 - [captionsjs](functions/captionsjs.md)
-- [renderCaptions](functions/renderCaptions.md)
 - [renderString](functions/renderString.md)
 
 ## References
