@@ -10,6 +10,14 @@ of the render — same code, same pixels, no browser in production.
 
 [**Live Demo**](https://maskin25.github.io/captions.js/) · [**Docs & API Reference**](https://maskin25.github.io/captions.js/docs/) · [**GitHub**](https://github.com/maskin25/captions.js)
 
+```bash
+npx captions.js burn talk.mp4 words.json --preset Karaoke
+```
+
+One command: a video and word timings (Whisper, Deepgram or a plain JSON array) in,
+an mp4 with animated captions out. The same preset, frame for frame, runs live over
+a `<video>` in the browser.
+
 If Captions.js is useful for you, a quick ⭐ on [GitHub](https://github.com/maskin25/captions.js) helps a lot.
 
 ## Why another captions library
@@ -45,16 +53,14 @@ pnpm add captions.js
 ## Browser: overlay on a `<video>`
 
 ```ts
-import captionsjs, { stylePresets, toCaptions } from "captions.js";
+import captionsjs, { getPreset, toCaptions } from "captions.js";
 
 const video = document.querySelector("video")!;
 
 // Deepgram response or a plain [{ word, startTime, endTime }] array
 const captions = toCaptions(transcript);
 
-const preset = stylePresets.find(
-  (p) => p.captionsSettings.style.name === "Karaoke",
-)!;
+const preset = getPreset("Karaoke");
 
 const instance = captionsjs({ video, preset, captions });
 
@@ -71,55 +77,35 @@ Fonts are pulled from Google Fonts on demand.
 
 ## Node: burn into video with FFmpeg
 
-The exact same `renderFrame`, drawn to a Node canvas and piped to FFmpeg as frames:
+The exact same `renderFrame`, drawn with skia-canvas and piped into FFmpeg — no browser.
+It lives in a separate package so browser installs stay free of native modules:
 
-```ts
-import { renderFrame, stylePresets, type Caption } from "captions.js";
-import Konva from "konva";
-import "konva/skia-backend";
-import { createCanvas, registerFont } from "canvas";
-import { FontLibrary } from "skia-canvas";
-import { PassThrough } from "node:stream";
-import ffmpeg from "fluent-ffmpeg";
-
-const size: [number, number] = [1080, 1920];
-const fps = 30;
-const { captionsSettings } = stylePresets[0];
-
-// register the same font family you use in the browser
-registerFont(fontPath, { family: captionsSettings.style.font.fontFamily });
-FontLibrary.use(captionsSettings.style.font.fontFamily, [fontPath]);
-
-const canvas = createCanvas(...size);
-const stage = new Konva.Stage({ container: canvas as any, width: size[0], height: size[1] });
-const layer = new Konva.Layer();
-stage.add(layer);
-
-const frames = new PassThrough();
-
-ffmpeg()
-  .input("input.mp4")
-  .input(frames)
-  .inputFormat("image2pipe")
-  .inputOptions([`-framerate ${fps}`])
-  .complexFilter(
-    [{ filter: "overlay", options: { x: 0, y: 0 }, inputs: ["0:v", "1"], outputs: "out" }],
-    "out",
-  )
-  .outputOptions(["-c:v libx264", "-pix_fmt yuv420p", "-map 0:a?", "-c:a copy"])
-  .output("output.mp4")
-  .run();
-
-for (let time = 0; time <= duration; time += 1 / fps) {
-  layer.removeChildren();
-  renderFrame(captionsSettings, undefined as any, captions, time, size, layer, 1);
-  frames.write(await layer.getNativeCanvasElement().toBuffer("image/png"));
-}
-frames.end();
+```bash
+npm install @captionsjs/server   # needs ffmpeg on PATH
 ```
 
-`konva`, `skia-canvas`, `canvas` and `fluent-ffmpeg` stay your dependencies —
-captions.js only brings the renderer.
+```ts
+import { burnCaptions } from "@captionsjs/server";
+
+await burnCaptions({
+  video: "talk.mp4",
+  captions: "words.json", // Whisper verbose_json, Deepgram, or [{ word, start, end }]
+  preset: "Karaoke",
+  output: "talk.captions.mp4",
+});
+```
+
+Or from the shell, without installing anything:
+
+```bash
+npx captions.js burn talk.mp4 words.json --preset "Focus Box" -o out.mp4
+npx captions.js presets   # list preset names
+```
+
+Preset fonts are fetched from Google Fonts on first use and cached. Font size follows
+the same rule as the browser overlay (`videoHeight / 480`), so the export matches the
+preview. Driving `renderFrame` yourself (custom pipelines, other encoders) — see
+[`packages/server/src/render/burnCaptions.ts`](./packages/server/src/render/burnCaptions.ts).
 
 ## Captions input
 
@@ -144,7 +130,7 @@ paragraph structure when the provider supplies it.
 ## What's in the box
 
 - **26 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
-  each a plain object you can clone and edit.
+  each a plain object you can clone and edit. `getPreset("Karaoke")` fetches one by name.
 - **10 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
   `slide-left`, `slide-up`, `slide-down`, `none`.
 - **Full typography control** — family, weight, size, stroke, shadow, capitalization,
@@ -159,4 +145,6 @@ paragraph structure when the provider supplies it.
 Captions.js is under active development and the API may still move before 2.0.
 Issues and PRs are welcome — see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
-MIT © [maskin25](https://github.com/maskin25)
+## License
+
+[MIT](./LICENSE) © [maskin25](https://github.com/maskin25). Free for commercial use, and it stays MIT.
