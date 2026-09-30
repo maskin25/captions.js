@@ -25,7 +25,6 @@ export async function loadGoogleFont(
 
   // 4️⃣ Register it in the document
   document.fonts.add(fontFace);
-  console.log(`✅ Font "${fontName}" loaded`);
 
   return fontFace;
 }

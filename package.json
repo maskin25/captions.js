@@ -1,12 +1,10 @@
 {
-  "name": "captions.js",
-  "private": false,
+  "name": "captions.js-monorepo",
+  "private": true,
   "packageManager": "pnpm@9.12.2",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "burn": "node packages/server/dist/cli.js burn"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

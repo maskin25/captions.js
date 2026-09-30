@@ -12,7 +12,7 @@
     "docs:preview": "vitepress preview"
   },
   "author": "Maxim Mordasov",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "typedoc": "^0.28.14",
     "typedoc-plugin-markdown": "^4.9.0",

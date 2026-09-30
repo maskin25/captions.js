@@ -19,11 +19,7 @@ export const methods: MethodRegistry = {
     status: "ok",
     timestamp: new Date().toISOString(),
   }),
-  echo: async ({ positional }) => positional.join(" "),
-  sum: async ({ positional }) =>
-    positional.reduce((total, value) => total + Number.parseFloat(value), 0),
-
   burnCaptions: async ({ named, positional }) => {
-    await burnCaptions(named as unknown as BurnCaptionsParams);
+    return burnCaptions(named as unknown as BurnCaptionsParams);
   },
 };

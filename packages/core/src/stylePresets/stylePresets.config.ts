@@ -915,3 +915,45 @@ export const stylePresets: StylePreset[] = [
     },
   },
 ];
+
+/**
+ * Names of all built-in presets, in display order.
+ *
+ * @public
+ */
+export const presetNames = stylePresets.map(
+  (preset) => preset.captionsSettings.style.name,
+) as StylePresetName[];
+
+const normalizePresetName = (name: string) =>
+  name.trim().toLowerCase().replace(/[\s_-]+/g, " ");
+
+/**
+ * Looks up a built-in preset by name.
+ *
+ * @remarks
+ * Matching is case-insensitive and treats spaces, `-` and `_` the same, so
+ * `"focus-box"` resolves to `"Focus Box"` (handy for CLI flags).
+ *
+ * @example
+ * ```ts
+ * const preset = getPreset("Karaoke");
+ * ```
+ *
+ * @throws Error listing the available names when nothing matches.
+ * @public
+ */
+export function getPreset(name: StylePresetName): StylePreset;
+export function getPreset(name: string): StylePreset;
+export function getPreset(name: string): StylePreset {
+  const wanted = normalizePresetName(name);
+  const preset = stylePresets.find(
+    (item) => normalizePresetName(item.captionsSettings.style.name) === wanted,
+  );
+  if (!preset) {
+    throw new Error(
+      `Unknown captions preset "${name}". Available: ${presetNames.join(", ")}`,
+    );
+  }
+  return preset;
+}

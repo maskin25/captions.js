@@ -43,7 +43,7 @@ export default defineConfig({
             },
             {
               text: "Utility Functions",
-              link: "/api/functions/renderCaptions",
+              link: "/api/functions/getPreset",
             },
             {
               text: "Style Preset Interface",

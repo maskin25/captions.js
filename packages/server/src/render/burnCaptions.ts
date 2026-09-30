@@ -1,214 +1,209 @@
 import {
-  Caption,
-  CaptionsSettings,
+  getPreset,
   renderFrame,
-  stylePresets,
+  type Caption,
+  type CaptionsSettings,
+  type StylePreset,
 } from "captions.js";
 import ffmpeg from "fluent-ffmpeg";
-
-import { createCanvas, registerFont } from "canvas";
 import Konva from "konva";
 import "konva/skia-backend";
 import { FontLibrary } from "skia-canvas";
 
-import path from "path";
-import fs from "fs";
+import path from "node:path";
 import { PassThrough } from "node:stream";
 import { once } from "node:events";
-import { fileURLToPath } from "url";
-import { getFontPath } from "./render.helpers.js";
 import { download } from "../utils/download.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.join(path.dirname(__filename), "../..");
+import { loadCaptions } from "./loadCaptions.js";
+import { resolveFontFile, type ResolveFontOptions } from "./fonts.js";
 
 export interface BurnCaptionsParams {
+  /** Input video: local path or http(s) URL. */
   video: string;
-  captions: string;
-  output: string;
-  preset: string;
+  /** Word timings: file path, URL, JSON string or an already parsed array/object. */
+  captions: string | Caption[] | Record<string, unknown>;
+  /** Output path. Defaults to `<input>.captions.mp4` next to the input. */
+  output?: string;
+  /** Preset name (case-insensitive) or a full preset object. Defaults to "Karaoke". */
+  preset?: string | StylePreset;
+  /** Override the output frame rate of the caption overlay. Defaults to the source fps. */
+  fps?: number;
+  /** Font lookup options, see {@link resolveFontFile}. */
+  fonts?: ResolveFontOptions;
+  /** x264 preset. Defaults to "veryfast". */
+  x264Preset?: string;
+  /** x264 CRF. Defaults to 20. */
+  crf?: number;
+  /**
+   * Font-size multiplier passed to `renderFrame`. Defaults to `height / 480`,
+   * the same rule the browser overlay uses, so the export matches the preview.
+   */
+  scale?: number;
+  /** Called after each rendered frame. */
+  onProgress?: (progress: { frame: number; totalFrames: number }) => void;
 }
 
-export const burnCaptions = async (params: BurnCaptionsParams) => {
-  const presetConfig =
-    stylePresets.find(
-      (preset: any) => preset.captionsSettings.style.name === params.preset,
-    ) || stylePresets[0];
-  const { captionsSettings } = presetConfig;
+export interface BurnCaptionsResult {
+  output: string;
+  frames: number;
+  width: number;
+  height: number;
+  fps: number;
+  durationSec: number;
+}
 
-  if (/^https?:\/\//i.test(params.video)) {
-    params.video = await download(params.video);
-  }
+const DEFAULT_PRESET = "Karaoke";
 
-  let captions: Caption[];
-  try {
-    captions = JSON.parse(params.captions);
-  } catch (err) {
-    if (/^https?:\/\//i.test(params.captions)) {
-      params.captions = await download(params.captions);
-    }
-    const captionsJson = fs.readFileSync(params.captions, "utf-8");
-    captions = JSON.parse(captionsJson);
-  }
+/**
+ * Renders captions with the same `renderFrame` the browser overlay uses and
+ * burns them into a video with FFmpeg. No browser involved.
+ */
+export const burnCaptions = async (
+  params: BurnCaptionsParams,
+): Promise<BurnCaptionsResult> => {
+  const preset =
+    typeof params.preset === "object"
+      ? params.preset
+      : getPreset(params.preset || DEFAULT_PRESET);
+  const captionsSettings = preset.captionsSettings as CaptionsSettings;
 
-  const [width, height] = await getDimensions(params.video);
+  const video = /^https?:\/\//i.test(params.video)
+    ? await download(params.video)
+    : params.video;
 
-  if (!params.output) {
-    params.output = path.join(
-      path.dirname(params.video),
-      `${path.parse(params.video).name}-captions-${
-        params.preset
-      }-${Date.now()}${path.parse(params.video).ext}`,
-    );
-  }
+  const captions = await loadCaptions(params.captions);
+  const probe = await probeVideo(video);
+  const fps = params.fps ?? probe.fps;
 
-  const duration = await getDuration(params.video);
+  const output =
+    params.output ||
+    path.join(path.dirname(video), `${path.parse(video).name}.captions.mp4`);
 
-  console.time("Burn captions time");
-  await addCanvasCaptionsToVideo(
-    params.video,
-    params.output,
+  await registerPresetFont(captionsSettings, params.fonts);
+
+  const frames = await addCanvasCaptionsToVideo({
+    sourceVideo: video,
+    outputVideo: output,
     captions,
-    captionsSettings as CaptionsSettings,
-    [width, height],
-    [0, duration],
-    1,
-  );
-  console.timeEnd("Burn captions time");
-  console.log("Output video saved to:", params.output);
+    captionsSettings,
+    size: [probe.width, probe.height],
+    duration: probe.duration,
+    fps,
+    scale: params.scale ?? probe.height / 480,
+    x264Preset: params.x264Preset ?? "veryfast",
+    crf: params.crf ?? 20,
+    onProgress: params.onProgress,
+  });
+
+  return {
+    output,
+    frames,
+    width: probe.width,
+    height: probe.height,
+    fps,
+    durationSec: probe.duration,
+  };
 };
 
-const addCanvasCaptionsToVideo = async (
-  sourceVideo: string,
-  outputVideo: string,
-  captions: Caption[],
+const registeredFonts = new Set<string>();
+
+const registerPresetFont = async (
   captionsSettings: CaptionsSettings,
-  targetSize: [number, number],
-  timeRange: [number, number],
-  toCoef?: number,
+  options?: ResolveFontOptions,
 ) => {
-  const [width, height] = targetSize;
-  const [timeStart, timeEnd] = timeRange;
+  const { fontFamily, fontWeight, italic } = captionsSettings.style.font;
+  const file = await resolveFontFile({ fontFamily, fontWeight, italic }, options);
+  if (registeredFonts.has(file)) return;
+  FontLibrary.use(fontFamily, [file]);
+  registeredFonts.add(file);
+};
 
-  const { fontFamily, fontSize, fontWeight, italic } =
-    captionsSettings.style.font;
+const addCanvasCaptionsToVideo = async (opts: {
+  sourceVideo: string;
+  outputVideo: string;
+  captions: Caption[];
+  captionsSettings: CaptionsSettings;
+  size: [number, number];
+  duration: number;
+  fps: number;
+  scale: number;
+  x264Preset: string;
+  crf: number;
+  onProgress?: BurnCaptionsParams["onProgress"];
+}): Promise<number> => {
+  const [width, height] = opts.size;
 
-  const fontPath = getFontPath(
-    path.join(__dirname, "assets", "fonts"),
-    fontFamily,
-    fontWeight,
-    italic,
-  );
-
-  registerFont(fontPath, {
-    family: fontFamily,
-    style: italic ? "italic" : "normal",
-    weight: fontWeight,
-  });
-  try {
-    FontLibrary.use(fontFamily, [fontPath]);
-  } catch (error) {
-    console.warn("FontLibrary.use failed:", error);
-  }
-
-  const canvas = createCanvas(width, height);
-
-  const stage = new Konva.Stage({
-    //@ts-ignore
-    container: canvas,
-    width: width,
-    height: height,
-  });
-
-  const layer = new Konva.Layer();
-  layer.pixelSize(2);
+  const stage = new Konva.Stage({ width, height });
+  const layer = new Konva.Layer({ listening: false });
   stage.add(layer);
 
-  const font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-  canvas.getContext("2d").font = font;
-  layer.getNativeCanvasElement().getContext("2d").font = font;
+  const totalFrames = Math.max(1, Math.ceil(opts.duration * opts.fps));
+  // Raw RGBA frames: no PNG encode/decode per frame.
+  const overlayStream = new PassThrough({ highWaterMark: width * height * 4 * 2 });
 
-  const frameRate = 30;
-  const frameDuration = 1 / frameRate;
-  const overlayStream = new PassThrough({ highWaterMark: 1024 * 1024 });
-
-  const ffmpegPromise = new Promise<string>((resolve, reject) => {
+  const ffmpegPromise = new Promise<void>((resolve, reject) => {
     ffmpeg()
-      .input(sourceVideo)
+      .input(opts.sourceVideo)
       .input(overlayStream)
-      .inputFormat("image2pipe")
-      .inputOptions([`-framerate ${frameRate}`])
-      .outputOptions([
-        "-c:v libx264",
-        "-pix_fmt yuv420p",
-        "-map 0:a?",
-        "-c:a copy",
+      .inputFormat("rawvideo")
+      .inputOptions([
+        "-pix_fmt rgba",
+        `-s ${width}x${height}`,
+        `-framerate ${opts.fps}`,
       ])
       .complexFilter(
         [
           {
             filter: "overlay",
-            options: { x: 0, y: 0 },
-            inputs: ["0:v", "1"],
-            outputs: "output",
+            options: { x: 0, y: 0, format: "auto" },
+            inputs: ["0:v", "1:v"],
+            outputs: "out",
           },
         ],
-        "output",
+        "out",
       )
-      .output(outputVideo)
-      .on("error", (err, stdout, stderr) => {
-        console.error("Error during add canvas captions to video: " + err);
-        console.error("stdout:", stdout);
-        console.error("stderr:", stderr);
-        overlayStream.destroy(err as Error);
-        reject({
-          message: "Error during add canvas captions to video",
-          err,
-          stdout,
-          stderr,
-        });
+      .outputOptions([
+        "-map 0:a?",
+        "-c:a copy",
+        "-c:v libx264",
+        `-preset ${opts.x264Preset}`,
+        `-crf ${opts.crf}`,
+        "-pix_fmt yuv420p",
+        "-movflags +faststart",
+      ])
+      .output(opts.outputVideo)
+      .on("error", (err, _stdout, stderr) => {
+        overlayStream.destroy();
+        const error = new Error(`FFmpeg failed: ${err.message}`);
+        (error as Error & { stderr?: string }).stderr = stderr ?? undefined;
+        reject(error);
       })
-      .on("progress", (progress) => {
-        console.log(`Processing: ${progress.percent}% done`);
-      })
-      .on("end", () => {
-        console.log("Processing finished successfully");
-        resolve(outputVideo);
-      })
+      .on("end", () => resolve())
       .run();
   });
 
-  let time = timeStart;
   const writeFrames = async () => {
     try {
-      while (time <= timeEnd + 1e-6) {
-        layer.removeChildren();
-
+      for (let frame = 0; frame < totalFrames; frame++) {
+        if (overlayStream.destroyed) return;
+        const time = frame / opts.fps;
+        layer.destroyChildren();
         renderFrame(
-          captionsSettings,
+          opts.captionsSettings,
           undefined as any,
-          captions,
+          opts.captions,
           time,
-          targetSize,
+          opts.size,
           layer,
-          toCoef,
-          undefined,
+          opts.scale,
         );
+        layer.draw();
 
-        //@ts-ignore
-        const maybeBuffer = layer
-          .getNativeCanvasElement()
-          .toBuffer("image/png");
-        const buffer =
-          typeof (maybeBuffer as Promise<Buffer>)?.then === "function"
-            ? await (maybeBuffer as Promise<Buffer>)
-            : (maybeBuffer as Buffer);
-
+        const buffer = await (layer.getNativeCanvasElement() as any).toBuffer("raw");
         if (!overlayStream.write(buffer)) {
           await once(overlayStream, "drain");
         }
-
-        time += frameDuration;
+        opts.onProgress?.({ frame: frame + 1, totalFrames });
       }
     } finally {
       overlayStream.end();
@@ -216,41 +211,43 @@ const addCanvasCaptionsToVideo = async (
   };
 
   await Promise.all([ffmpegPromise, writeFrames()]);
-  return outputVideo;
+  stage.destroy();
+  return totalFrames;
 };
 
-const getDimensions = async (videoPath: string): Promise<[number, number]> => {
-  return new Promise((resolve, reject) => {
+const parseRate = (rate?: string) => {
+  if (!rate) return undefined;
+  const [num, den = "1"] = rate.split("/");
+  const value = Number(num) / Number(den);
+  return Number.isFinite(value) && value > 0 ? value : undefined;
+};
+
+export const probeVideo = (
+  videoPath: string,
+): Promise<{ width: number; height: number; duration: number; fps: number }> =>
+  new Promise((resolve, reject) => {
     ffmpeg.ffprobe(videoPath, (err, metadata) => {
       if (err) {
-        console.error("Error inspecting video:", err);
-        return reject({ message: "Error during getDimensions", err });
+        return reject(new Error(`ffprobe failed for ${videoPath}: ${err.message}`));
       }
-
-      const videoStream = metadata.streams.find(
-        (stream) => stream.codec_type === "video",
+      const stream = metadata.streams.find((s) => s.codec_type === "video");
+      if (!stream?.width || !stream?.height) {
+        return reject(new Error(`No video stream in ${videoPath}`));
+      }
+      const rotation = Math.abs(Number(stream.rotation ?? 0));
+      const [width, height] =
+        rotation === 90 || rotation === 270
+          ? [stream.height, stream.width]
+          : [stream.width, stream.height];
+      const fps = Math.min(
+        60,
+        parseRate(stream.avg_frame_rate) ?? parseRate(stream.r_frame_rate) ?? 30,
       );
-      const rotation = videoStream?.rotation ? Number(videoStream.rotation) : 0;
-
-      const size =
-        Math.abs(rotation) === 90
-          ? [videoStream?.height, videoStream?.width]
-          : [videoStream?.width, videoStream?.height];
-      resolve(size as [number, number]);
+      resolve({
+        width,
+        height,
+        duration: Number(metadata.format.duration ?? stream.duration ?? 0),
+        fps: Math.round(fps * 1000) / 1000,
+      });
     });
   });
-};
-
-const getDuration = async (videoPath: string): Promise<number> => {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(videoPath, (err, metadata) => {
-      if (err) {
-        console.error("Error inspecting video:", err);
-        return reject({ message: "Error during getDuration", err });
-      }
-
-      const duration = metadata.format.duration || 0;
-      resolve(duration);
-    });
-  });
-};

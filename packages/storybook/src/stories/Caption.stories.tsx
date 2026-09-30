@@ -1,17 +1,18 @@
-import React, { useEffect, useRef } from "react";
-import { renderCaptions } from "captions.js";
+import { useEffect, useState } from "react";
+import { getPreset, renderStylePreset } from "captions.js";
 
 export default { title: "Captions/Basic" };
 
 export const Basic = () => {
-  const ref = useRef<HTMLCanvasElement>(null);
+  const [src, setSrc] = useState<string>();
   useEffect(() => {
-    if (ref.current) {
-      const ctx = ref.current.getContext("2d")!;
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, 640, 360);
-      renderCaptions(ctx, "Storybook caption example");
-    }
+    renderStylePreset(getPreset("Karaoke"), [640, 360], [1.1], "Storybook captions").then(
+      ([image]) => setSrc(image),
+    );
   }, []);
-  return <canvas ref={ref} width={640} height={360} />;
+  return (
+    <div style={{ background: "black", width: 640, height: 360 }}>
+      {src && <img src={src} width={640} height={360} alt="Karaoke preset" />}
+    </div>
+  );
 };

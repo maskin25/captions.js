@@ -39,8 +39,6 @@ export async function renderString(
     height: height,
   });
 
-  console.log("width, height", width, height);
-
   // then create layer
   var layer = new Konva.Layer();
 
@@ -79,8 +77,6 @@ export async function renderString(
     offsetX: 0,
     offsetY: 0,
   };
-
-  console.log("textOptions", textOptions);
 
   const konvaText = new Konva.Text(textOptions);
 
