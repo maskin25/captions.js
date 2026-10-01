@@ -93,7 +93,7 @@ const burn = async (argv: string[]) => {
         },
   }).catch((err: Error & { stderr?: string }) => {
     if (!quiet) process.stderr.write("\n");
-    if (err.stderr) process.stderr.write(err.stderr.split("\n").slice(-8).join("\n") + "\n");
+    if (err.stderr) process.stderr.write(err.stderr.trim().split("\n").slice(-8).join("\n") + "\n");
     return fail(err.message);
   });
 
