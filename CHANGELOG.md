@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## captions.js 1.10.0 · @captionsjs/server 0.1.1 — 2026-10-01
 
 ### captions.js
 - **Fixed:** the browser overlay no longer rebuilds the scene every frame

@@ -1,6 +1,6 @@
 {
   "name": "@captionsjs/server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Burn captions.js animated word-level captions into video with FFmpeg — same renderer as the browser preview, no headless browser.",
   "license": "MIT",
   "repository": {
