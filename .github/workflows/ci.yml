@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - run: pnpm install --frozen-lockfile
+      - name: Build
+        run: |
+          pnpm --filter captions.js build
+          pnpm --filter @captionsjs/server build
+      - name: Typecheck configurator
+        run: pnpm --filter @maskin25/captions-configurator exec tsc --noEmit -p .
+      - name: Test core (exports/types under every moduleResolution)
+        run: pnpm --filter captions.js test
+      - name: Test server (animations, CLI end-to-end)
+        run: pnpm --filter @captionsjs/server test
