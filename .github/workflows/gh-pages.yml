@@ -47,6 +47,12 @@ jobs:
       - name: Build docs
         run: pnpm --filter docs run docs:build
 
+      - name: Render preset gallery
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+          pnpm --filter @captionsjs/server build
+          pnpm --filter @captionsjs/server run previews ../../presets-dist
+
       - name: Prepare GitHub Pages artifacts
         run: |
           rm -rf gh-pages-dist
@@ -54,6 +60,8 @@ jobs:
           cp -r packages/demo/dist/. gh-pages-dist/
           mkdir -p gh-pages-dist/docs
           cp -r packages/docs/.vitepress/dist/. gh-pages-dist/docs/
+          mkdir -p gh-pages-dist/presets
+          cp -r presets-dist/. gh-pages-dist/presets/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

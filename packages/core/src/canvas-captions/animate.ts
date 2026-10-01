@@ -1,7 +1,7 @@
 import Konva from "konva";
 import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
 import { Ease, mapEaseToFn } from "./easing";
-import { getBoxWordBackgroundColor } from "./utils";
+import { getBoxWordBackgroundColor, getHighlightColor } from "./utils";
 
 const BOUNCE_ATTACK_SEC = 0.15;
 const UNDERLINE_DRAW_SEC = 0.25;
@@ -84,7 +84,7 @@ export const animate = (
           lineCap: "round",
           stroke: current.caption.highlightColor
             ? current.caption.highlightColor
-            : captionsSettings.style.aplifiedWordColor,
+            : getHighlightColor(captionsSettings),
           strokeWidth: 8,
           opacity: Math.min(1, t * 2),
         });

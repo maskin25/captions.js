@@ -70,7 +70,14 @@ const parseHexColor = (color: unknown) => {
 const getFieldValue = (
   settings: CaptionsSettingsValue,
   path: (string | number)[],
-) => path.reduce<any>((acc, key) => acc?.[key], settings);
+) => {
+  const value = path.reduce<any>((acc, key) => acc?.[key], settings);
+  // settings saved before 1.10 carry the old misspelled key
+  if (value === undefined && path[0] === "style" && path[1] === "highlightColor") {
+    return (settings as any)?.style?.aplifiedWordColor;
+  }
+  return value;
+};
 
 const NumberFieldInput = ({
   label,

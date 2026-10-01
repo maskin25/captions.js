@@ -45,6 +45,10 @@ export class Captions {
   private videoWidth = 0;
   private videoHeight = 0;
   private readonly debug: boolean;
+  /** Scene must be rebuilt on the next tick regardless of time. */
+  private dirty = true;
+  private lastRenderedTime = Number.NaN;
+  private renderCount = 0;
 
   private readonly handleResize = () => {
     this.syncStageDimensions();
@@ -52,6 +56,11 @@ export class Captions {
 
   private readonly handleMetadata = () => {
     this.syncStageDimensions();
+  };
+
+  private readonly handleSeeked = () => {
+    // Paused + seek: the time changes without the video playing.
+    this.dirty = true;
   };
 
   private readonly animationLoop = () => {
@@ -109,7 +118,9 @@ export class Captions {
     }
 
     this.video.addEventListener("loadedmetadata", this.handleMetadata);
+    this.video.addEventListener("seeked", this.handleSeeked);
 
+    this.dirty = true;
     this.syncStageDimensions();
 
     this.animationFrameId = requestAnimationFrame(this.animationLoop);
@@ -134,6 +145,7 @@ export class Captions {
 
     window.removeEventListener("resize", this.handleResize);
     this.video.removeEventListener("loadedmetadata", this.handleMetadata);
+    this.video.removeEventListener("seeked", this.handleSeeked);
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
 
@@ -198,8 +210,11 @@ export class Captions {
       return;
     }
 
+    this.dirty = true;
     if (loadFont) {
       await this.loadFontForCurrentPreset();
+      // the font may have finished loading after a frame was drawn with a fallback
+      this.dirty = true;
     }
 
     this.updateFrame();
@@ -212,6 +227,14 @@ export class Captions {
     await loadGoogleFont2(fontFamily);
   }
 
+  /**
+   * Number of times the scene has been rebuilt. Useful for diagnostics and
+   * tests — it stays flat while the video is paused.
+   */
+  getRenderCount() {
+    return this.renderCount;
+  }
+
   private updateFrame() {
     if (!this.layer || !this.stage) {
       return;
@@ -221,6 +244,16 @@ export class Captions {
       return;
     }
 
+    const currentTime = this.video.currentTime;
+    // Nothing changed since the last rebuild (paused video, or several
+    // display frames per video frame): keep the existing scene.
+    if (!this.dirty && currentTime === this.lastRenderedTime) {
+      return;
+    }
+    this.dirty = false;
+    this.lastRenderedTime = currentTime;
+    this.renderCount++;
+
     this.layer.destroyChildren();
     const currentVideoHeight = this.video.videoHeight || this.videoHeight;
     const toCoef = currentVideoHeight > 0 ? currentVideoHeight / 480 : 1;
@@ -229,7 +262,7 @@ export class Captions {
       this.presetState.captionsSettings as any,
       undefined as any,
       this.captionsState || [],
-      this.video.currentTime,
+      currentTime,
       [this.videoWidth, this.videoHeight],
       this.layer,
       toCoef,
@@ -254,6 +287,7 @@ export class Captions {
 
     this.stage.width(this.videoWidth);
     this.stage.height(this.videoHeight);
+    this.dirty = true;
 
     const rect = this.video.getBoundingClientRect();
     const stageContainer = this.stage.container() as HTMLDivElement;

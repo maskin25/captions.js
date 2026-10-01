@@ -234,17 +234,17 @@ export const getFillColor = (
     captionsSettings.animation === "box" &&
     (isCurrentCaption || isPastCaption)
   ) {
-    return caption.highlightColor || captionsSettings.style.aplifiedWordColor;
+    return caption.highlightColor || getHighlightColor(captionsSettings);
   }
 
   if (captionsSettings.animation === "box-word" && isCurrentCaption) {
     return isVisibleColor(captionsSettings.style.backgroundColor)
-      ? caption.highlightColor || captionsSettings.style.aplifiedWordColor
+      ? caption.highlightColor || getHighlightColor(captionsSettings)
       : captionsSettings.style.font.fontColor;
   }
 
   if (isCurrentCaption) {
-    return caption.highlightColor || captionsSettings.style.aplifiedWordColor;
+    return caption.highlightColor || getHighlightColor(captionsSettings);
   }
 
   return captionsSettings.style.font.fontColor;
@@ -256,7 +256,7 @@ export const getBoxWordBackgroundColor = (
 ) =>
   isVisibleColor(captionsSettings.style.backgroundColor)
     ? captionsSettings.style.backgroundColor
-    : caption.highlightColor || captionsSettings.style.aplifiedWordColor;
+    : caption.highlightColor || getHighlightColor(captionsSettings);
 
 export const getCaptionsGroupY = (
   groupHeight: number,
@@ -384,3 +384,14 @@ function isLatin(text: string) {
 function isArabic(text: string) {
   return /[\u0600-\u06FF]/.test(text);
 }
+
+/**
+ * Active-word color of a settings object, honouring the deprecated
+ * `aplifiedWordColor` name for settings saved before 1.10.
+ *
+ * @public
+ */
+export const getHighlightColor = (captionsSettings: CaptionsSettings): string =>
+  captionsSettings.style.highlightColor ??
+  captionsSettings.style.aplifiedWordColor ??
+  captionsSettings.style.font.fontColor;
