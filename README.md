@@ -131,6 +131,7 @@ paragraph structure when the provider supplies it.
 
 - **26 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
   each a plain object you can clone and edit. `getPreset("Karaoke")` fetches one by name.
+  **[See them all animated →](https://maskin25.github.io/captions.js/presets/)**
 - **10 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
   `slide-left`, `slide-up`, `slide-down`, `none`.
 - **Full typography control** — family, weight, size, stroke, shadow, capitalization,

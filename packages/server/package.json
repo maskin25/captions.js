@@ -49,7 +49,8 @@
     "prepublishOnly": "cp ../../LICENSE ./LICENSE && pnpm run build",
     "postpublish": "rm -f LICENSE",
     "docker:build": "docker build -t captionsjs-server .",
-    "docker:run": "docker run --rm -p 4000:4000 captionsjs-server"
+    "docker:run": "docker run --rm -p 4000:4000 captionsjs-server",
+    "previews": "node scripts/render-previews.mjs"
   },
   "dependencies": {
     "captions.js": "workspace:^",

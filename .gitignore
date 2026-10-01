@@ -70,3 +70,7 @@ reports/
 /packages/docs/.vitepress/cache
 
 .npmrc
+
+# preset previews (rendered by packages/server/scripts/render-previews.mjs)
+presets-dist/
+packages/server/previews/
