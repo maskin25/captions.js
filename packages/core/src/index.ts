@@ -31,6 +31,7 @@ export {
 } from "./captions/Captions";
 
 export { renderFrame, renderStylePreset } from "./canvas-captions";
+export { getHighlightColor } from "./canvas-captions/utils";
 
 export {
   toCaptions,

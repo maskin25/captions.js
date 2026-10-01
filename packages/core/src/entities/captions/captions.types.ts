@@ -24,7 +24,16 @@ export interface CaptionsSettings {
       };
     };
     verticalCoverImg?: string;
-    aplifiedWordColor: string;
+    /**
+     * Color of the active (spoken) word. A per-word `Caption.highlightColor`
+     * overrides it.
+     */
+    highlightColor?: string;
+    /**
+     * @deprecated Misspelled original name of {@link CaptionsSettings.style.highlightColor}.
+     * Still read when `highlightColor` is not set; will be removed in 2.0.
+     */
+    aplifiedWordColor?: string;
     backgroundColor: string;
   };
   linesPerPage: number;

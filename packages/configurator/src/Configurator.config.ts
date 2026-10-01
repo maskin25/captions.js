@@ -97,7 +97,7 @@ export const STYLE_FIELDS: StyleField[] = [
     type: "color",
   },
   {
-    path: ["style", "aplifiedWordColor"],
+    path: ["style", "highlightColor"],
     label: "Highlighted Word Color",
     type: "color",
   },

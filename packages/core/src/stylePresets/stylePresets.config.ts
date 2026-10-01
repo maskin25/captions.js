@@ -75,7 +75,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/karaoke_preview.png",
-        aplifiedWordColor: "#24deff",
+        highlightColor: "#24deff",
       },
       position: "bottom",
       animation: "bounce",
@@ -106,7 +106,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#C7FF2EFF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/popline_preview.png",
-        aplifiedWordColor: "#101318FF",
+        highlightColor: "#101318FF",
       },
       position: "bottom",
       animation: "box-word",
@@ -139,7 +139,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/beasty_preview.png",
-        aplifiedWordColor: "#fdfa14ff",
+        highlightColor: "#fdfa14ff",
       },
       position: "bottom",
       animation: "pop",
@@ -170,7 +170,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#00000000",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/aciv_preview.png",
-        aplifiedWordColor: "#6BF5C7FF",
+        highlightColor: "#6BF5C7FF",
       },
       position: "bottom",
       animation: "none",
@@ -208,7 +208,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#00000000",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/aciv_preview.png",
-        aplifiedWordColor: "#f866cfff",
+        highlightColor: "#f866cfff",
       },
       position: "bottom",
       animation: "scale",
@@ -240,7 +240,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#00000000",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/aciv_preview.png",
-        aplifiedWordColor: "#a76dffff",
+        highlightColor: "#a76dffff",
       },
       position: "bottom",
       animation: "scale",
@@ -278,7 +278,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
-        aplifiedWordColor: "#6f0eecff",
+        highlightColor: "#6f0eecff",
       },
       position: "bottom",
       animation: "underline",
@@ -315,7 +315,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#00000000",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/popline_preview.png",
-        aplifiedWordColor: "#5fffb0ff",
+        highlightColor: "#5fffb0ff",
       },
       position: "bottom",
       animation: "slide-up",
@@ -347,7 +347,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/beasty_preview.png",
-        aplifiedWordColor: "#ff0000ff",
+        highlightColor: "#ff0000ff",
       },
       position: "bottom",
       animation: "pop",
@@ -378,7 +378,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/desert_preview.png",
-        aplifiedWordColor: "#ebf901ff",
+        highlightColor: "#ebf901ff",
       },
       position: "bottom",
       animation: "none",
@@ -410,7 +410,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/safari_preview.png",
-        aplifiedWordColor: "#000000FF",
+        highlightColor: "#000000FF",
       },
       position: "bottom",
       animation: "box",
@@ -441,7 +441,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/popline_preview.png",
-        aplifiedWordColor: "#F43FE0FF",
+        highlightColor: "#F43FE0FF",
       },
       position: "bottom",
       animation: "none",
@@ -472,7 +472,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/desert_preview.png",
-        aplifiedWordColor: "#8F2EEDFF",
+        highlightColor: "#8F2EEDFF",
       },
       position: "bottom",
       animation: "bounce",
@@ -503,7 +503,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/hook_preview.png",
-        aplifiedWordColor: "#8F2EEDFF",
+        highlightColor: "#8F2EEDFF",
       },
       position: "bottom",
       animation: "underline",
@@ -534,7 +534,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/sky_preview.png",
-        aplifiedWordColor: "#FFFFFFFF",
+        highlightColor: "#FFFFFFFF",
       },
       position: "bottom",
       animation: "slide-left",
@@ -565,7 +565,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
-        aplifiedWordColor: "#ff0000ff",
+        highlightColor: "#ff0000ff",
       },
       position: "bottom",
       animation: "scale",
@@ -596,7 +596,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#000000ff",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/captions-deep-diver-b&w.png",
-        aplifiedWordColor: "#ffffffff",
+        highlightColor: "#ffffffff",
       },
       position: "bottom",
       animation: "box",
@@ -627,7 +627,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
-        aplifiedWordColor: "#dbff00ff",
+        highlightColor: "#dbff00ff",
       },
       position: "middle",
       animation: "pop",
@@ -658,7 +658,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/desert_preview.png",
-        aplifiedWordColor: "#ff5700ff",
+        highlightColor: "#ff5700ff",
       },
       position: "bottom",
       animation: "bounce",
@@ -695,7 +695,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#E4E4E4FF",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/karaoke_preview.png",
-        aplifiedWordColor: "#ffdd03ff",
+        highlightColor: "#ffdd03ff",
       },
       position: "bottom",
       animation: "pop",
@@ -726,7 +726,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#000000ff",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/safari_preview.png",
-        aplifiedWordColor: "#ffffffff",
+        highlightColor: "#ffffffff",
       },
       position: "bottom",
       animation: "none",
@@ -757,7 +757,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#000000ff",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/safari_preview.png",
-        aplifiedWordColor: "#ffffffff",
+        highlightColor: "#ffffffff",
       },
       position: "bottom",
       animation: "none",
@@ -794,7 +794,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#00000000",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/aciv_preview.png",
-        aplifiedWordColor: "#ffffffff",
+        highlightColor: "#ffffffff",
       },
       position: "bottom",
       animation: "slide-up",
@@ -826,7 +826,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#000000ff",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/safari_preview.png",
-        aplifiedWordColor: "#e4e900ff",
+        highlightColor: "#e4e900ff",
       },
       position: "bottom",
       animation: "none",
@@ -863,7 +863,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#00000000",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/captions-deep-diver-b&w.png",
-        aplifiedWordColor: "#f3ca72ff",
+        highlightColor: "#f3ca72ff",
       },
       position: "bottom",
       animation: "box",
@@ -901,7 +901,7 @@ export const stylePresets: StylePreset[] = [
         backgroundColor: "#00000000",
         verticalCoverImg:
           "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
-        aplifiedWordColor: "#ff7b00",
+        highlightColor: "#ff7b00",
       },
       position: "bottom",
       animation: "underline",
