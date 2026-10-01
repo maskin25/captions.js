@@ -1,0 +1,204 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>captions.js — caption style presets</title>
+<meta name="description" content="26 animated caption styles for TikTok, Reels and Shorts. Rendered by captions.js — the same output in the browser and in FFmpeg.">
+<style>
+  :root{color-scheme:dark;--bg:#0e1116;--card:#171b22;--muted:#8b95a3}
+  body{margin:0;background:var(--bg);color:#e8ecf1;font:15px/1.5 system-ui,sans-serif}
+  header{max-width:1200px;margin:0 auto;padding:40px 16px 8px}
+  h1{margin:0 0 6px;font-size:28px} header p{margin:0;color:var(--muted)}
+  main{max-width:1200px;margin:0 auto;padding:16px;display:grid;gap:16px;
+       grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  figure{margin:0;background:var(--card);border-radius:12px;overflow:hidden}
+  video{display:block;width:100%;aspect-ratio:540/960;background:#000}
+  figcaption{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+  figcaption a{color:inherit;font-weight:600;text-decoration:none}
+  figcaption span{color:var(--muted);font-size:12.5px}
+  code{font-size:12px;color:#9fd3ff}
+</style></head><body>
+<header><h1>Caption styles</h1>
+<p>26 presets, each rendered by the engine itself. Burn any of them: <code>npx captions.js burn video.mp4 words.json --preset Karaoke</code></p></header>
+<main>
+  <figure id="karaoke">
+    <video autoplay muted loop playsinline preload="metadata" poster="karaoke.jpg">
+      <source src="karaoke.webm" type="video/webm"><source src="karaoke.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#karaoke">Karaoke</a><span>bounce · Rubik black</span>
+      <code>getPreset("Karaoke")</code></figcaption>
+  </figure>
+  <figure id="focus-box">
+    <video autoplay muted loop playsinline preload="metadata" poster="focus-box.jpg">
+      <source src="focus-box.webm" type="video/webm"><source src="focus-box.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#focus-box">Focus Box</a><span>box-word · Montserrat black</span>
+      <code>getPreset("Focus Box")</code></figcaption>
+  </figure>
+  <figure id="banger">
+    <video autoplay muted loop playsinline preload="metadata" poster="banger.jpg">
+      <source src="banger.webm" type="video/webm"><source src="banger.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#banger">Banger</a><span>pop · Oswald bold</span>
+      <code>getPreset("Banger")</code></figcaption>
+  </figure>
+  <figure id="acid">
+    <video autoplay muted loop playsinline preload="metadata" poster="acid.jpg">
+      <source src="acid.webm" type="video/webm"><source src="acid.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#acid">Acid</a><span>none · PT Sans black</span>
+      <code>getPreset("Acid")</code></figcaption>
+  </figure>
+  <figure id="lovly">
+    <video autoplay muted loop playsinline preload="metadata" poster="lovly.jpg">
+      <source src="lovly.webm" type="video/webm"><source src="lovly.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#lovly">Lovly</a><span>scale · Pacifico medium</span>
+      <code>getPreset("Lovly")</code></figcaption>
+  </figure>
+  <figure id="marvel">
+    <video autoplay muted loop playsinline preload="metadata" poster="marvel.jpg">
+      <source src="marvel.webm" type="video/webm"><source src="marvel.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#marvel">Marvel</a><span>scale · Oswald medium</span>
+      <code>getPreset("Marvel")</code></figcaption>
+  </figure>
+  <figure id="marker">
+    <video autoplay muted loop playsinline preload="metadata" poster="marker.jpg">
+      <source src="marker.webm" type="video/webm"><source src="marker.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#marker">Marker</a><span>underline · Raleway black</span>
+      <code>getPreset("Marker")</code></figcaption>
+  </figure>
+  <figure id="neon-pulse">
+    <video autoplay muted loop playsinline preload="metadata" poster="neon-pulse.jpg">
+      <source src="neon-pulse.webm" type="video/webm"><source src="neon-pulse.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#neon-pulse">Neon Pulse</a><span>slide-up · Amatic SC black</span>
+      <code>getPreset("Neon Pulse")</code></figcaption>
+  </figure>
+  <figure id="beasty">
+    <video autoplay muted loop playsinline preload="metadata" poster="beasty.jpg">
+      <source src="beasty.webm" type="video/webm"><source src="beasty.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#beasty">Beasty</a><span>pop · Permanent Marker black</span>
+      <code>getPreset("Beasty")</code></figcaption>
+  </figure>
+  <figure id="crazy">
+    <video autoplay muted loop playsinline preload="metadata" poster="crazy.jpg">
+      <source src="crazy.webm" type="video/webm"><source src="crazy.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#crazy">Crazy</a><span>none · Montserrat black</span>
+      <code>getPreset("Crazy")</code></figcaption>
+  </figure>
+  <figure id="safari">
+    <video autoplay muted loop playsinline preload="metadata" poster="safari.jpg">
+      <source src="safari.webm" type="video/webm"><source src="safari.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#safari">Safari</a><span>box · Poppins bold</span>
+      <code>getPreset("Safari")</code></figcaption>
+  </figure>
+  <figure id="popline">
+    <video autoplay muted loop playsinline preload="metadata" poster="popline.jpg">
+      <source src="popline.webm" type="video/webm"><source src="popline.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#popline">Popline</a><span>none · Raleway bold</span>
+      <code>getPreset("Popline")</code></figcaption>
+  </figure>
+  <figure id="desert">
+    <video autoplay muted loop playsinline preload="metadata" poster="desert.jpg">
+      <source src="desert.webm" type="video/webm"><source src="desert.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#desert">Desert</a><span>bounce · Montserrat black</span>
+      <code>getPreset("Desert")</code></figcaption>
+  </figure>
+  <figure id="hook">
+    <video autoplay muted loop playsinline preload="metadata" poster="hook.jpg">
+      <source src="hook.webm" type="video/webm"><source src="hook.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#hook">Hook</a><span>underline · Lato black</span>
+      <code>getPreset("Hook")</code></figcaption>
+  </figure>
+  <figure id="sky">
+    <video autoplay muted loop playsinline preload="metadata" poster="sky.jpg">
+      <source src="sky.webm" type="video/webm"><source src="sky.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#sky">Sky</a><span>slide-left · Montserrat black</span>
+      <code>getPreset("Sky")</code></figcaption>
+  </figure>
+  <figure id="flamingo">
+    <video autoplay muted loop playsinline preload="metadata" poster="flamingo.jpg">
+      <source src="flamingo.webm" type="video/webm"><source src="flamingo.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#flamingo">Flamingo</a><span>scale · Montserrat black</span>
+      <code>getPreset("Flamingo")</code></figcaption>
+  </figure>
+  <figure id="deep-diver-bw">
+    <video autoplay muted loop playsinline preload="metadata" poster="deep-diver-bw.jpg">
+      <source src="deep-diver-bw.webm" type="video/webm"><source src="deep-diver-bw.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#deep-diver-bw">Deep Diver B&W</a><span>box · Raleway bold</span>
+      <code>getPreset("Deep Diver B&W")</code></figcaption>
+  </figure>
+  <figure id="new">
+    <video autoplay muted loop playsinline preload="metadata" poster="new.jpg">
+      <source src="new.webm" type="video/webm"><source src="new.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#new">New</a><span>pop · Montserrat bold</span>
+      <code>getPreset("New")</code></figcaption>
+  </figure>
+  <figure id="catchy">
+    <video autoplay muted loop playsinline preload="metadata" poster="catchy.jpg">
+      <source src="catchy.webm" type="video/webm"><source src="catchy.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#catchy">Catchy</a><span>bounce · Montserrat black</span>
+      <code>getPreset("Catchy")</code></figcaption>
+  </figure>
+  <figure id="from">
+    <video autoplay muted loop playsinline preload="metadata" poster="from.jpg">
+      <source src="from.webm" type="video/webm"><source src="from.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#from">From</a><span>pop · Kanit black</span>
+      <code>getPreset("From")</code></figcaption>
+  </figure>
+  <figure id="classic">
+    <video autoplay muted loop playsinline preload="metadata" poster="classic.jpg">
+      <source src="classic.webm" type="video/webm"><source src="classic.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#classic">Classic</a><span>none · Roboto bold</span>
+      <code>getPreset("Classic")</code></figcaption>
+  </figure>
+  <figure id="classic-big">
+    <video autoplay muted loop playsinline preload="metadata" poster="classic-big.jpg">
+      <source src="classic-big.webm" type="video/webm"><source src="classic-big.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#classic-big">Classic Big</a><span>none · Roboto medium</span>
+      <code>getPreset("Classic Big")</code></figcaption>
+  </figure>
+  <figure id="old-money">
+    <video autoplay muted loop playsinline preload="metadata" poster="old-money.jpg">
+      <source src="old-money.webm" type="video/webm"><source src="old-money.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#old-money">Old Money</a><span>slide-up · Playfair Display regular</span>
+      <code>getPreset("Old Money")</code></figcaption>
+  </figure>
+  <figure id="cinema">
+    <video autoplay muted loop playsinline preload="metadata" poster="cinema.jpg">
+      <source src="cinema.webm" type="video/webm"><source src="cinema.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#cinema">Cinema</a><span>none · Lato bold</span>
+      <code>getPreset("Cinema")</code></figcaption>
+  </figure>
+  <figure id="midnight-serif">
+    <video autoplay muted loop playsinline preload="metadata" poster="midnight-serif.jpg">
+      <source src="midnight-serif.webm" type="video/webm"><source src="midnight-serif.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#midnight-serif">Midnight Serif</a><span>box · Playfair Display bold</span>
+      <code>getPreset("Midnight Serif")</code></figcaption>
+  </figure>
+  <figure id="aurora-ink">
+    <video autoplay muted loop playsinline preload="metadata" poster="aurora-ink.jpg">
+      <source src="aurora-ink.webm" type="video/webm"><source src="aurora-ink.mp4" type="video/mp4">
+    </video>
+    <figcaption><a href="#aurora-ink">Aurora Ink</a><span>underline · Oswald bold</span>
+      <code>getPreset("Aurora Ink")</code></figcaption>
+  </figure>
+</main></body></html>

@@ -1,0 +1,288 @@
+[
+  {
+    "name": "Karaoke",
+    "slug": "karaoke",
+    "animation": "bounce",
+    "font": "Rubik black",
+    "files": {
+      "mp4": "karaoke.mp4",
+      "webm": "karaoke.webm",
+      "poster": "karaoke.jpg"
+    }
+  },
+  {
+    "name": "Focus Box",
+    "slug": "focus-box",
+    "animation": "box-word",
+    "font": "Montserrat black",
+    "files": {
+      "mp4": "focus-box.mp4",
+      "webm": "focus-box.webm",
+      "poster": "focus-box.jpg"
+    }
+  },
+  {
+    "name": "Banger",
+    "slug": "banger",
+    "animation": "pop",
+    "font": "Oswald bold",
+    "files": {
+      "mp4": "banger.mp4",
+      "webm": "banger.webm",
+      "poster": "banger.jpg"
+    }
+  },
+  {
+    "name": "Acid",
+    "slug": "acid",
+    "animation": "none",
+    "font": "PT Sans black",
+    "files": {
+      "mp4": "acid.mp4",
+      "webm": "acid.webm",
+      "poster": "acid.jpg"
+    }
+  },
+  {
+    "name": "Lovly",
+    "slug": "lovly",
+    "animation": "scale",
+    "font": "Pacifico medium",
+    "files": {
+      "mp4": "lovly.mp4",
+      "webm": "lovly.webm",
+      "poster": "lovly.jpg"
+    }
+  },
+  {
+    "name": "Marvel",
+    "slug": "marvel",
+    "animation": "scale",
+    "font": "Oswald medium",
+    "files": {
+      "mp4": "marvel.mp4",
+      "webm": "marvel.webm",
+      "poster": "marvel.jpg"
+    }
+  },
+  {
+    "name": "Marker",
+    "slug": "marker",
+    "animation": "underline",
+    "font": "Raleway black",
+    "files": {
+      "mp4": "marker.mp4",
+      "webm": "marker.webm",
+      "poster": "marker.jpg"
+    }
+  },
+  {
+    "name": "Neon Pulse",
+    "slug": "neon-pulse",
+    "animation": "slide-up",
+    "font": "Amatic SC black",
+    "files": {
+      "mp4": "neon-pulse.mp4",
+      "webm": "neon-pulse.webm",
+      "poster": "neon-pulse.jpg"
+    }
+  },
+  {
+    "name": "Beasty",
+    "slug": "beasty",
+    "animation": "pop",
+    "font": "Permanent Marker black",
+    "files": {
+      "mp4": "beasty.mp4",
+      "webm": "beasty.webm",
+      "poster": "beasty.jpg"
+    }
+  },
+  {
+    "name": "Crazy",
+    "slug": "crazy",
+    "animation": "none",
+    "font": "Montserrat black",
+    "files": {
+      "mp4": "crazy.mp4",
+      "webm": "crazy.webm",
+      "poster": "crazy.jpg"
+    }
+  },
+  {
+    "name": "Safari",
+    "slug": "safari",
+    "animation": "box",
+    "font": "Poppins bold",
+    "files": {
+      "mp4": "safari.mp4",
+      "webm": "safari.webm",
+      "poster": "safari.jpg"
+    }
+  },
+  {
+    "name": "Popline",
+    "slug": "popline",
+    "animation": "none",
+    "font": "Raleway bold",
+    "files": {
+      "mp4": "popline.mp4",
+      "webm": "popline.webm",
+      "poster": "popline.jpg"
+    }
+  },
+  {
+    "name": "Desert",
+    "slug": "desert",
+    "animation": "bounce",
+    "font": "Montserrat black",
+    "files": {
+      "mp4": "desert.mp4",
+      "webm": "desert.webm",
+      "poster": "desert.jpg"
+    }
+  },
+  {
+    "name": "Hook",
+    "slug": "hook",
+    "animation": "underline",
+    "font": "Lato black",
+    "files": {
+      "mp4": "hook.mp4",
+      "webm": "hook.webm",
+      "poster": "hook.jpg"
+    }
+  },
+  {
+    "name": "Sky",
+    "slug": "sky",
+    "animation": "slide-left",
+    "font": "Montserrat black",
+    "files": {
+      "mp4": "sky.mp4",
+      "webm": "sky.webm",
+      "poster": "sky.jpg"
+    }
+  },
+  {
+    "name": "Flamingo",
+    "slug": "flamingo",
+    "animation": "scale",
+    "font": "Montserrat black",
+    "files": {
+      "mp4": "flamingo.mp4",
+      "webm": "flamingo.webm",
+      "poster": "flamingo.jpg"
+    }
+  },
+  {
+    "name": "Deep Diver B&W",
+    "slug": "deep-diver-bw",
+    "animation": "box",
+    "font": "Raleway bold",
+    "files": {
+      "mp4": "deep-diver-bw.mp4",
+      "webm": "deep-diver-bw.webm",
+      "poster": "deep-diver-bw.jpg"
+    }
+  },
+  {
+    "name": "New",
+    "slug": "new",
+    "animation": "pop",
+    "font": "Montserrat bold",
+    "files": {
+      "mp4": "new.mp4",
+      "webm": "new.webm",
+      "poster": "new.jpg"
+    }
+  },
+  {
+    "name": "Catchy",
+    "slug": "catchy",
+    "animation": "bounce",
+    "font": "Montserrat black",
+    "files": {
+      "mp4": "catchy.mp4",
+      "webm": "catchy.webm",
+      "poster": "catchy.jpg"
+    }
+  },
+  {
+    "name": "From",
+    "slug": "from",
+    "animation": "pop",
+    "font": "Kanit black",
+    "files": {
+      "mp4": "from.mp4",
+      "webm": "from.webm",
+      "poster": "from.jpg"
+    }
+  },
+  {
+    "name": "Classic",
+    "slug": "classic",
+    "animation": "none",
+    "font": "Roboto bold",
+    "files": {
+      "mp4": "classic.mp4",
+      "webm": "classic.webm",
+      "poster": "classic.jpg"
+    }
+  },
+  {
+    "name": "Classic Big",
+    "slug": "classic-big",
+    "animation": "none",
+    "font": "Roboto medium",
+    "files": {
+      "mp4": "classic-big.mp4",
+      "webm": "classic-big.webm",
+      "poster": "classic-big.jpg"
+    }
+  },
+  {
+    "name": "Old Money",
+    "slug": "old-money",
+    "animation": "slide-up",
+    "font": "Playfair Display regular",
+    "files": {
+      "mp4": "old-money.mp4",
+      "webm": "old-money.webm",
+      "poster": "old-money.jpg"
+    }
+  },
+  {
+    "name": "Cinema",
+    "slug": "cinema",
+    "animation": "none",
+    "font": "Lato bold",
+    "files": {
+      "mp4": "cinema.mp4",
+      "webm": "cinema.webm",
+      "poster": "cinema.jpg"
+    }
+  },
+  {
+    "name": "Midnight Serif",
+    "slug": "midnight-serif",
+    "animation": "box",
+    "font": "Playfair Display bold",
+    "files": {
+      "mp4": "midnight-serif.mp4",
+      "webm": "midnight-serif.webm",
+      "poster": "midnight-serif.jpg"
+    }
+  },
+  {
+    "name": "Aurora Ink",
+    "slug": "aurora-ink",
+    "animation": "underline",
+    "font": "Oswald bold",
+    "files": {
+      "mp4": "aurora-ink.mp4",
+      "webm": "aurora-ink.webm",
+      "poster": "aurora-ink.jpg"
+    }
+  }
+]
