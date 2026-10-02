@@ -53,9 +53,11 @@ cd ../server       && pnpm publish --access public
   already exist on npm.
 - **Use `pnpm publish`, not `npm publish`** — npm would ship the literal
   `workspace:^` and break installs.
-- `prepublishOnly` copies the root `README.md`/`LICENSE` into the package and builds;
-  `postpublish` removes the copies. If a publish fails halfway, delete those copies
-  instead of committing them.
+- npm only ships files from inside the package folder. `LICENSE` is committed in each
+  package (`packages/*/LICENSE`, a copy of the root one — update all three if it ever
+  changes). The core README is the repo's root `README.md`: `prepublishOnly` copies it
+  in and `postpublish` removes it (it's gitignored). If a publish fails halfway, just
+  delete `packages/core/README.md`.
 
 ## 4. Docker image
 

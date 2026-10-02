@@ -46,8 +46,7 @@
     "start": "node dist/index.js",
     "test": "node test/animate.test.mjs && node test/cli.test.mjs",
     "clean": "rimraf dist",
-    "prepublishOnly": "cp ../../LICENSE ./LICENSE && pnpm run build",
-    "postpublish": "rm -f LICENSE",
+    "prepublishOnly": "pnpm run build",
     "docker:build": "docker build -t captionsjs-server .",
     "docker:run": "docker run --rm -p 4000:4000 captionsjs-server",
     "previews": "node scripts/render-previews.mjs"

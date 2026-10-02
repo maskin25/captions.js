@@ -54,8 +54,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts",
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
-    "prepublishOnly": "cp ../../README.md ./README.md && cp ../../LICENSE ./LICENSE && pnpm run build",
-    "postpublish": "rm -f README.md LICENSE",
+    "prepublishOnly": "cp ../../README.md ./README.md && pnpm run build",
+    "postpublish": "rm -f README.md",
     "test": "node test/types-smoke.mjs"
   },
   "devDependencies": {
