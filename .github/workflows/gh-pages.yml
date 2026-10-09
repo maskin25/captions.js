@@ -1,4 +1,6 @@
-name: Deploy Demo to GitHub Pages
+# Publishes only the redirect stub (index.html + 404.html) to the gh-pages branch, wiping
+# the old demo/docs/presets, so every old URL forwards to the same path on captionsjs.dev.
+name: GitHub Pages redirect + notify captionsjs.dev
 
 on:
   push:
@@ -9,62 +11,29 @@ permissions:
   contents: write
 
 jobs:
-  build-and-deploy:
+  redirect:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build library
-        run: pnpm --filter captions.js build
-
-      - name: Build configurator
-        run: pnpm --filter @maskin25/captions-configurator build
-
-      - name: Build demo
-        env:
-          VITE_PUBLIC_POSTHOG_KEY: ${{ vars.VITE_PUBLIC_POSTHOG_KEY }}
-          VITE_PUBLIC_POSTHOG_HOST: ${{ vars.VITE_PUBLIC_POSTHOG_HOST }}
-        run: |
-          pnpm --filter demo build
-          cp packages/demo/dist/index.html packages/demo/dist/404.html  # ✅ create 404 fallback
-
-      - name: Build docs
-        run: pnpm --filter docs run docs:build
-
-      - name: Render preset gallery
-        run: |
-          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
-          pnpm --filter @captionsjs/server build
-          pnpm --filter @captionsjs/server run previews ../../presets-dist
-
-      - name: Prepare GitHub Pages artifacts
-        run: |
-          rm -rf gh-pages-dist
-          mkdir -p gh-pages-dist
-          cp -r packages/demo/dist/. gh-pages-dist/
-          mkdir -p gh-pages-dist/docs
-          cp -r packages/docs/.vitepress/dist/. gh-pages-dist/docs/
-          mkdir -p gh-pages-dist/presets
-          cp -r presets-dist/. gh-pages-dist/presets/
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - uses: actions/checkout@v4
+      - run: mkdir -p gh-pages-dist && cp .github/pages-redirect/index.html .github/pages-redirect/404.html gh-pages-dist/ && touch gh-pages-dist/.nojekyll
+      - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: gh-pages-dist
+          force_orphan: true
+
+  # Rebuilds captionsjs.dev so docs, API reference and changelog follow main.
+  # SITE_DISPATCH_TOKEN: fine-grained PAT with "Contents: read and write" on maskin25/captionsjs-site.
+  # Skipped until the secret exists, so the redirect deploys either way.
+  notify-site:
+    runs-on: ubuntu-latest
+    env:
+      SITE_DISPATCH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+    steps:
+      - if: env.SITE_DISPATCH_TOKEN != ''
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.SITE_DISPATCH_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/maskin25/captionsjs-site/dispatches \
+            -d '{"event_type":"captionsjs-updated","client_payload":{"sha":"${{ github.sha }}"}}'
