@@ -91,8 +91,8 @@ cd "$(mktemp -d)" && npx --yes captions.js --version   # prints the server versi
 docker buildx imagetools inspect maskin25/captions.js-render:latest   # amd64 + arm64
 ```
 
-The preset gallery (`maskin25.github.io/captions.js/presets/`) is rebuilt by the
-GitHub Pages workflow on every push to `main` — nothing to do per release.
+The style gallery (`captionsjs.dev/styles`), docs and changelog on captionsjs.dev are
+rebuilt when the site deploys — nothing to do per release.
 
 ## Gotchas
 

@@ -8,7 +8,7 @@ In Node it runs on the same Konva scene graph through skia-canvas and pipes fram
 straight into FFmpeg. What your user styles in the editor is exactly what comes out
 of the render — same code, same pixels, no browser in production.
 
-[**Live Demo**](https://maskin25.github.io/captions.js/) · [**Docs & API Reference**](https://maskin25.github.io/captions.js/docs/) · [**GitHub**](https://github.com/maskin25/captions.js)
+[**Website**](https://captionsjs.dev) · [**Try it on your video**](https://captionsjs.dev/try) · [**Docs**](https://captionsjs.dev/docs) · [**API Reference**](https://captionsjs.dev/docs/api) · [**Changelog**](https://captionsjs.dev/changelog)
 
 ```bash
 npx captions.js burn talk.mp4 words.json --preset Karaoke
@@ -131,7 +131,7 @@ paragraph structure when the provider supplies it.
 
 - **26 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
   each a plain object you can clone and edit. `getPreset("Karaoke")` fetches one by name.
-  **[See them all animated →](https://maskin25.github.io/captions.js/presets/)**
+  **[See them all animated →](https://captionsjs.dev/styles)**
 - **10 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
   `slide-left`, `slide-up`, `slide-down`, `none`.
 - **Full typography control** — family, weight, size, stroke, shadow, capitalization,
