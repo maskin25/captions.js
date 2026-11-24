@@ -78,6 +78,14 @@ exact pixels differ between your machine and the CI runner. A block fails when
 its average moves by more than 32 in any channel, which catches layout, timing
 and animation changes but not small color shifts.
 
+`pnpm --filter @captionsjs/server test:parity` renders the same frames in headless
+Chromium and reports how far they are from the server renders, per preset
+(`test/parity-out/report.md`; findings in `docs/v2/parity.md`). It needs
+`pnpm --filter @captionsjs/server exec playwright install chromium` once; on an
+Ubuntu release newer than Playwright knows, prefix both commands with
+`PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64`. It is a report, not a CI gate;
+`--strict` makes it fail over the limit.
+
 ```bash
 pnpm --filter captions.js build && pnpm --filter @captionsjs/server build
 cd packages/server
