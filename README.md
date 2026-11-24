@@ -1,6 +1,6 @@
 # Captions.js
 
-### The same caption renderer in your live preview and in your FFmpeg pipeline. Pixel-identical output, no headless browser.
+### The same caption renderer in your live preview and in your FFmpeg pipeline. Same layout, same motion, visually identical — no headless browser.
 
 One `renderFrame` function draws word-level animated captions onto a canvas.
 In the browser it runs every frame as an overlay on top of a `<video>` element.
@@ -16,8 +16,8 @@ npx captions.js burn talk.mp4 words.json --preset Karaoke
 
 One command: a video and a transcript (Whisper, Deepgram, AssemblyAI, ElevenLabs,
 SRT/VTT or a plain JSON array) in,
-an mp4 with animated captions out. The same preset, frame for frame, runs live over
-a `<video>` in the browser.
+an mp4 with animated captions out. The same preset runs live over a `<video>` in the
+browser, with the same layout and motion.
 
 If Captions.js is useful for you, a quick ⭐ on [GitHub](https://github.com/maskin25/captions.js) helps a lot.
 
@@ -40,7 +40,7 @@ Full Remotion rendering does share code between preview and export, but the pric
 headless Chrome in your production pipeline. ASS/libass burns in reliably but can't do
 per-word scale, bounce or box animations. `drawtext` is a string-escaping nightmare.
 
-Captions.js is the narrow tool: kinetic word-level captions, identical in both places,
+Captions.js is the narrow tool: kinetic word-level captions that look the same in both places,
 running on plain canvas.
 
 ## Installation
@@ -105,7 +105,9 @@ npx captions.js presets   # list preset names
 
 Preset fonts are fetched from Google Fonts on first use and cached. Font size follows
 the same rule as the browser overlay (`videoHeight / 480`), so the export matches the
-preview. Driving `renderFrame` yourself (custom pipelines, other encoders) — see
+preview. Browser and server draw text with different engines (Chromium vs Skia), so
+edges can differ by a pixel; every preset is measured against the browser in
+[`docs/v2/parity.md`](./docs/v2/parity.md). Driving `renderFrame` yourself (custom pipelines, other encoders) — see
 [`packages/server/src/render/burnCaptions.ts`](./packages/server/src/render/burnCaptions.ts).
 
 ## Captions input
