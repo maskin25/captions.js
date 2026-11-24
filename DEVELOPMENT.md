@@ -72,6 +72,12 @@ reference phrase, at 540×960 and 1080×1920, rendered through the server path
 `pnpm --filter @captionsjs/server test` compares fresh renders against them, and
 CI runs it on every PR.
 
+Frames are compared as 8×8 px block averages (16×16 at 1080 wide), not pixel by
+pixel: Skia rasterizes shadow and glow blur a little differently on each CPU, so
+exact pixels differ between your machine and the CI runner. A block fails when
+its average moves by more than 32 in any channel, which catches layout, timing
+and animation changes but not small color shifts.
+
 ```bash
 pnpm --filter captions.js build && pnpm --filter @captionsjs/server build
 cd packages/server

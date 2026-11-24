@@ -1,5 +1,5 @@
 // Golden frames: every built-in preset, rendered by the server path
-// (Konva + skia-canvas), compared pixel by pixel with checked-in PNGs.
+// (Konva + skia-canvas), compared with checked-in PNGs.
 // This is the safety net for the 2.0 engine work: any change to how a preset
 // looks shows up here and has to be approved by regenerating the baselines.
 //
@@ -50,10 +50,18 @@ const SIZES = [
   [1080, 1920],
 ];
 
-// A pixel counts as different when any channel differs by more than this.
+// Skia rasterizes blur (shadows, glows) slightly differently per CPU, so the
+// same commit gives frames that differ by up to ~40 per channel at glyph edges
+// on another machine. Frames are therefore compared as averages over square
+// blocks (8 px at 540 wide, scaled with the frame): a frame fails when any
+// block's average differs by more than BLOCK_TOLERANCE in any channel.
+// Measured on GitHub runners vs a local i5-14600K: cross-machine noise peaks
+// at 19, while a real change (a highlight moving one word) starts at ~90.
+// Changes smaller than this, such as a slight color shift, are not caught.
+const BLOCK_SIZE_AT_540 = 8;
+const BLOCK_TOLERANCE = 32;
+// For the diff image only: a pixel is drawn red when a channel differs more.
 const CHANNEL_TOLERANCE = 2;
-// A frame fails when more than this share of its pixels differ.
-const MAX_DIFF_RATIO = 0.0005;
 
 const slugify = (name) =>
   name.toLowerCase().replace(/&/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -95,12 +103,35 @@ const compare = async (expectedPng, actualPng) => {
   const a = await pixels(expectedPng);
   const b = await pixels(actualPng);
   if (a.width !== b.width || a.height !== b.height) {
-    return { ratio: 1, diffPng: null, reason: `size ${a.width}x${a.height} vs ${b.width}x${b.height}` };
+    return { failed: true, diffPng: null, reason: `size ${a.width}x${a.height} vs ${b.width}x${b.height}` };
   }
-  const diff = new Canvas(a.width, a.height);
+  const { width, height } = a;
+
+  // pass/fail: block averages
+  const bs = Math.max(1, Math.round((BLOCK_SIZE_AT_540 * width) / 540));
+  let worst = 0;
+  let badBlocks = 0;
+  for (let by = 0; by < height; by += bs) {
+    for (let bx = 0; bx < width; bx += bs) {
+      const sum = [0, 0, 0, 0];
+      let n = 0;
+      for (let y = by; y < Math.min(height, by + bs); y++) {
+        for (let x = bx; x < Math.min(width, bx + bs); x++) {
+          const i = (y * width + x) * 4;
+          for (let c = 0; c < 4; c++) sum[c] += a.data[i + c] - b.data[i + c];
+          n++;
+        }
+      }
+      const delta = Math.max(...sum.map((v) => Math.abs(v) / n));
+      if (delta > worst) worst = delta;
+      if (delta > BLOCK_TOLERANCE) badBlocks++;
+    }
+  }
+
+  // diff image for review: changed pixels in red over a faint expected frame
+  const diff = new Canvas(width, height);
   const dctx = diff.getContext("2d");
-  const out = dctx.createImageData(a.width, a.height);
-  let changed = 0;
+  const out = dctx.createImageData(width, height);
   for (let i = 0; i < a.data.length; i += 4) {
     const delta = Math.max(
       Math.abs(a.data[i] - b.data[i]),
@@ -108,17 +139,16 @@ const compare = async (expectedPng, actualPng) => {
       Math.abs(a.data[i + 2] - b.data[i + 2]),
       Math.abs(a.data[i + 3] - b.data[i + 3]),
     );
-    if (delta > CHANNEL_TOLERANCE) {
-      changed++;
-      out.data.set([255, 0, 0, 255], i);
-    } else {
-      // faint copy of the expected frame for orientation
-      out.data.set([a.data[i] / 4, a.data[i + 1] / 4, a.data[i + 2] / 4, a.data[i + 3] / 4], i);
-    }
+    if (delta > CHANNEL_TOLERANCE) out.data.set([255, 0, 0, 255], i);
+    else out.data.set([a.data[i] / 4, a.data[i + 1] / 4, a.data[i + 2] / 4, a.data[i + 3] / 4], i);
   }
   dctx.putImageData(out, 0, 0);
-  const ratio = changed / (a.width * a.height);
-  return { ratio, changed, diffPng: ratio > 0 ? await diff.toBuffer("png") : null };
+  const failed = badBlocks > 0;
+  return {
+    failed,
+    diffPng: failed ? await diff.toBuffer("png") : null,
+    reason: `${badBlocks} block(s) of ${bs}px differ (worst average delta ${worst.toFixed(1)}, limit ${BLOCK_TOLERANCE})`,
+  };
 };
 
 let failures = 0;
@@ -146,10 +176,10 @@ for (const name of names) {
         results.push(`missing ${file}`);
         continue;
       }
-      const { ratio, changed, diffPng, reason } = await compare(fs.readFileSync(baseline), actual);
-      if (ratio > MAX_DIFF_RATIO) {
+      const { failed, diffPng, reason } = await compare(fs.readFileSync(baseline), actual);
+      if (failed) {
         failures++;
-        results.push(`${file}: ${reason ?? `${changed} px (${(ratio * 100).toFixed(3)}%) differ`}`);
+        results.push(`${file}: ${reason}`);
         const base = path.join(outDir, file.replace(/\.png$/, ""));
         fs.mkdirSync(path.dirname(base), { recursive: true });
         fs.writeFileSync(`${base}.actual.png`, actual);
