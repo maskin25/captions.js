@@ -1,0 +1,122 @@
+{
+ "track": {
+  "words": [
+   {
+    "text": "Hi,",
+    "start": 0.12,
+    "end": 0.38,
+    "confidence": 0.99,
+    "speaker": "A"
+   },
+   {
+    "text": "I'm",
+    "start": 0.4,
+    "end": 0.56,
+    "confidence": 0.97,
+    "speaker": "A"
+   },
+   {
+    "text": "Ana.",
+    "start": 0.56,
+    "end": 0.98,
+    "confidence": 0.93,
+    "speaker": "A"
+   },
+   {
+    "text": "And",
+    "start": 1.4,
+    "end": 1.55,
+    "confidence": 0.96,
+    "speaker": "B"
+   },
+   {
+    "text": "I'm",
+    "start": 1.55,
+    "end": 1.7,
+    "confidence": 0.98,
+    "speaker": "B"
+   },
+   {
+    "text": "Ben.",
+    "start": 1.7,
+    "end": 2.1,
+    "confidence": 0.99,
+    "speaker": "B"
+   }
+  ],
+  "paragraphs": [
+   {
+    "start": 0.12,
+    "end": 0.98,
+    "speaker": "A"
+   },
+   {
+    "start": 1.4,
+    "end": 2.1,
+    "speaker": "B"
+   }
+  ],
+  "speakers": [
+   {
+    "id": "A"
+   },
+   {
+    "id": "B"
+   }
+  ],
+  "meta": {
+   "source": "assemblyai",
+   "language": "en_us"
+  }
+ },
+ "captions": [
+  {
+   "word": "Hi,",
+   "startTime": 0.12,
+   "endTime": 0.38,
+   "paragraphStartTime": 0.12,
+   "paragraphEndTime": 0.98,
+   "speaker": 0
+  },
+  {
+   "word": "I'm",
+   "startTime": 0.4,
+   "endTime": 0.56,
+   "paragraphStartTime": 0.12,
+   "paragraphEndTime": 0.98,
+   "speaker": 0
+  },
+  {
+   "word": "Ana.",
+   "startTime": 0.56,
+   "endTime": 0.98,
+   "paragraphStartTime": 0.12,
+   "paragraphEndTime": 0.98,
+   "speaker": 0
+  },
+  {
+   "word": "And",
+   "startTime": 1.4,
+   "endTime": 1.55,
+   "paragraphStartTime": 1.4,
+   "paragraphEndTime": 2.1,
+   "speaker": 1
+  },
+  {
+   "word": "I'm",
+   "startTime": 1.55,
+   "endTime": 1.7,
+   "paragraphStartTime": 1.4,
+   "paragraphEndTime": 2.1,
+   "speaker": 1
+  },
+  {
+   "word": "Ben.",
+   "startTime": 1.7,
+   "endTime": 2.1,
+   "paragraphStartTime": 1.4,
+   "paragraphEndTime": 2.1,
+   "speaker": 1
+  }
+ ]
+}

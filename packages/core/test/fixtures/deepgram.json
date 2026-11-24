@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "transaction_key": "deprecated",
+    "request_id": "fixture",
+    "sha256": "fixture",
+    "created": "2026-11-24T10:00:00.000Z",
+    "duration": 4.2,
+    "channels": 1,
+    "models": ["fixture"],
+    "model_info": { "fixture": { "name": "nova-3", "version": "fixture", "arch": "nova-3" } }
+  },
+  "results": {
+    "channels": [
+      {
+        "detected_language": "en",
+        "alternatives": [
+          {
+            "transcript": "hello there welcome back so today we test",
+            "confidence": 0.99,
+            "words": [
+              { "word": "hello", "start": 0.08, "end": 0.4, "confidence": 0.99, "speaker": 0, "speaker_confidence": 0.8, "punctuated_word": "Hello" },
+              { "word": "there", "start": 0.4, "end": 0.72, "confidence": 0.98, "speaker": 0, "speaker_confidence": 0.8, "punctuated_word": "there." },
+              { "word": "welcome", "start": 0.9, "end": 1.3, "confidence": 0.97, "speaker": 0, "speaker_confidence": 0.8, "punctuated_word": "Welcome" },
+              { "word": "back", "start": 1.3, "end": 1.62, "confidence": 0.99, "speaker": 0, "speaker_confidence": 0.8, "punctuated_word": "back." },
+              { "word": "so", "start": 2.1, "end": 2.3, "confidence": 0.9, "speaker": 1, "speaker_confidence": 0.7, "punctuated_word": "So" },
+              { "word": "today", "start": 2.3, "end": 2.7, "confidence": 0.99, "speaker": 1, "speaker_confidence": 0.7, "punctuated_word": "today" },
+              { "word": "we", "start": 2.7, "end": 2.85, "confidence": 0.99, "speaker": 1, "speaker_confidence": 0.7, "punctuated_word": "we" },
+              { "word": "test", "start": 2.85, "end": 3.3, "confidence": 0.95, "speaker": 1, "speaker_confidence": 0.7, "punctuated_word": "test." }
+            ],
+            "paragraphs": {
+              "transcript": "\nSpeaker 0: Hello there. Welcome back.\n\nSpeaker 1: So today we test.",
+              "paragraphs": [
+                {
+                  "sentences": [
+                    { "text": "Hello there.", "start": 0.08, "end": 0.72 },
+                    { "text": "Welcome back.", "start": 0.9, "end": 1.62 }
+                  ],
+                  "speaker": 0, "num_words": 4, "start": 0.08, "end": 1.62
+                },
+                {
+                  "sentences": [{ "text": "So today we test.", "start": 2.1, "end": 3.3 }],
+                  "speaker": 1, "num_words": 4, "start": 2.1, "end": 3.3
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "utterances": []
+  }
+}

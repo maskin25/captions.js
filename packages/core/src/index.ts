@@ -41,5 +41,41 @@ export {
 
 export type { CaptionsSettings } from "./entities/captions/captions.types";
 
+/** Normalized caption track, its input adapters and validation. */
+export type {
+  CaptionTrack,
+  TrackWord,
+  TrackSegment,
+  TrackSpeaker,
+  TrackEvent,
+  TrackMeta,
+  TrackSource,
+  EmphasisSource,
+} from "./track/track.types";
+export {
+  toTrack,
+  detectFormat,
+  fromAssemblyAI,
+  fromCaptions,
+  fromDeepgram,
+  fromElevenLabs,
+  fromSrt,
+  fromVtt,
+  fromWhisper,
+  fromWhisperCpp,
+  fromWords,
+  type AssemblyAITranscript,
+  type ElevenLabsTranscript,
+  type WhisperVerboseJson,
+  type WhisperCppJson,
+} from "./track/adapters";
+export {
+  trackToCaptions,
+  validate,
+  type TrackIssue,
+  type TrackValidation,
+} from "./track/track.helpers";
+export type { DeepgramResponse } from "./captions-adapters/deepgram";
+
 /** Default export is the `captionsjs()` factory for ergonomic imports. */
 export default captionsjs;

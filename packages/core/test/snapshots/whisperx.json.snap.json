@@ -1,0 +1,108 @@
+{
+ "track": {
+  "words": [
+   {
+    "text": "It",
+    "start": 0.031,
+    "end": 0.15,
+    "confidence": 0.91,
+    "speaker": "SPEAKER_00"
+   },
+   {
+    "text": "costs",
+    "start": 0.2,
+    "end": 0.61,
+    "confidence": 0.88,
+    "speaker": "SPEAKER_00"
+   },
+   {
+    "text": "25",
+    "start": 0.61,
+    "end": 1.4,
+    "approximated": true,
+    "speaker": "SPEAKER_00"
+   },
+   {
+    "text": "dollars.",
+    "start": 1.4,
+    "end": 2.2,
+    "confidence": 0.93,
+    "speaker": "SPEAKER_00"
+   },
+   {
+    "text": "Really?",
+    "start": 2.5,
+    "end": 3.1,
+    "confidence": 0.8,
+    "speaker": "SPEAKER_01"
+   }
+  ],
+  "sentences": [
+   {
+    "start": 0.031,
+    "end": 2.2,
+    "speaker": "SPEAKER_00"
+   },
+   {
+    "start": 2.5,
+    "end": 3.1,
+    "speaker": "SPEAKER_01"
+   }
+  ],
+  "speakers": [
+   {
+    "id": "SPEAKER_00"
+   },
+   {
+    "id": "SPEAKER_01"
+   }
+  ],
+  "meta": {
+   "source": "whisper",
+   "language": "en",
+   "approximated": true
+  }
+ },
+ "captions": [
+  {
+   "word": "It",
+   "startTime": 0.031,
+   "endTime": 0.15,
+   "sentenceStartTime": 0.031,
+   "sentenceEndTime": 2.2,
+   "speaker": 0
+  },
+  {
+   "word": "costs",
+   "startTime": 0.2,
+   "endTime": 0.61,
+   "sentenceStartTime": 0.031,
+   "sentenceEndTime": 2.2,
+   "speaker": 0
+  },
+  {
+   "word": "25",
+   "startTime": 0.61,
+   "endTime": 1.4,
+   "sentenceStartTime": 0.031,
+   "sentenceEndTime": 2.2,
+   "speaker": 0
+  },
+  {
+   "word": "dollars.",
+   "startTime": 1.4,
+   "endTime": 2.2,
+   "sentenceStartTime": 0.031,
+   "sentenceEndTime": 2.2,
+   "speaker": 0
+  },
+  {
+   "word": "Really?",
+   "startTime": 2.5,
+   "endTime": 3.1,
+   "sentenceStartTime": 2.5,
+   "sentenceEndTime": 3.1,
+   "speaker": 1
+  }
+ ]
+}

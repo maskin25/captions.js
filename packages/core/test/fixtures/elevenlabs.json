@@ -1,0 +1,16 @@
+{
+  "language_code": "eng",
+  "language_probability": 0.98,
+  "text": "That was great (laughter) really.",
+  "words": [
+    { "text": "That", "start": 0.12, "end": 0.33, "type": "word", "speaker_id": "speaker_0", "logprob": -0.01 },
+    { "text": " ", "start": 0.33, "end": 0.35, "type": "spacing", "speaker_id": "speaker_0", "logprob": 0 },
+    { "text": "was", "start": 0.35, "end": 0.5, "type": "word", "speaker_id": "speaker_0", "logprob": -0.05 },
+    { "text": " ", "start": 0.5, "end": 0.52, "type": "spacing", "speaker_id": "speaker_0", "logprob": 0 },
+    { "text": "great", "start": 0.52, "end": 0.9, "type": "word", "speaker_id": "speaker_0", "logprob": -0.2 },
+    { "text": " ", "start": 0.9, "end": 0.95, "type": "spacing", "speaker_id": "speaker_0", "logprob": 0 },
+    { "text": "(laughter)", "start": 0.95, "end": 1.8, "type": "audio_event", "speaker_id": "speaker_1", "logprob": 0 },
+    { "text": " ", "start": 1.8, "end": 1.85, "type": "spacing", "speaker_id": "speaker_1", "logprob": 0 },
+    { "text": "really.", "start": 1.85, "end": 2.3, "type": "word", "speaker_id": "speaker_1", "logprob": -0.4 }
+  ]
+}

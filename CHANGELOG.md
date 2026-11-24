@@ -1,5 +1,40 @@
 # Changelog
 
+## Unreleased (2.0)
+
+### captions.js
+- **Added:** `CaptionTrack`, the normalized track every input becomes: words
+  with optional confidence, speaker, language and emphasis; sentences,
+  paragraphs, speakers and audio events. `toTrack(input)` detects the format,
+  `trackToCaptions(track)` gives the renderer's `Caption[]`, and
+  `validate(track)` reports non-finite or reversed times, empty words,
+  overlaps and unknown speakers.
+- **Added:** input adapters in core: OpenAI Whisper `verbose_json` (also
+  faster-whisper and WhisperX), whisper.cpp JSON, SRT, WebVTT, AssemblyAI,
+  ElevenLabs Scribe, loose `{ word | text, start, end }` arrays and a
+  `CaptionTrack` object, next to Deepgram. `toCaptions()` now accepts all of
+  them, so the browser and the CLI take the same files (Whisper JSON and
+  `{ word, start, end }` used to throw in the browser). Each adapter is also
+  exported on its own (`fromWhisper`, `fromSrt`, ...), plus `detectFormat()`.
+- **Added:** `*word*` and `*several words*` in any text input mark manual
+  emphasis; the asterisks are removed from the text.
+- SRT and VTT have no word times: each cue's time is spread over its words by
+  length and those words are marked `approximated`. VTT inline timestamps
+  (`<00:00:01.200>word`) and `<v Speaker>` are used when present. Cues that are
+  only `[Music]` or `(laughs)` become events instead of words.
+- Deepgram output of `toCaptions()` is unchanged (checked against 1.10.0). A
+  Deepgram response with paragraphs but no word list now yields interpolated
+  words instead of one "word" per sentence.
+
+### @captionsjs/server
+- The CLI and `loadCaptions()` use the core adapters, so `npx captions.js burn
+  talk.mp4 talk.srt` works, as do `.vtt` files and every JSON format above.
+  Whisper input now carries segment bounds, so screens break at segment ends.
+
+### Repo
+- Golden frames: 260 PNGs (26 presets × 5 moments × 2 sizes) compared on
+  every PR; see DEVELOPMENT.md.
+
 ## captions.js 1.10.0 · @captionsjs/server 0.1.1 — 2026-10-01
 
 ### captions.js

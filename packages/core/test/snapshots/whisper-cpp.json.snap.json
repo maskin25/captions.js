@@ -1,0 +1,88 @@
+{
+ "track": {
+  "words": [
+   {
+    "text": "Captions",
+    "start": 0,
+    "end": 0.7,
+    "confidence": 0.9
+   },
+   {
+    "text": "everywhere.",
+    "start": 0.7,
+    "end": 1.5,
+    "confidence": 0.97
+   },
+   {
+    "text": "No",
+    "start": 1.8,
+    "end": 2.04,
+    "approximated": true
+   },
+   {
+    "text": "tokens",
+    "start": 2.04,
+    "end": 2.6,
+    "approximated": true
+   },
+   {
+    "text": "here",
+    "start": 2.6,
+    "end": 3,
+    "approximated": true
+   }
+  ],
+  "sentences": [
+   {
+    "start": 0,
+    "end": 1.5
+   },
+   {
+    "start": 1.8,
+    "end": 3
+   }
+  ],
+  "meta": {
+   "source": "whisper.cpp",
+   "language": "en",
+   "approximated": true
+  }
+ },
+ "captions": [
+  {
+   "word": "Captions",
+   "startTime": 0,
+   "endTime": 0.7,
+   "sentenceStartTime": 0,
+   "sentenceEndTime": 1.5
+  },
+  {
+   "word": "everywhere.",
+   "startTime": 0.7,
+   "endTime": 1.5,
+   "sentenceStartTime": 0,
+   "sentenceEndTime": 1.5
+  },
+  {
+   "word": "No",
+   "startTime": 1.8,
+   "endTime": 2.04,
+   "sentenceStartTime": 1.8,
+   "sentenceEndTime": 3
+  },
+  {
+   "word": "tokens",
+   "startTime": 2.04,
+   "endTime": 2.6,
+   "sentenceStartTime": 1.8,
+   "sentenceEndTime": 3
+  },
+  {
+   "word": "here",
+   "startTime": 2.6,
+   "endTime": 3,
+   "sentenceStartTime": 1.8,
+   "sentenceEndTime": 3
+  }
+ ]
+}

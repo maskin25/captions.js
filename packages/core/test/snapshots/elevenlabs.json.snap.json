@@ -1,0 +1,80 @@
+{
+ "track": {
+  "words": [
+   {
+    "text": "That",
+    "start": 0.12,
+    "end": 0.33,
+    "confidence": 0.99,
+    "speaker": "speaker_0"
+   },
+   {
+    "text": "was",
+    "start": 0.35,
+    "end": 0.5,
+    "confidence": 0.951,
+    "speaker": "speaker_0"
+   },
+   {
+    "text": "great",
+    "start": 0.52,
+    "end": 0.9,
+    "confidence": 0.819,
+    "speaker": "speaker_0"
+   },
+   {
+    "text": "really.",
+    "start": 1.85,
+    "end": 2.3,
+    "confidence": 0.67,
+    "speaker": "speaker_1"
+   }
+  ],
+  "events": [
+   {
+    "type": "laughter",
+    "start": 0.95,
+    "end": 1.8,
+    "label": "(laughter)"
+   }
+  ],
+  "speakers": [
+   {
+    "id": "speaker_0"
+   },
+   {
+    "id": "speaker_1"
+   }
+  ],
+  "meta": {
+   "source": "elevenlabs",
+   "language": "eng"
+  }
+ },
+ "captions": [
+  {
+   "word": "That",
+   "startTime": 0.12,
+   "endTime": 0.33,
+   "speaker": 0
+  },
+  {
+   "word": "was",
+   "startTime": 0.35,
+   "endTime": 0.5,
+   "speaker": 0
+  },
+  {
+   "word": "great",
+   "startTime": 0.52,
+   "endTime": 0.9,
+   "speaker": 0
+  },
+  {
+   "word": "really.",
+   "startTime": 1.85,
+   "endTime": 2.3,
+   "speaker": 1
+  }
+ ]
+}

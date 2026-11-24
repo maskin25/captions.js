@@ -1,0 +1,20 @@
+{
+  "id": "fixture",
+  "status": "completed",
+  "audio_url": "https://example.com/audio.mp3",
+  "language_code": "en_us",
+  "text": "Hi, I'm Ana. And I'm Ben.",
+  "confidence": 0.95,
+  "words": [
+    { "text": "Hi,", "start": 120, "end": 380, "confidence": 0.99, "speaker": "A" },
+    { "text": "I'm", "start": 400, "end": 560, "confidence": 0.97, "speaker": "A" },
+    { "text": "Ana.", "start": 560, "end": 980, "confidence": 0.93, "speaker": "A" },
+    { "text": "And", "start": 1400, "end": 1550, "confidence": 0.96, "speaker": "B" },
+    { "text": "I'm", "start": 1550, "end": 1700, "confidence": 0.98, "speaker": "B" },
+    { "text": "Ben.", "start": 1700, "end": 2100, "confidence": 0.99, "speaker": "B" }
+  ],
+  "utterances": [
+    { "speaker": "A", "start": 120, "end": 980, "text": "Hi, I'm Ana.", "confidence": 0.96, "words": [] },
+    { "speaker": "B", "start": 1400, "end": 2100, "text": "And I'm Ben.", "confidence": 0.97, "words": [] }
+  ]
+}

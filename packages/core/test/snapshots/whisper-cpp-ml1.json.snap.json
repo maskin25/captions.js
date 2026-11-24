@@ -1,0 +1,42 @@
+{
+ "track": {
+  "words": [
+   {
+    "text": "Same",
+    "start": 0,
+    "end": 0.41
+   },
+   {
+    "text": "renderer",
+    "start": 0.41,
+    "end": 0.98
+   },
+   {
+    "text": "twice.",
+    "start": 0.98,
+    "end": 1.5
+   }
+  ],
+  "meta": {
+   "source": "whisper.cpp",
+   "language": "en"
+  }
+ },
+ "captions": [
+  {
+   "word": "Same",
+   "startTime": 0,
+   "endTime": 0.41
+  },
+  {
+   "word": "renderer",
+   "startTime": 0.41,
+   "endTime": 0.98
+  },
+  {
+   "word": "twice.",
+   "startTime": 0.98,
+   "endTime": 1.5
+  }
+ ]
+}

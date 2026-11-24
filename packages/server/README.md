@@ -11,13 +11,22 @@ npx captions.js burn talk.mp4 words.json --preset Karaoke
 # → talk.captions.mp4
 ```
 
-`words.json` is any of:
+The transcript can be any of:
 
 ```jsonc
 [{ "word": "Hello", "start": 0.12, "end": 0.48 }, ...]   // plain word timings
-{ "segments": [{ "words": [...] }] }                     // OpenAI Whisper verbose_json
-{ "results": { "channels": [...] } }                     // Deepgram response
+{ "words": [...], "speakers": [...] }                     // a captions.js CaptionTrack
+{ "segments": [...], "words": [...] }                     // OpenAI Whisper verbose_json, faster-whisper, WhisperX
+{ "transcription": [{ "offsets": {...}, ... }] }          // whisper.cpp --output-json
+{ "results": { "channels": [...] } }                      // Deepgram
+{ "status": "completed", "words": [...] }                 // AssemblyAI
+{ "language_probability": 0.98, "words": [...] }          // ElevenLabs Scribe
 ```
+
+or an `.srt` / `.vtt` file. SRT and VTT carry no word times, so each cue's time
+is spread over its words by length (VTT inline `<00:00:01.200>` timestamps are
+used when present). The browser library's `toCaptions()` accepts exactly the
+same inputs.
 
 | Option | |
 | --- | --- |
