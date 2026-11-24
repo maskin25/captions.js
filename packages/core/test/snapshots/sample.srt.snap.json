@@ -1,0 +1,149 @@
+{
+ "track": {
+  "words": [
+   {
+    "text": "Hello",
+    "start": 1,
+    "end": 1.265,
+    "approximated": true
+   },
+   {
+    "text": "world,",
+    "start": 1.265,
+    "end": 1.574,
+    "approximated": true
+   },
+   {
+    "text": "this",
+    "start": 1.574,
+    "end": 1.794,
+    "approximated": true
+   },
+   {
+    "text": "is",
+    "start": 1.794,
+    "end": 1.926,
+    "approximated": true
+   },
+   {
+    "text": "very",
+    "start": 1.926,
+    "end": 2.235,
+    "approximated": true,
+    "emphasis": 1,
+    "emphasisSource": "manual"
+   },
+   {
+    "text": "nice.",
+    "start": 2.235,
+    "end": 2.5,
+    "approximated": true
+   },
+   {
+    "text": "Bye",
+    "start": 4.2,
+    "end": 4.446,
+    "approximated": true
+   },
+   {
+    "text": "&",
+    "start": 4.446,
+    "end": 4.569,
+    "approximated": true
+   },
+   {
+    "text": "thanks",
+    "start": 4.569,
+    "end": 5,
+    "approximated": true
+   }
+  ],
+  "sentences": [
+   {
+    "start": 1,
+    "end": 2.5
+   },
+   {
+    "start": 4.2,
+    "end": 5
+   }
+  ],
+  "events": [
+   {
+    "type": "music",
+    "start": 3,
+    "end": 4,
+    "label": "[Music]"
+   }
+  ],
+  "meta": {
+   "source": "srt",
+   "approximated": true
+  }
+ },
+ "captions": [
+  {
+   "word": "Hello",
+   "startTime": 1,
+   "endTime": 1.265,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2.5
+  },
+  {
+   "word": "world,",
+   "startTime": 1.265,
+   "endTime": 1.574,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2.5
+  },
+  {
+   "word": "this",
+   "startTime": 1.574,
+   "endTime": 1.794,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2.5
+  },
+  {
+   "word": "is",
+   "startTime": 1.794,
+   "endTime": 1.926,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2.5
+  },
+  {
+   "word": "very",
+   "startTime": 1.926,
+   "endTime": 2.235,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2.5
+  },
+  {
+   "word": "nice.",
+   "startTime": 2.235,
+   "endTime": 2.5,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2.5
+  },
+  {
+   "word": "Bye",
+   "startTime": 4.2,
+   "endTime": 4.446,
+   "sentenceStartTime": 4.2,
+   "sentenceEndTime": 5
+  },
+  {
+   "word": "&",
+   "startTime": 4.446,
+   "endTime": 4.569,
+   "sentenceStartTime": 4.2,
+   "sentenceEndTime": 5
+  },
+  {
+   "word": "thanks",
+   "startTime": 4.569,
+   "endTime": 5,
+   "sentenceStartTime": 4.2,
+   "sentenceEndTime": 5
+  }
+ ]
+}

@@ -1,72 +1,36 @@
 import type { Caption } from "../entities/captions/captions.types";
 import {
   DeepgramParagraph,
-  toCaptions as toDeepgramCaptions,
   type DeepgramResponse,
   getParagraphs as getDeepgramParagraphs,
 } from "./deepgram";
-import { toCaptions as toPlainCaptions, type PlainCaptions } from "./plain";
+import { toTrack } from "../track/adapters";
+import { isCaptions } from "../track/adapters/loose";
+import { isDeepgram } from "../track/adapters/deepgram";
+import { trackToCaptions } from "../track/track.helpers";
+import type { CaptionTrack } from "../track/track.types";
 
-export type CaptionsInput = DeepgramResponse | PlainCaptions;
+/**
+ * Anything {@link toCaptions} accepts: `Caption[]`, a {@link CaptionTrack},
+ * a speech-to-text response, or SRT / WebVTT / JSON text. See `toTrack` for
+ * the full list of formats.
+ */
+export type CaptionsInput = DeepgramResponse | Caption[] | CaptionTrack | string | Record<string, unknown> | unknown[];
 
-const isObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
-
-const isFiniteNumber = (value: unknown): value is number =>
-  typeof value === "number" && Number.isFinite(value);
-
-const isCaptionEntry = (value: unknown): value is Caption => {
-  if (!isObject(value)) return false;
-  return (
-    typeof value.word === "string" &&
-    isFiniteNumber(value.startTime) &&
-    isFiniteNumber(value.endTime)
-  );
-};
-
-const isPlainCaptions = (value: unknown): value is PlainCaptions =>
-  Array.isArray(value) && value.every((entry) => isCaptionEntry(entry));
-
-const hasDeepgramChannels = (value: Record<string, unknown>): boolean => {
-  const results = value.results;
-  if (!isObject(results) || !Array.isArray(results.channels)) return false;
-
-  return results.channels.every(
-    (channel) =>
-      isObject(channel) &&
-      Array.isArray(channel.alternatives) &&
-      channel.alternatives.every(
-        (alternative) =>
-          isObject(alternative) && Array.isArray(alternative.words),
-      ),
-  );
-};
-
-const isDeepgramResponse = (value: unknown): value is DeepgramResponse => {
-  if (!isObject(value)) return false;
-
-  if (hasDeepgramChannels(value)) return true;
-
-  const result = value.result;
-  if (!isObject(result)) return false;
-
-  return hasDeepgramChannels(result);
-};
-
+/**
+ * Converts any supported transcript into the `Caption[]` the renderer reads.
+ * Same as `trackToCaptions(toTrack(input))`, except that a `Caption[]` is
+ * returned as it is.
+ *
+ * @throws When the format is not recognized.
+ */
 export const toCaptions = (input: unknown): Caption[] => {
-  if (isPlainCaptions(input)) {
-    return toPlainCaptions(input);
-  }
-
-  if (isDeepgramResponse(input)) {
-    return toDeepgramCaptions(input);
-  }
-
-  throw new Error("Unsupported captions format: unable to detect adapter.");
+  if (isCaptions(input)) return input;
+  return trackToCaptions(toTrack(input));
 };
 
 export const getParagraphs = (input: unknown): DeepgramParagraph[] | null => {
-  if (isDeepgramResponse(input)) {
+  if (isDeepgram(input)) {
     return getDeepgramParagraphs(input);
   }
 

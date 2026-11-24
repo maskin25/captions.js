@@ -64,6 +64,35 @@ pnpm --filter captions-storybook run storybook
 
 ---
 
+## 🖼️ Golden frames
+
+`packages/server/test/golden/` holds 260 PNGs: every preset at five moments of a
+reference phrase, at 540×960 and 1080×1920, rendered through the server path
+(Konva + skia-canvas) with the fonts in `packages/server/assets/fonts`.
+`pnpm --filter @captionsjs/server test` compares fresh renders against them, and
+CI runs it on every PR.
+
+Frames are compared as 8×8 px block averages (16×16 at 1080 wide), not pixel by
+pixel: Skia rasterizes shadow and glow blur a little differently on each CPU, so
+exact pixels differ between your machine and the CI runner. A block fails when
+its average moves by more than 32 in any channel, which catches layout, timing
+and animation changes but not small color shifts.
+
+```bash
+pnpm --filter captions.js build && pnpm --filter @captionsjs/server build
+cd packages/server
+node test/golden.test.mjs                    # compare
+node test/golden.test.mjs --only "Karaoke"   # one preset
+node test/golden.test.mjs --update           # accept the new look
+```
+
+On a mismatch the actual frame and a diff (changed pixels in red) are written to
+`packages/server/test/golden-out/`; in CI they are uploaded as an artifact.
+Regenerate baselines only for a change you have looked at and approved, and
+commit them together with that change.
+
+---
+
 ## ⚡ Tips & Recommendations
 
 1.  **Targeted Scripts:** Always run scripts using `pnpm --filter` to ensure you're using the correct local binaries for that package.

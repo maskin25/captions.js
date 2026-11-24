@@ -11,7 +11,7 @@ const { version } = require("../package.json") as { version: string };
 const HELP = `captions.js ${version} — burn animated word-level captions into a video
 
 Usage
-  npx captions.js burn <video> <words.json> [options]
+  npx captions.js burn <video> <transcript> [options]
   npx captions.js presets
 
 Options for burn
@@ -23,11 +23,14 @@ Options for burn
   -q, --quiet            No progress output
   -h, --help
 
-<words.json> can be [{ "word", "start", "end" }], Whisper verbose_json,
-or a Deepgram response. Needs ffmpeg and ffprobe on PATH (or FFMPEG_PATH/FFPROBE_PATH).
+<transcript> can be [{ "word", "start", "end" }], SRT, WebVTT, or a Deepgram,
+Whisper (OpenAI, faster-whisper, WhisperX), whisper.cpp, AssemblyAI or
+ElevenLabs JSON response. SRT and VTT have no word times; they are spread
+evenly over each cue. Needs ffmpeg and ffprobe on PATH (or FFMPEG_PATH/FFPROBE_PATH).
 
 Example
   npx captions.js burn talk.mp4 words.json --preset "Focus Box"
+  npx captions.js burn talk.mp4 talk.srt
 `;
 
 const fail = (message: string): never => {
@@ -67,7 +70,7 @@ const burn = async (argv: string[]) => {
   if (values.help) return void process.stdout.write(HELP);
 
   const [video, captions] = positionals;
-  if (!video || !captions) fail("burn needs <video> and <words.json>. Run with --help.");
+  if (!video || !captions) fail("burn needs <video> and <transcript>. Run with --help.");
   checkFfmpeg();
 
   const quiet = values.quiet || !process.stderr.isTTY;

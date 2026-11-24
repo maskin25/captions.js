@@ -1,0 +1,127 @@
+{
+ "track": {
+  "words": [
+   {
+    "text": "Plain",
+    "start": 1,
+    "end": 1.4,
+    "approximated": true,
+    "speaker": "Ana"
+   },
+   {
+    "text": "cue",
+    "start": 1.4,
+    "end": 1.667,
+    "approximated": true,
+    "speaker": "Ana"
+   },
+   {
+    "text": "here",
+    "start": 1.667,
+    "end": 2,
+    "approximated": true,
+    "speaker": "Ana"
+   },
+   {
+    "text": "Exact",
+    "start": 2,
+    "end": 2.4,
+    "speaker": "Ben"
+   },
+   {
+    "text": "word",
+    "start": 2.4,
+    "end": 2.9,
+    "speaker": "Ben"
+   },
+   {
+    "text": "times",
+    "start": 2.9,
+    "end": 3.2,
+    "speaker": "Ben"
+   }
+  ],
+  "sentences": [
+   {
+    "start": 1,
+    "end": 2,
+    "speaker": "Ana"
+   },
+   {
+    "start": 2,
+    "end": 3.2,
+    "speaker": "Ben"
+   }
+  ],
+  "events": [
+   {
+    "type": "applause",
+    "start": 3.5,
+    "end": 4,
+    "label": "(applause)"
+   }
+  ],
+  "speakers": [
+   {
+    "id": "Ana"
+   },
+   {
+    "id": "Ben"
+   }
+  ],
+  "meta": {
+   "source": "vtt",
+   "approximated": true
+  }
+ },
+ "captions": [
+  {
+   "word": "Plain",
+   "startTime": 1,
+   "endTime": 1.4,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2,
+   "speaker": 0
+  },
+  {
+   "word": "cue",
+   "startTime": 1.4,
+   "endTime": 1.667,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2,
+   "speaker": 0
+  },
+  {
+   "word": "here",
+   "startTime": 1.667,
+   "endTime": 2,
+   "sentenceStartTime": 1,
+   "sentenceEndTime": 2,
+   "speaker": 0
+  },
+  {
+   "word": "Exact",
+   "startTime": 2,
+   "endTime": 2.4,
+   "sentenceStartTime": 2,
+   "sentenceEndTime": 3.2,
+   "speaker": 1
+  },
+  {
+   "word": "word",
+   "startTime": 2.4,
+   "endTime": 2.9,
+   "sentenceStartTime": 2,
+   "sentenceEndTime": 3.2,
+   "speaker": 1
+  },
+  {
+   "word": "times",
+   "startTime": 2.9,
+   "endTime": 3.2,
+   "sentenceStartTime": 2,
+   "sentenceEndTime": 3.2,
+   "speaker": 1
+  }
+ ]
+}

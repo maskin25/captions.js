@@ -1,0 +1,14 @@
+WEBVTT
+Kind: captions
+
+NOTE a comment block
+
+intro
+00:01.000 --> 00:02.000 align:center
+<v Ana>Plain cue here</v>
+
+00:00:02.000 --> 00:00:03.200
+<v.loud Ben><00:00:02.000>Exact <00:00:02.400>word <00:00:02.900>times
+
+00:03.500 --> 00:04.000
+(applause)

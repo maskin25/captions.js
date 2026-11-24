@@ -1,0 +1,8 @@
+{
+  "result": { "language": "en" },
+  "transcription": [
+    { "timestamps": { "from": "00:00:00,000", "to": "00:00:00,410" }, "offsets": { "from": 0, "to": 410 }, "text": " Same" },
+    { "timestamps": { "from": "00:00:00,410", "to": "00:00:00,980" }, "offsets": { "from": 410, "to": 980 }, "text": " renderer" },
+    { "timestamps": { "from": "00:00:00,980", "to": "00:00:01,500" }, "offsets": { "from": 980, "to": 1500 }, "text": " twice." }
+  ]
+}

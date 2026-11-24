@@ -74,3 +74,6 @@ reports/
 # preset previews (rendered by packages/server/scripts/render-previews.mjs)
 presets-dist/
 packages/server/previews/
+
+# golden-frame mismatches (packages/server/test/golden.test.mjs)
+packages/server/test/golden-out/

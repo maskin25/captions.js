@@ -35,6 +35,16 @@ for (let i = 0; i < a.length; i++) if (Math.abs(a[i] - b[i]) > 40) changed++;
 assert.ok(changed > 500, `captions not visible in output (changed px: ${changed})`);
 console.log(`ok   CLI burn (${changed} px changed at t=0.5s)`);
 
+// SRT goes through the same core adapters as the browser
+const srt = path.join(dir, "talk.srt");
+fs.writeFileSync(srt, "1\n00:00:00,100 --> 00:00:01,800\nHello world\n");
+execFileSync(process.execPath, [cli, "burn", input, srt, "-o", path.join(dir, "srt.mp4"), "-q"]);
+const fromSrt = frameAt(path.join(dir, "srt.mp4"), 0.5);
+let srtChanged = 0;
+for (let i = 0; i < a.length; i++) if (Math.abs(a[i] - fromSrt[i]) > 40) srtChanged++;
+assert.ok(srtChanged > 500, `SRT captions not visible (changed px: ${srtChanged})`);
+console.log(`ok   CLI burn from .srt (${srtChanged} px changed at t=0.5s)`);
+
 assert.throws(() => execFileSync(process.execPath, [cli, "burn", input, words, "-p", "nope"], { stdio: "pipe" }));
 console.log("ok   unknown preset fails");
 fs.rmSync(dir, { recursive: true, force: true });

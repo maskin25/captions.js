@@ -1,0 +1,18 @@
+{
+  "language": "en",
+  "segments": [
+    {
+      "start": 0.031, "end": 2.2, "text": " It costs 25 dollars.", "speaker": "SPEAKER_00",
+      "words": [
+        { "word": "It", "start": 0.031, "end": 0.15, "score": 0.91, "speaker": "SPEAKER_00" },
+        { "word": "costs", "start": 0.2, "end": 0.61, "score": 0.88, "speaker": "SPEAKER_00" },
+        { "word": "25" },
+        { "word": "dollars.", "start": 1.4, "end": 2.2, "score": 0.93, "speaker": "SPEAKER_00" }
+      ]
+    },
+    {
+      "start": 2.5, "end": 3.1, "text": " Really?", "speaker": "SPEAKER_01",
+      "words": [{ "word": "Really?", "start": 2.5, "end": 3.1, "score": 0.8, "speaker": "SPEAKER_01" }]
+    }
+  ]
+}

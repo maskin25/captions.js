@@ -57,7 +57,7 @@
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
     "prepublishOnly": "cp ../../README.md ./README.md && pnpm run build",
     "postpublish": "rm -f README.md",
-    "test": "node test/types-smoke.mjs"
+    "test": "node test/types-smoke.mjs && node test/adapters.test.mjs"
   },
   "devDependencies": {
     "@types/object-hash": "^3.0.6",

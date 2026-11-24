@@ -31,5 +31,12 @@ jobs:
         run: pnpm --filter @maskin25/captions-configurator exec tsc --noEmit -p .
       - name: Test core (exports/types under every moduleResolution)
         run: pnpm --filter captions.js test
-      - name: Test server (animations, CLI end-to-end)
+      - name: Test server (animations, CLI end-to-end, golden frames)
         run: pnpm --filter @captionsjs/server test
+      - name: Upload golden-frame diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-diff-node${{ matrix.node }}
+          path: packages/server/test/golden-out/
+          if-no-files-found: ignore

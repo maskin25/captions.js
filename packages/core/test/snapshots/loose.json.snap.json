@@ -1,0 +1,65 @@
+{
+ "track": {
+  "words": [
+   {
+    "text": "We",
+    "start": 0.1,
+    "end": 0.3
+   },
+   {
+    "text": "really",
+    "start": 0.3,
+    "end": 0.7,
+    "speaker": "2",
+    "emphasis": 1,
+    "emphasisSource": "manual"
+   },
+   {
+    "text": "mean",
+    "start": 0.7,
+    "end": 0.9,
+    "emphasis": 1,
+    "emphasisSource": "manual"
+   },
+   {
+    "text": "it!",
+    "start": 0.9,
+    "end": 1.2,
+    "confidence": 0.5,
+    "emphasis": 1,
+    "emphasisSource": "manual"
+   }
+  ],
+  "speakers": [
+   {
+    "id": "2"
+   }
+  ],
+  "meta": {
+   "source": "words"
+  }
+ },
+ "captions": [
+  {
+   "word": "We",
+   "startTime": 0.1,
+   "endTime": 0.3
+  },
+  {
+   "word": "really",
+   "startTime": 0.3,
+   "endTime": 0.7,
+   "speaker": 2
+  },
+  {
+   "word": "mean",
+   "startTime": 0.7,
+   "endTime": 0.9
+  },
+  {
+   "word": "it!",
+   "startTime": 0.9,
+   "endTime": 1.2
+  }
+ ]
+}

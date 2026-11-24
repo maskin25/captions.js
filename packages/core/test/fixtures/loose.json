@@ -1,0 +1,6 @@
+[
+  { "text": "We", "start": 0.1, "end": 0.3 },
+  { "word": "*really*", "startTime": 0.3, "endTime": 0.7, "speaker": 2 },
+  { "text": "*mean", "start": 0.7, "end": 0.9 },
+  { "text": "it*!", "start": 0.9, "end": 1.2, "confidence": 0.5 }
+]
