@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/maskin25/captions.js"
   },
-  "description": "The same caption renderer in your live browser preview and in your FFmpeg pipeline — word-level animated captions on canvas, pixel-identical, no headless browser.",
+  "description": "The same caption renderer in your live browser preview and in your FFmpeg pipeline — word-level animated captions on canvas, visually identical in both, no headless browser.",
   "keywords": [
     "captions",
     "subtitles",

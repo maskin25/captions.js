@@ -276,6 +276,9 @@ importers:
       '@types/node':
         specifier: ^20.11.19
         version: 20.19.25
+      playwright:
+        specifier: 1.56.1
+        version: 1.56.1
       rimraf:
         specifier: ^5.0.5
         version: 5.0.10
@@ -1449,6 +1452,7 @@ packages:
   '@opentelemetry/sdk-trace-base@2.2.0':
     resolution: {integrity: sha512-xWQgL0Bmctsalg6PaXExmzdedSp3gyKV8mQBwK/j9VGdCDu2fmXIb2gAehBKbkXCpJ4HPkgv3QfoJWRT4dHWbw==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.3.0 <1.10.0'
 

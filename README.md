@@ -1,6 +1,6 @@
 # Captions.js
 
-### The same caption renderer in your live preview and in your FFmpeg pipeline. Pixel-identical output, no headless browser.
+### The same caption renderer in your live preview and in your FFmpeg pipeline. Same layout, same motion, visually identical — no headless browser.
 
 One `renderFrame` function draws word-level animated captions onto a canvas.
 In the browser it runs every frame as an overlay on top of a `<video>` element.
@@ -14,9 +14,10 @@ of the render — same code, same pixels, no browser in production.
 npx captions.js burn talk.mp4 words.json --preset Karaoke
 ```
 
-One command: a video and word timings (Whisper, Deepgram or a plain JSON array) in,
-an mp4 with animated captions out. The same preset, frame for frame, runs live over
-a `<video>` in the browser.
+One command: a video and a transcript (Whisper, Deepgram, AssemblyAI, ElevenLabs,
+SRT/VTT or a plain JSON array) in,
+an mp4 with animated captions out. The same preset runs live over a `<video>` in the
+browser, with the same layout and motion.
 
 If Captions.js is useful for you, a quick ⭐ on [GitHub](https://github.com/maskin25/captions.js) helps a lot.
 
@@ -39,7 +40,7 @@ Full Remotion rendering does share code between preview and export, but the pric
 headless Chrome in your production pipeline. ASS/libass burns in reliably but can't do
 per-word scale, bounce or box animations. `drawtext` is a string-escaping nightmare.
 
-Captions.js is the narrow tool: kinetic word-level captions, identical in both places,
+Captions.js is the narrow tool: kinetic word-level captions that look the same in both places,
 running on plain canvas.
 
 ## Installation
@@ -57,7 +58,7 @@ import captionsjs, { getPreset, toCaptions } from "captions.js";
 
 const video = document.querySelector("video")!;
 
-// Deepgram response or a plain [{ word, startTime, endTime }] array
+// any supported transcript: Deepgram, Whisper, SRT text, a plain word array…
 const captions = toCaptions(transcript);
 
 const preset = getPreset("Karaoke");
@@ -89,7 +90,7 @@ import { burnCaptions } from "@captionsjs/server";
 
 await burnCaptions({
   video: "talk.mp4",
-  captions: "words.json", // Whisper verbose_json, Deepgram, or [{ word, start, end }]
+  captions: "words.json", // any format from "Captions input" below, or .srt / .vtt
   preset: "Karaoke",
   output: "talk.captions.mp4",
 });
@@ -104,7 +105,9 @@ npx captions.js presets   # list preset names
 
 Preset fonts are fetched from Google Fonts on first use and cached. Font size follows
 the same rule as the browser overlay (`videoHeight / 480`), so the export matches the
-preview. Driving `renderFrame` yourself (custom pipelines, other encoders) — see
+preview. Browser and server draw text with different engines (Chromium vs Skia), so
+edges can differ by a pixel; every preset is measured against the browser in
+[`docs/v2/parity.md`](./docs/v2/parity.md). Driving `renderFrame` yourself (custom pipelines, other encoders) — see
 [`packages/server/src/render/burnCaptions.ts`](./packages/server/src/render/burnCaptions.ts).
 
 ## Captions input
@@ -123,9 +126,37 @@ type Caption = {
 };
 ```
 
-`toCaptions(input)` auto-detects the format — a raw Deepgram response or an array of
-captions — so you can feed the STT output straight in. `getParagraphs(input)` returns
-paragraph structure when the provider supplies it.
+`toCaptions(input)` auto-detects the format, so you can feed speech-to-text output
+straight in, as an object or as raw text. `getParagraphs(input)` returns paragraph
+structure when the provider supplies it.
+
+| Input | Word times | Also carries |
+| --- | --- | --- |
+| Deepgram (response or `{ result }` envelope) | exact | speakers, sentences, paragraphs |
+| OpenAI Whisper `verbose_json`, WhisperX | exact | WhisperX speakers |
+| whisper.cpp JSON (`-oj`) | exact with `-ojf` or `--max-len 1`, else estimated | |
+| AssemblyAI transcript | exact | speakers (utterances) |
+| ElevenLabs speech-to-text | exact | speakers, audio events |
+| WebVTT | inline `<00:00:01.000>` tags if present, else estimated | `<v Speaker>` voices |
+| SRT | estimated | `[Music]`-style events |
+| `[{ word \| text, start, end }]` or `Caption[]` | exact | |
+
+Estimated times spread each cue over its words by word length; those words are
+flagged `approximated`. Wrap words in asterisks (`*really*`) to mark emphasis.
+
+Under the hood every input becomes a `CaptionTrack` (words, sentences, paragraphs,
+speakers, events), which you can also build yourself:
+
+```ts
+import { toTrack, validate, trackToCaptions } from "captions.js";
+
+const track = toTrack(srtText);
+const { ok, issues } = validate(track); // reversed or non-finite times, overlaps, empty words…
+const captions = trackToCaptions(track);
+```
+
+> The formats beyond Deepgram, Whisper and plain arrays, `CaptionTrack` and
+> `validate()` arrive in 2.0; `npm` 1.10 does not have them yet.
 
 ## What's in the box
 
