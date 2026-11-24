@@ -89,55 +89,65 @@ const sameSentence = (left: Caption, right: Caption): boolean => {
   return false;
 };
 
+/** A silence at least this long (seconds) between two words starts a new screen. */
+export const SCREEN_BREAK_PAUSE = 0.6;
+
+// Sentence-final punctuation, optionally followed by closing quotes or brackets.
+const SENTENCE_END = /[.!?…。！？]["'»”’)\]]*$/;
+// Words that end in a period without ending a sentence.
+const ABBREVIATION =
+  /^(?:[A-Za-z]\.){2,}$|^(?:mr|mrs|ms|dr|prof|sr|jr|st|vs|etc|e\.g|i\.e|approx|no|vol|т\.е|т\.д|т\.п|г|гг|др|им|ул|см|стр)\.$/i;
+
+const endsSentence = (word: string) => {
+  const text = word.trim();
+  return SENTENCE_END.test(text) && !ABBREVIATION.test(text);
+};
+
+/**
+ * True when `next` must start a new screen: it belongs to another sentence
+ * (by sentence times when the transcript has them), the previous word ends a
+ * sentence, the speaker changes, or there is a pause of
+ * {@link SCREEN_BREAK_PAUSE} seconds or more between them.
+ */
+export const isScreenBreak = (previous: Caption, next: Caption): boolean => {
+  if (!sameSentence(previous, next)) return true;
+  if (endsSentence(previous.word)) return true;
+  if (
+    previous.speaker !== undefined &&
+    next.speaker !== undefined &&
+    previous.speaker !== next.speaker
+  ) {
+    return true;
+  }
+  return next.startTime - previous.endTime >= SCREEN_BREAK_PAUSE;
+};
+
+/**
+ * Splits captions into screens. Screens never cross a break found by
+ * {@link isScreenBreak}; within a phrase, words are packed by
+ * `totalWordsToDisplay` characters per line and `linesPerPage` lines.
+ */
 export const splitCaptionsBySentenceAwareBlocks = (
   captions: Caption[],
   totalWordsToDisplay: number,
   linesPerPage: number
 ) => {
-  if (!captions.length) return [];
-
-  const containsSentenceData = captions.some((caption) =>
-    hasSentenceMetadata(caption)
-  );
-  if (!containsSentenceData) {
-    return splitCaptionsBytotalWordsToDisplay(
-      captions,
-      totalWordsToDisplay,
-      linesPerPage
-    );
-  }
-
   const result: Caption[][] = [];
-  let sentenceBlock: Caption[] = [];
+  let phrase: Caption[] = [];
 
-  const flushSentenceBlock = () => {
-    if (!sentenceBlock.length) return;
-    const sentenceChunks = splitCaptionsBytotalWordsToDisplay(
-      sentenceBlock,
-      totalWordsToDisplay,
-      linesPerPage
+  const flushPhrase = () => {
+    if (!phrase.length) return;
+    splitCaptionsBytotalWordsToDisplay(phrase, totalWordsToDisplay, linesPerPage).forEach(
+      (chunk) => result.push(chunk)
     );
-    sentenceChunks.forEach((chunk) => result.push(chunk));
-    sentenceBlock = [];
+    phrase = [];
   };
 
   captions.forEach((caption, index) => {
-    if (!sentenceBlock.length) {
-      sentenceBlock.push(caption);
-      return;
-    }
-
-    const previous = captions[index - 1];
-    if (previous && sameSentence(previous, caption)) {
-      sentenceBlock.push(caption);
-      return;
-    }
-
-    flushSentenceBlock();
-    sentenceBlock.push(caption);
+    if (phrase.length && isScreenBreak(captions[index - 1], caption)) flushPhrase();
+    phrase.push(caption);
   });
-
-  flushSentenceBlock();
+  flushPhrase();
 
   return result;
 };

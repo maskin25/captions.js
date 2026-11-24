@@ -25,6 +25,16 @@
 - Deepgram output of `toCaptions()` is unchanged (checked against 1.10.0). A
   Deepgram response with paragraphs but no word list now yields interpolated
   words instead of one "word" per sentence.
+- **Changed:** a screen now ends where a sentence ends (`.`, `!`, `?`, `…`;
+  not after abbreviations like `Dr.` or `e.g.`), where the speaker changes,
+  and at a pause of 0.6 s or more, even when the transcript has no sentence
+  times. Screens used to run across sentences ("YEAH. AND THAT / WAY. I MEAN").
+  During a silence the finished screen stays up for up to 1 s instead of
+  blinking off.
+- **Fixed:** Focus Box (`box-word`) glued a short word to the next one,
+  most visibly at 1080×1920 ("ВБАЗОВОМ"). The highlight box now scales with
+  the font and the gap between words leaves room for it. Focus Box goldens
+  changed; no other preset did.
 
 ### @captionsjs/server
 - The CLI and `loadCaptions()` use the core adapters, so `npx captions.js burn
