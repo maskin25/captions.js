@@ -2,7 +2,21 @@
 
 ## Unreleased (2.0)
 
+Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
+
 ### captions.js
+- **Breaking:** Konva is a peer dependency (`npm install captions.js konva`).
+- **Breaking:** `renderString` is removed.
+- **Breaking:** built-in presets have no `id` or `layoutSettings`; both are
+  optional on `StylePreset`. Preset covers point to captionsjs.dev posters
+  instead of cdn.shorty.plus.
+- **Changed:** `renderFrame({ settings, captions, time, size, layer, scale,
+  debug })`, with `scale` defaulting to `height / 480`. The positional form
+  still works and is deprecated. `RenderFrameOptions` is exported.
+- **Changed:** the browser overlay renders on `requestVideoFrameCallback` at
+  the presented frame's `mediaTime` where available, at most once per video
+  frame; `requestAnimationFrame` still applies edits while paused.
+- `sideEffects: false`; `renderStylePreset` is documented as browser-only.
 - **Added:** `CaptionTrack`, the normalized track every input becomes: words
   with optional confidence, speaker, language and emphasis; sentences,
   paragraphs, speakers and audio events. `toTrack(input)` detects the format,
@@ -86,6 +100,11 @@
   Whisper input now carries segment bounds, so screens break at segment ends.
 
 ### Repo
+- Removed `packages/docs` (the docs live on captionsjs.dev) and
+  `packages/core/Dockerfile`.
+- `test:overlay`: the browser overlay over a playing video in headless
+  Chromium (video frames drive it, edits while paused redraw, `disable()`
+  stops it).
 - Golden frames: 260 PNGs (26 presets × 5 moments × 2 sizes) compared on
   every PR; see DEVELOPMENT.md. 140 of them changed with the new line breaks.
 - Layout test: every preset must give the same screens and lines at three
@@ -110,6 +129,11 @@
   manifest.json, gallery page). Published to GitHub Pages at `/presets/`.
 
 ### Repo
+- Removed `packages/docs` (the docs live on captionsjs.dev) and
+  `packages/core/Dockerfile`.
+- `test:overlay`: the browser overlay over a playing video in headless
+  Chromium (video frames drive it, edits while paused redraw, `disable()`
+  stops it).
 - CI: build + tests on Node 20 and 22 for every PR.
 
 ## captions.js 1.9.0 · @captionsjs/server 0.1.0 — 2026-09-30

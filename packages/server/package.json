@@ -51,7 +51,8 @@
     "docker:run": "docker run --rm -p 4000:4000 captionsjs-server",
     "previews": "node scripts/render-previews.mjs",
     "test:golden:update": "node test/golden.test.mjs --update",
-    "test:parity": "node test/parity.test.mjs"
+    "test:parity": "node test/parity.test.mjs",
+    "test:overlay": "node test/overlay.test.mjs"
   },
   "dependencies": {
     "captions.js": "workspace:^",

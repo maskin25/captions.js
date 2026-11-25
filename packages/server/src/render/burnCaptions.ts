@@ -191,15 +191,14 @@ const addCanvasCaptionsToVideo = async (opts: {
       for (let frame = 0; frame < totalFrames; frame++) {
         const time = frame / opts.fps;
         layer.destroyChildren();
-        renderFrame(
-          opts.captionsSettings,
-          undefined as any,
-          opts.captions,
+        renderFrame({
+          settings: opts.captionsSettings,
+          captions: opts.captions,
           time,
-          opts.size,
+          size: opts.size,
           layer,
-          opts.scale,
-        );
+          scale: opts.scale,
+        });
         layer.draw();
 
         const buffer = await (layer.getNativeCanvasElement() as any).toBuffer("raw");

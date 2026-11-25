@@ -260,14 +260,78 @@ const drawDebugBoundingBox = (
   rect.moveToTop();
 };
 
-export const renderFrame: RenderFrameFn = (
+/**
+ * What {@link renderFrame} draws.
+ *
+ * @public
+ */
+export interface RenderFrameOptions {
+  /** The preset's `captionsSettings` (plus `expressiveness`, `animationOptions`). */
+  settings: CaptionsSettings;
+  captions: Caption[];
+  /** Media time in seconds. */
+  time: number;
+  /** Frame size in px, `[width, height]`. */
+  size: [number, number];
+  /** Konva layer to draw into; existing children are kept. */
+  layer: Konva.Layer;
+  /**
+   * Font-size multiplier. Defaults to `height / 480`, the rule the browser
+   * overlay and the server use, so preview and export match.
+   */
+  scale?: number;
+  /** Draw screen and line bounding boxes. */
+  debug?: boolean;
+}
+
+/**
+ * Draws the captions visible at `time` into `layer`: the same function runs in
+ * the browser overlay and on the server.
+ *
+ * @public
+ */
+export function renderFrame(options: RenderFrameOptions): void;
+/**
+ * @deprecated Use the options object: `renderFrame({ settings, captions, time,
+ * size, layer, scale })`. Here `toCoef` defaults to 1, not `height / 480`.
+ * `layoutSettings` is ignored.
+ */
+export function renderFrame(
   captionsSettings: CaptionsSettings,
-  layoutSettings: LayoutSettings,
+  layoutSettings: LayoutSettings | undefined,
   captions: Caption[],
   currentTime: number,
   targetSize: [number, number],
   layer: Konva.Layer,
   toCoef?: number,
+  debug?: boolean,
+): void;
+export function renderFrame(...args: unknown[]): void {
+  if (args.length === 1 && args[0] && typeof args[0] === "object" && "settings" in args[0]) {
+    const options = args[0] as RenderFrameOptions;
+    drawFrame(
+      options.settings,
+      options.captions,
+      options.time,
+      options.size,
+      options.layer,
+      options.scale ?? options.size[1] / 480,
+      options.debug,
+    );
+    return;
+  }
+  const [captionsSettings, , captions, currentTime, targetSize, layer, toCoef, debug] =
+    args as Parameters<RenderFrameFn>;
+  drawFrame(captionsSettings, captions, currentTime, targetSize, layer, toCoef ?? 1, debug);
+}
+
+const drawFrame = (
+  captionsSettings: CaptionsSettings,
+  captions: Caption[],
+  currentTime: number,
+  targetSize: [number, number],
+  layer: Konva.Layer,
+  toCoef: number,
   debug?: boolean,
 ) => {
   const [width, height] = targetSize;
@@ -640,6 +704,11 @@ export const warmUpKonvaFonts = (layer: Konva.Layer) => {
   }, 2000);
 };
 
+/**
+ * Renders a preset on a two-word sample into data URLs, one per time in
+ * `frames`. Browser only: it needs `document` for an offscreen Konva stage.
+ * On the server, call {@link renderFrame} on a skia-canvas layer instead.
+ */
 export const renderStylePreset = async (
   stylePreset: StylePreset,
   size: [number, number],
@@ -684,15 +753,14 @@ export const renderStylePreset = async (
 
   const renderAtTime = (currentTime: number) => {
     layer.destroyChildren();
-    renderFrame(
-      stylePreset.captionsSettings,
-      undefined as any,
-      previewCaptions,
-      currentTime,
+    renderFrame({
+      settings: stylePreset.captionsSettings,
+      captions: previewCaptions,
+      time: currentTime,
       size,
       layer,
-      1.3,
-    );
+      scale: 1.3,
+    });
     return stage.toDataURL({ pixelRatio: devicePixelRatio });
   };
 

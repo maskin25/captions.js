@@ -42,6 +42,9 @@ export class Captions {
   private layer: Konva.Layer | null = null;
   private resizeObserver?: ResizeObserver;
   private animationFrameId: number | null = null;
+  private videoFrameId: number | null = null;
+  /** Media time of the last presented video frame, from requestVideoFrameCallback. */
+  private videoFrameTime: number | null = null;
   private videoWidth = 0;
   private videoHeight = 0;
   private readonly debug: boolean;
@@ -63,10 +66,47 @@ export class Captions {
     this.dirty = true;
   };
 
+  /**
+   * Display-rate loop. While a playing video reports its frames through
+   * requestVideoFrameCallback, this loop only applies edits (preset, captions,
+   * resize) at the last presented frame's time; otherwise it follows
+   * `video.currentTime`.
+   */
   private readonly animationLoop = () => {
-    this.updateFrame();
+    const followsVideoFrames =
+      this.videoFrameId !== null && !this.video.paused && this.videoFrameTime !== null;
+    if (followsVideoFrames) {
+      if (this.dirty) this.updateFrame(this.videoFrameTime!);
+    } else {
+      this.updateFrame();
+    }
     this.animationFrameId = requestAnimationFrame(this.animationLoop);
   };
+
+  /**
+   * Called for every video frame the browser presents, with that frame's
+   * media time, so captions change on the same frame as the picture.
+   */
+  private readonly videoFrameLoop = (
+    _now: number,
+    metadata: { mediaTime: number },
+  ) => {
+    this.videoFrameTime = metadata.mediaTime;
+    this.updateFrame(metadata.mediaTime);
+    this.requestVideoFrame();
+  };
+
+  private requestVideoFrame() {
+    const video = this.video as HTMLVideoElement & {
+      requestVideoFrameCallback?: (
+        callback: (now: number, metadata: { mediaTime: number }) => void,
+      ) => number;
+    };
+    this.videoFrameId =
+      typeof video.requestVideoFrameCallback === "function"
+        ? video.requestVideoFrameCallback(this.videoFrameLoop)
+        : null;
+  }
 
   /**
    * Create a controller bound to the provided video element and preset.
@@ -124,6 +164,7 @@ export class Captions {
     this.syncStageDimensions();
 
     this.animationFrameId = requestAnimationFrame(this.animationLoop);
+    this.requestVideoFrame();
 
     this.enabled = true;
 
@@ -142,6 +183,14 @@ export class Captions {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
+    if (this.videoFrameId !== null) {
+      const video = this.video as HTMLVideoElement & {
+        cancelVideoFrameCallback?: (handle: number) => void;
+      };
+      video.cancelVideoFrameCallback?.(this.videoFrameId);
+      this.videoFrameId = null;
+    }
+    this.videoFrameTime = null;
 
     window.removeEventListener("resize", this.handleResize);
     this.video.removeEventListener("loadedmetadata", this.handleMetadata);
@@ -235,7 +284,7 @@ export class Captions {
     return this.renderCount;
   }
 
-  private updateFrame() {
+  private updateFrame(time: number = this.video.currentTime) {
     if (!this.layer || !this.stage) {
       return;
     }
@@ -244,7 +293,7 @@ export class Captions {
       return;
     }
 
-    const currentTime = this.video.currentTime;
+    const currentTime = time;
     // Nothing changed since the last rebuild (paused video, or several
     // display frames per video frame): keep the existing scene.
     if (!this.dirty && currentTime === this.lastRenderedTime) {
@@ -258,16 +307,15 @@ export class Captions {
     const currentVideoHeight = this.video.videoHeight || this.videoHeight;
     const toCoef = currentVideoHeight > 0 ? currentVideoHeight / 480 : 1;
 
-    renderFrame(
-      this.presetState.captionsSettings as any,
-      undefined as any,
-      this.captionsState || [],
-      currentTime,
-      [this.videoWidth, this.videoHeight],
-      this.layer,
-      toCoef,
-      this.debug,
-    );
+    renderFrame({
+      settings: this.presetState.captionsSettings,
+      captions: this.captionsState || [],
+      time: currentTime,
+      size: [this.videoWidth, this.videoHeight],
+      layer: this.layer,
+      scale: toCoef,
+      debug: this.debug,
+    });
   }
 
   private syncStageDimensions() {

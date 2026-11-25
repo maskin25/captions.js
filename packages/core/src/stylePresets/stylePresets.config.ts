@@ -6,9 +6,11 @@ import { CaptionsSettings } from "../entities/captions/captions.types";
  * @public
  */
 export interface StylePreset {
-  id: number;
+  /** Optional id for apps that store presets; built-in presets have none. */
+  id?: number;
   captionsSettings: CaptionsSettings;
-  layoutSettings: {
+  /** Optional layout hints for apps that use them; not read by the renderer. */
+  layoutSettings?: {
     aspectRatio: string;
     aIAutoLayout: string[];
     fitLayoutAspectRatio: string;
@@ -57,7 +59,6 @@ export type StylePresetName =
  */
 export const stylePresets: StylePreset[] = [
   {
-    id: 1,
     captionsSettings: {
       style: {
         font: {
@@ -73,22 +74,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Karaoke",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/karaoke_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/karaoke.jpg",
         highlightColor: "#24deff",
       },
       position: "bottom",
       animation: "bounce",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 26,
     captionsSettings: {
       style: {
         font: {
@@ -104,8 +98,7 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Focus Box",
         backgroundColor: "#C7FF2EFF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/popline_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/focus-box.jpg",
         highlightColor: "#101318FF",
       },
       position: "bottom",
@@ -114,14 +107,8 @@ export const stylePresets: StylePreset[] = [
       lineSpacing: 6,
       positionTopOffset: 0,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 2,
     captionsSettings: {
       style: {
         font: {
@@ -137,22 +124,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Banger",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/beasty_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/banger.jpg",
         highlightColor: "#fdfa14ff",
       },
       position: "bottom",
       animation: "pop",
       linesPerPage: 1,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 3,
     captionsSettings: {
       style: {
         font: {
@@ -168,8 +148,7 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Acid",
         backgroundColor: "#00000000",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/aciv_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/acid.jpg",
         highlightColor: "#6BF5C7FF",
       },
       position: "bottom",
@@ -177,14 +156,8 @@ export const stylePresets: StylePreset[] = [
       linesPerPage: 1,
       positionTopOffset: 42,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 4,
     captionsSettings: {
       style: {
         font: {
@@ -206,8 +179,7 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Lovly",
         backgroundColor: "#00000000",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/aciv_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/lovly.jpg",
         highlightColor: "#f866cfff",
       },
       position: "bottom",
@@ -215,14 +187,8 @@ export const stylePresets: StylePreset[] = [
       linesPerPage: 2,
       positionTopOffset: 0,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 5,
     captionsSettings: {
       style: {
         font: {
@@ -238,8 +204,7 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Marvel",
         backgroundColor: "#00000000",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/aciv_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/marvel.jpg",
         highlightColor: "#a76dffff",
       },
       position: "bottom",
@@ -247,14 +212,8 @@ export const stylePresets: StylePreset[] = [
       linesPerPage: 2,
       positionTopOffset: 0,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 6,
     captionsSettings: {
       style: {
         font: {
@@ -276,22 +235,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Marker",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/marker.jpg",
         highlightColor: "#6f0eecff",
       },
       position: "bottom",
       animation: "underline",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 7,
     captionsSettings: {
       style: {
         font: {
@@ -313,8 +265,7 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Neon Pulse",
         backgroundColor: "#00000000",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/popline_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/neon-pulse.jpg",
         highlightColor: "#5fffb0ff",
       },
       position: "bottom",
@@ -322,14 +273,8 @@ export const stylePresets: StylePreset[] = [
       linesPerPage: 2,
       positionTopOffset: 0,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 8,
     captionsSettings: {
       style: {
         font: {
@@ -345,22 +290,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Beasty",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/beasty_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/beasty.jpg",
         highlightColor: "#ff0000ff",
       },
       position: "bottom",
       animation: "pop",
       linesPerPage: 1,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 9,
     captionsSettings: {
       style: {
         font: {
@@ -376,8 +314,7 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Crazy",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/desert_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/crazy.jpg",
         highlightColor: "#ebf901ff",
       },
       position: "bottom",
@@ -385,14 +322,8 @@ export const stylePresets: StylePreset[] = [
       linesPerPage: 2,
       positionTopOffset: 0,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 10,
     captionsSettings: {
       style: {
         font: {
@@ -408,22 +339,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Safari",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/safari_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/safari.jpg",
         highlightColor: "#000000FF",
       },
       position: "bottom",
       animation: "box",
       linesPerPage: 1,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 11,
     captionsSettings: {
       style: {
         font: {
@@ -439,22 +363,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Popline",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/popline_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/popline.jpg",
         highlightColor: "#F43FE0FF",
       },
       position: "bottom",
       animation: "none",
       linesPerPage: 1,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 12,
     captionsSettings: {
       style: {
         font: {
@@ -470,22 +387,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Desert",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/desert_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/desert.jpg",
         highlightColor: "#8F2EEDFF",
       },
       position: "bottom",
       animation: "bounce",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 13,
     captionsSettings: {
       style: {
         font: {
@@ -501,22 +411,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Hook",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/hook_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/hook.jpg",
         highlightColor: "#8F2EEDFF",
       },
       position: "bottom",
       animation: "underline",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 14,
     captionsSettings: {
       style: {
         font: {
@@ -532,22 +435,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Sky",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/sky_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/sky.jpg",
         highlightColor: "#FFFFFFFF",
       },
       position: "bottom",
       animation: "slide-left",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 15,
     captionsSettings: {
       style: {
         font: {
@@ -563,22 +459,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Flamingo",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/flamingo.jpg",
         highlightColor: "#ff0000ff",
       },
       position: "bottom",
       animation: "scale",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 16,
     captionsSettings: {
       style: {
         font: {
@@ -594,22 +483,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Deep Diver B&W",
         backgroundColor: "#000000ff",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/captions-deep-diver-b&w.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/deep-diver-bw.jpg",
         highlightColor: "#ffffffff",
       },
       position: "bottom",
       animation: "box",
       linesPerPage: 1,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 17,
     captionsSettings: {
       style: {
         font: {
@@ -625,22 +507,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "New",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/new.jpg",
         highlightColor: "#dbff00ff",
       },
       position: "middle",
       animation: "pop",
       linesPerPage: 3,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 18,
     captionsSettings: {
       style: {
         font: {
@@ -656,22 +531,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Catchy",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/desert_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/catchy.jpg",
         highlightColor: "#ff5700ff",
       },
       position: "bottom",
       animation: "bounce",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 19,
     captionsSettings: {
       style: {
         font: {
@@ -693,22 +561,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "From",
         backgroundColor: "#E4E4E4FF",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/karaoke_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/from.jpg",
         highlightColor: "#ffdd03ff",
       },
       position: "bottom",
       animation: "pop",
       linesPerPage: 1,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 20,
     captionsSettings: {
       style: {
         font: {
@@ -724,22 +585,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Classic",
         backgroundColor: "#000000ff",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/safari_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/classic.jpg",
         highlightColor: "#ffffffff",
       },
       position: "bottom",
       animation: "none",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 21,
     captionsSettings: {
       style: {
         font: {
@@ -755,22 +609,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Classic Big",
         backgroundColor: "#000000ff",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/safari_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/classic-big.jpg",
         highlightColor: "#ffffffff",
       },
       position: "bottom",
       animation: "none",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 22,
     captionsSettings: {
       style: {
         font: {
@@ -792,8 +639,7 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Old Money",
         backgroundColor: "#00000000",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/aciv_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/old-money.jpg",
         highlightColor: "#ffffffff",
       },
       position: "bottom",
@@ -801,14 +647,8 @@ export const stylePresets: StylePreset[] = [
       linesPerPage: 3,
       positionTopOffset: 0,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 23,
     captionsSettings: {
       style: {
         font: {
@@ -824,22 +664,15 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Cinema",
         backgroundColor: "#000000ff",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/safari_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/cinema.jpg",
         highlightColor: "#e4e900ff",
       },
       position: "bottom",
       animation: "none",
       linesPerPage: 2,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 24,
     captionsSettings: {
       style: {
         font: {
@@ -861,8 +694,7 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Midnight Serif",
         backgroundColor: "#00000000",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/captions-deep-diver-b&w.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/midnight-serif.jpg",
         highlightColor: "#f3ca72ff",
       },
       position: "bottom",
@@ -870,14 +702,8 @@ export const stylePresets: StylePreset[] = [
       linesPerPage: 2,
       positionTopOffset: 0,
     },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
-    },
   },
   {
-    id: 25,
     captionsSettings: {
       style: {
         font: {
@@ -899,19 +725,13 @@ export const stylePresets: StylePreset[] = [
         },
         name: "Aurora Ink",
         backgroundColor: "#00000000",
-        verticalCoverImg:
-          "https://cdn.shorty.plus/captions-preview/flamingo_preview.png",
+        verticalCoverImg: "https://captionsjs.dev/presets/aurora-ink.jpg",
         highlightColor: "#ff7b00",
       },
       position: "bottom",
       animation: "underline",
       linesPerPage: 2,
       positionTopOffset: 0,
-    },
-    layoutSettings: {
-      aspectRatio: "9:16",
-      aIAutoLayout: ["fill", "fit", "split", "three", "four", "screenShare"],
-      fitLayoutAspectRatio: "original",
     },
   },
 ];

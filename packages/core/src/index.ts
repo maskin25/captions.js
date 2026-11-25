@@ -14,8 +14,6 @@ export {
   presetNames,
 } from "./stylePresets/stylePresets.config";
 
-/** Renders a captions string to an offscreen canvas (Node/FFmpeg helper). */
-export { renderString } from "./render/renderString";
 
 /** Strong typing for caption entries (word timing, styling etc). */
 export type { Caption } from "./entities/captions/captions.types";
@@ -30,7 +28,11 @@ export {
   type CaptionsInstance,
 } from "./captions/Captions";
 
-export { renderFrame, renderStylePreset } from "./canvas-captions";
+export {
+  renderFrame,
+  renderStylePreset,
+  type RenderFrameOptions,
+} from "./canvas-captions";
 
 /** Effects: one module per animation; add your own with registerEffect. */
 export {

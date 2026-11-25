@@ -31,7 +31,8 @@
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "konva": "^10.0.2"
   },
   "dependencies": {
     "@radix-ui/react-collapsible": "^1.1.12",
@@ -58,6 +59,7 @@
   "devDependencies": {
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "konva": "^10.0.8",
     "tsup": "^8.0.0",
     "typescript": "^5.6.3"
   }

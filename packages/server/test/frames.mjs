@@ -59,7 +59,7 @@ export const layoutScreens = ({ Konva, renderFrame, captionsSettings, captions, 
   for (const caption of captions) {
     const layer = new Konva.Layer({ listening: false });
     stage.add(layer);
-    renderFrame(captionsSettings, undefined, captions, caption.startTime + 0.01, size, layer, height / 480);
+    renderFrame({ settings: captionsSettings, captions, time: caption.startTime + 0.01, size, layer });
     const group = layer.getChildren()[0];
     const lines = group
       ? group
