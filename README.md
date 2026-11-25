@@ -159,6 +159,48 @@ const captions = trackToCaptions(track);
 > The formats beyond Deepgram, Whisper and plain arrays, `CaptionTrack` and
 > `validate()` arrive in 2.0; `npm` 1.10 does not have them yet.
 
+## Emphasis
+
+Any word can carry `emphasis` from 0 to 1, and a preset's `expressiveness`
+(0 to 1, default 0) decides how much it shows: at 1, a fully emphasized word is
+drawn 1.4× larger, on the same baseline as its neighbours, and layout makes room
+for it. With `style.emphasisColor` set, strongly emphasized words also take that
+color. At 0 a preset looks exactly as it does without emphasis.
+
+There are three ways to mark words:
+
+- set `emphasis` on a caption or track word;
+- write `*word*` or `*several words*` in any text input (SRT, VTT, word lists);
+- let an LLM choose. captions.js never calls a model: `annotationPrompt(track)`
+  gives you the text to send, with the words numbered, and
+  `applyAnnotations(track, reply)` validates the answer and applies it. A
+  manual mark always wins over an annotation.
+
+```ts
+import captionsjs, { annotationPrompt, applyAnnotations, getPreset, toTrack, trackToCaptions } from "captions.js";
+
+const track = toTrack(transcript);
+const reply = await yourLlm(annotationPrompt(track)); // any model, your API key
+const { track: annotated, issues } = applyAnnotations(track, reply);
+const captions = trackToCaptions(annotated);
+
+const karaoke = getPreset("Karaoke");
+const preset = { ...karaoke, captionsSettings: { ...karaoke.captionsSettings, expressiveness: 0.7 } };
+captionsjs({ video, preset, captions });
+```
+
+The reply may be raw JSON, or JSON in prose or a code fence. An entry whose word
+is not where the model said is looked for up to 5 words away, and reported in
+`issues` either way; `ANNOTATIONS_SCHEMA` is the JSON Schema for structured
+output. From the shell:
+
+```bash
+npx captions.js prompt words.json > prompt.txt          # send it to your LLM
+npx captions.js burn talk.mp4 words.json -a reply.json -e 0.7
+```
+
+> Emphasis, annotations and `expressiveness` arrive in 2.0.
+
 ## What's in the box
 
 - **26 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,

@@ -13,7 +13,8 @@
 // Also checks layout exactly: LAYOUT_SAMPLE (English and Russian) must break
 // into the same screens and lines in Chromium at 360x640, 540x960 and
 // 1080x1920 as on the server at 540x960 and 1080x1920. A layout mismatch always
-// fails the run. Words the preset font has no glyphs for (Cyrillic in Kanit,
+// fails the run. The check runs twice: plain, and with every fifth word
+// emphasized at expressiveness 1. Words the preset font has no glyphs for (Cyrillic in Kanit,
 // Lato, Poppins, Permanent Marker) are left out: each engine draws them in its
 // own fallback font, so neither widths nor glyphs can match.
 //
@@ -36,7 +37,7 @@ import { getPreset, presetNames, renderFrame } from "captions.js";
 import { resolveFontFile } from "../dist/render/fonts.js";
 import { fontCovers } from "./cmap.mjs";
 import { BLOCK_TOLERANCE, compare } from "./compare.mjs";
-import { LAYOUT_SAMPLE, PHRASE, SIZES, TIMES, layoutScreens, slugify } from "./frames.mjs";
+import { EMPHASIS_SAMPLE, LAYOUT_SAMPLE, PHRASE, SIZES, TIMES, layoutScreens, slugify } from "./frames.mjs";
 
 // Layout is checked against the server at 1080x1920.
 const LAYOUT_BROWSER_SIZES = [[360, 640], [540, 960], [1080, 1920]];
@@ -94,8 +95,8 @@ const page_html = `<!doctype html><html><head>
     stage.destroy();
     return url.slice(url.indexOf(",") + 1);
   };
-  window.layout = ({ name, size, captions }) =>
-    layoutScreens({ Konva, renderFrame, captionsSettings: getPreset(name).captionsSettings, captions, size });
+  window.layout = ({ name, size, captions, expressiveness }) =>
+    layoutScreens({ Konva, renderFrame, captionsSettings: { ...getPreset(name).captionsSettings, expressiveness }, captions, size });
   window.ready = true;
 </script></body></html>`;
 
@@ -139,26 +140,34 @@ for (const name of names) {
   });
 
   // exact layout: same screens and lines everywhere
-  const sample = LAYOUT_SAMPLE.filter(({ word }) => fontCovers(file, word));
-  const layoutAt = (size) =>
-    layoutScreens({ Konva, renderFrame, captionsSettings, captions: sample, size });
-  const reference = layoutAt([1080, 1920]);
-  const candidates = [
-    ...LAYOUT_SERVER_SIZES.map((size) => [`server ${size.join("x")}`, layoutAt(size)]),
-    ...(await Promise.all(
-      LAYOUT_BROWSER_SIZES.map(async (size) => [
-        `browser ${size.join("x")}`,
-        await page.evaluate((args) => window.layout(args), { name, size, captions: sample }),
-      ]),
-    )),
-  ];
   let layoutOk = true;
-  for (const [where, screens] of candidates) {
-    const at = screens.findIndex((screen, i) => screen !== reference[i]);
-    if (at !== -1 || screens.length !== reference.length) {
-      layoutOk = false;
-      const i = at === -1 ? Math.min(screens.length, reference.length) : at;
-      layoutMismatches.push(`${name}, ${where}: "${screens[i]}" vs server 1080x1920 "${reference[i]}"`);
+  let reference = [];
+  const covered = (list) => list.filter(({ word }) => fontCovers(file, word));
+  const sample = covered(LAYOUT_SAMPLE);
+  for (const [captions, expressiveness, label] of [
+    [sample, 0, ""],
+    [covered(EMPHASIS_SAMPLE), 1, ", emphasized"],
+  ]) {
+    const settings = { ...captionsSettings, expressiveness };
+    const layoutAt = (size) => layoutScreens({ Konva, renderFrame, captionsSettings: settings, captions, size });
+    const serverReference = layoutAt([1080, 1920]);
+    if (!label) reference = serverReference;
+    const candidates = [
+      ...LAYOUT_SERVER_SIZES.map((size) => [`server ${size.join("x")}${label}`, layoutAt(size)]),
+      ...(await Promise.all(
+        LAYOUT_BROWSER_SIZES.map(async (size) => [
+          `browser ${size.join("x")}${label}`,
+          await page.evaluate((args) => window.layout(args), { name, size, captions, expressiveness }),
+        ]),
+      )),
+    ];
+    for (const [where, screens] of candidates) {
+      const at = screens.findIndex((screen, i) => screen !== serverReference[i]);
+      if (at !== -1 || screens.length !== serverReference.length) {
+        layoutOk = false;
+        const i = at === -1 ? Math.min(screens.length, serverReference.length) : at;
+        layoutMismatches.push(`${name}, ${where}: "${screens[i]}" vs server 1080x1920 "${serverReference[i]}"`);
+      }
     }
   }
 

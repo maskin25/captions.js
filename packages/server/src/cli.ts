@@ -2,8 +2,9 @@
 import { parseArgs } from "node:util";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
-import { presetNames } from "captions.js";
+import { annotationPrompt, presetNames, toTrack } from "captions.js";
 import { burnCaptions } from "./render/burnCaptions.js";
+import { loadCaptions } from "./render/loadCaptions.js";
 
 const require = createRequire(import.meta.url);
 const { version } = require("../package.json") as { version: string };
@@ -12,6 +13,7 @@ const HELP = `captions.js ${version} — burn animated word-level captions into 
 
 Usage
   npx captions.js burn <video> <transcript> [options]
+  npx captions.js prompt <transcript> [--share 0.1]
   npx captions.js presets
 
 Options for burn
@@ -20,6 +22,10 @@ Options for burn
       --fps <n>          Overlay frame rate (default: source fps)
       --fonts-dir <dir>  Local folder with TTF fonts (default: download from Google Fonts)
       --crf <n>          x264 quality, lower is better (default: 20)
+  -e, --expressiveness <0-1>
+                         How strongly emphasized words stand out (default: 0, off)
+  -a, --annotations <file>
+                         Emphasis chosen by an LLM; see \`prompt\` below
   -q, --quiet            No progress output
   -h, --help
 
@@ -28,9 +34,16 @@ Whisper (OpenAI, faster-whisper, WhisperX), whisper.cpp, AssemblyAI or
 ElevenLabs JSON response. SRT and VTT have no word times; they are spread
 evenly over each cue. Needs ffmpeg and ffprobe on PATH (or FFMPEG_PATH/FFPROBE_PATH).
 
+Emphasis
+  Mark words in the transcript as *word*, or let an LLM pick them: \`prompt\`
+  prints instructions with the numbered words; save the model's JSON reply and
+  pass it with --annotations. captions.js never calls a model itself.
+
 Example
   npx captions.js burn talk.mp4 words.json --preset "Focus Box"
   npx captions.js burn talk.mp4 talk.srt
+  npx captions.js prompt words.json > prompt.txt     # send to your LLM
+  npx captions.js burn talk.mp4 words.json -a reply.json -e 0.7
 `;
 
 const fail = (message: string): never => {
@@ -63,6 +76,8 @@ const burn = async (argv: string[]) => {
       fps: { type: "string" },
       "fonts-dir": { type: "string" },
       crf: { type: "string" },
+      expressiveness: { type: "string", short: "e" },
+      annotations: { type: "string", short: "a" },
       quiet: { type: "boolean", short: "q" },
       help: { type: "boolean", short: "h" },
     },
@@ -72,6 +87,14 @@ const burn = async (argv: string[]) => {
   const [video, captions] = positionals;
   if (!video || !captions) fail("burn needs <video> and <transcript>. Run with --help.");
   checkFfmpeg();
+
+  let expressiveness: number | undefined;
+  if (values.expressiveness !== undefined) {
+    expressiveness = Number(values.expressiveness);
+    if (!Number.isFinite(expressiveness) || expressiveness < 0 || expressiveness > 1) {
+      fail("--expressiveness takes a number from 0 to 1");
+    }
+  }
 
   const quiet = values.quiet || !process.stderr.isTTY;
   const started = Date.now();
@@ -84,6 +107,8 @@ const burn = async (argv: string[]) => {
     output: values.output,
     fps: values.fps ? Number(values.fps) : undefined,
     crf: values.crf ? Number(values.crf) : undefined,
+    expressiveness,
+    annotations: values.annotations,
     fonts: { fontsDir: values["fonts-dir"] },
     onProgress: quiet
       ? undefined
@@ -101,10 +126,37 @@ const burn = async (argv: string[]) => {
   });
 
   if (!quiet) process.stderr.write("\n");
+  for (const issue of result.annotationIssues ?? []) {
+    process.stderr.write(`annotations: entry ${issue.entry}: ${issue.message}\n`);
+  }
+  if (result.annotated !== undefined) {
+    process.stderr.write(`annotations: ${result.annotated} word(s) emphasized\n`);
+  }
+  if (result.emphasized > 0 && !(expressiveness ?? 0)) {
+    process.stderr.write(
+      `note: ${result.emphasized} word(s) have emphasis, but expressiveness is 0, so they look like the rest. ` +
+        `Add --expressiveness 0.7 to show it.\n`,
+    );
+  }
   const secs = ((Date.now() - started) / 1000).toFixed(1);
   process.stdout.write(
     `${result.output}  (${result.width}x${result.height}, ${result.durationSec.toFixed(1)}s video in ${secs}s)\n`,
   );
+};
+
+const prompt = async (argv: string[]) => {
+  const { values, positionals } = parseArgs({
+    args: argv,
+    allowPositionals: true,
+    options: { share: { type: "string" }, help: { type: "boolean", short: "h" } },
+  });
+  if (values.help) return void process.stdout.write(HELP);
+  const [transcript] = positionals;
+  if (!transcript) fail("prompt needs <transcript>. Run with --help.");
+  const share = values.share === undefined ? undefined : Number(values.share);
+  if (share !== undefined && !(share > 0 && share <= 1)) fail("--share takes a number from 0 to 1");
+  const captions = await loadCaptions(transcript);
+  process.stdout.write(annotationPrompt(toTrack(captions), { share }) + "\n");
 };
 
 const main = async () => {
@@ -112,6 +164,8 @@ const main = async () => {
   switch (command) {
     case "burn":
       return burn(rest);
+    case "prompt":
+      return prompt(rest);
     case "presets":
       return void process.stdout.write(presetNames.join("\n") + "\n");
     case "-v":

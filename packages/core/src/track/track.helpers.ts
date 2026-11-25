@@ -279,6 +279,7 @@ export const trackToCaptions = (track: CaptionTrack): Caption[] => {
   return track.words.map((word) => {
     const caption: Caption = { word: word.text, startTime: word.start, endTime: word.end };
     if (word.highlightColor) caption.highlightColor = word.highlightColor;
+    if (word.emphasis !== undefined && word.emphasis > 0) caption.emphasis = word.emphasis;
     const sentence = containing(track.sentences, word.start);
     const paragraph = containing(track.paragraphs, word.start);
     if (sentence) {

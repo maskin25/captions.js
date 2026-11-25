@@ -1,7 +1,9 @@
 import {
   getPreset,
   renderFrame,
+  type AnnotationIssue,
   type Caption,
+  type CaptionAnnotations,
   type CaptionsSettings,
   type StylePreset,
 } from "captions.js";
@@ -11,7 +13,7 @@ import { FontLibrary } from "skia-canvas";
 
 import path from "node:path";
 import { download } from "../utils/download.js";
-import { loadCaptions } from "./loadCaptions.js";
+import { annotateCaptions, loadAnnotations, loadCaptions } from "./loadCaptions.js";
 import { resolveFontFile, type ResolveFontOptions } from "./fonts.js";
 import { probeVideo, runFfmpeg } from "./ffmpeg.js";
 
@@ -26,6 +28,17 @@ export interface BurnCaptionsParams {
   output?: string;
   /** Preset name (case-insensitive) or a full preset object. Defaults to "Karaoke". */
   preset?: string | StylePreset;
+  /**
+   * How strongly the preset reacts to word emphasis, 0–1 (see
+   * `CaptionsSettings.expressiveness`). Defaults to the preset's own value, or 0.
+   */
+  expressiveness?: number;
+  /**
+   * Emphasis annotations, e.g. written by an LLM: a file path, URL, JSON text
+   * or object (see `applyAnnotations` in captions.js). Shown only when
+   * `expressiveness` is above 0.
+   */
+  annotations?: string | CaptionAnnotations | Record<string, unknown>;
   /** Override the output frame rate of the caption overlay. Defaults to the source fps. */
   fps?: number;
   /** Font lookup options, see {@link resolveFontFile}. */
@@ -50,6 +63,12 @@ export interface BurnCaptionsResult {
   height: number;
   fps: number;
   durationSec: number;
+  /** Words whose emphasis came from `annotations`. */
+  annotated?: number;
+  /** Problems found in `annotations`; the entries concerned were skipped or adjusted. */
+  annotationIssues?: AnnotationIssue[];
+  /** Number of words with emphasis, from any source. */
+  emphasized: number;
 }
 
 const DEFAULT_PRESET = "Karaoke";
@@ -65,13 +84,26 @@ export const burnCaptions = async (
     typeof params.preset === "object"
       ? params.preset
       : getPreset(params.preset || DEFAULT_PRESET);
-  const captionsSettings = preset.captionsSettings as CaptionsSettings;
+  const captionsSettings: CaptionsSettings = {
+    ...(preset.captionsSettings as CaptionsSettings),
+    ...(params.expressiveness !== undefined
+      ? { expressiveness: params.expressiveness }
+      : {}),
+  };
 
   const video = /^https?:\/\//i.test(params.video)
     ? await download(params.video)
     : params.video;
 
-  const captions = await loadCaptions(params.captions);
+  let captions = await loadCaptions(params.captions);
+  let annotated: number | undefined;
+  let annotationIssues: AnnotationIssue[] | undefined;
+  if (params.annotations !== undefined) {
+    const result = annotateCaptions(captions, await loadAnnotations(params.annotations));
+    captions = result.captions;
+    annotated = result.applied;
+    annotationIssues = result.issues;
+  }
   const probe = await probeVideo(video);
   const fps = params.fps ?? probe.fps;
 
@@ -102,6 +134,9 @@ export const burnCaptions = async (
     height: probe.height,
     fps,
     durationSec: probe.duration,
+    annotated,
+    annotationIssues,
+    emphasized: captions.filter((c) => (c.emphasis ?? 0) > 0).length,
   };
 };
 

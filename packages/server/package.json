@@ -44,7 +44,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "rimraf dist && tsc -p tsconfig.json && node -e \"require('fs').chmodSync('dist/cli.js',0o755)\"",
     "start": "node dist/index.js",
-    "test": "node test/animate.test.mjs && node test/layout.test.mjs && node test/cli.test.mjs && node test/golden.test.mjs",
+    "test": "node test/animate.test.mjs && node test/layout.test.mjs && node test/emphasis.test.mjs && node test/cli.test.mjs && node test/golden.test.mjs",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run build",
     "docker:build": "docker build -t captionsjs-server .",

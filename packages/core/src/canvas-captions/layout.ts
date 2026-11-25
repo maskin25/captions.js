@@ -1,5 +1,9 @@
 import Konva from "konva";
-import { Caption } from "../entities/captions/captions.types";
+import {
+  Caption,
+  CaptionsSettings,
+  EMPHASIS_MAX_SCALE,
+} from "../entities/captions/captions.types";
 
 /**
  * Engine-independent text widths for line breaking.
@@ -100,6 +104,49 @@ export const measureUnits = (text: string, font: string) => {
     units += width;
   }
   return units;
+};
+
+const clamp01 = (value: unknown) =>
+  typeof value === "number" && Number.isFinite(value)
+    ? Math.min(1, Math.max(0, value))
+    : 0;
+
+/** emphasis × expressiveness, 0–1: how much a word reacts to its emphasis. */
+export const emphasisStrength = (
+  caption: Caption,
+  captionsSettings: CaptionsSettings,
+) => clamp01(caption.emphasis) * clamp01(captionsSettings.expressiveness);
+
+/** Font size of a word relative to the preset's, from its emphasis. */
+export const emphasisScale = (
+  caption: Caption,
+  captionsSettings: CaptionsSettings,
+) => 1 + (EMPHASIS_MAX_SCALE - 1) * emphasisStrength(caption, captionsSettings);
+
+const baselineCache = new Map<string, number>();
+
+/**
+ * Distance from the top of a Konva text node to its baseline, as a share of
+ * the font size (line height 1). Words of different sizes on one line are
+ * shifted down by (largest size − own size) × this, so they share a baseline.
+ */
+export const baselineRatio = (font: string) => {
+  let ratio = baselineCache.get(font);
+  if (ratio === undefined) {
+    const ctx = getContext();
+    ctx.font = font;
+    const metrics = ctx.measureText("M");
+    const ascent = metrics.fontBoundingBoxAscent ?? metrics.actualBoundingBoxAscent;
+    const descent = metrics.fontBoundingBoxDescent ?? metrics.actualBoundingBoxDescent;
+    // Konva draws with the alphabetic baseline at (ascent − descent) / 2 below
+    // the middle of the line box
+    ratio =
+      Number.isFinite(ascent) && Number.isFinite(descent)
+        ? 0.5 + (ascent - descent) / 2 / LAYOUT_UNITS_PER_EM
+        : 0.8;
+    baselineCache.set(font, ratio);
+  }
+  return ratio;
 };
 
 /** One screen: lines of words, top to bottom. */

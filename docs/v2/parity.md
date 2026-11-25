@@ -7,13 +7,14 @@ same font files, so this measures the two renderers, nothing else.
 
 It also checks layout exactly: a 96-word English and Russian sample must break
 into the same screens and lines in Chromium at 360×640, 540×960 and 1080×1920
-and on the server at 540×960 and 1080×1920. A layout mismatch fails the run.
+and on the server at 540×960 and 1080×1920, once as is and once with every
+fifth word emphasized at `expressiveness: 1`. A layout mismatch fails the run.
 
 ## Findings
 
 1. **Same screens and lines everywhere.** All 26 presets break the sample into
    identical screens and lines in both engines and at every size, including a
-   360×640 preview against a 1080×1920 export.
+   360×640 preview against a 1080×1920 export, with and without emphasis.
 2. **Visually the same, not pixel-identical.** No frame has a block delta above
    76, while a different screen or a moved highlight starts around 90. Glyph
    edges, strokes and blur rasterize differently, and Chromium draws text about

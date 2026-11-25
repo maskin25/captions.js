@@ -10,7 +10,12 @@ export {
   type BurnCaptionsParams,
   type BurnCaptionsResult,
 } from "./render/burnCaptions.js";
-export { loadCaptions, normalizeCaptions } from "./render/loadCaptions.js";
+export {
+  annotateCaptions,
+  loadAnnotations,
+  loadCaptions,
+  normalizeCaptions,
+} from "./render/loadCaptions.js";
 export {
   resolveFontFile,
   defaultFontCacheDir,

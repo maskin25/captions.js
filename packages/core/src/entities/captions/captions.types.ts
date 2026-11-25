@@ -1,4 +1,12 @@
 /**
+ * Size of a fully emphasized word at `expressiveness: 1`, relative to the
+ * preset's font size.
+ *
+ * @public
+ */
+export const EMPHASIS_MAX_SCALE = 1.4;
+
+/**
  * Full styling + animation configuration for a single captions track.
  *
  * @public
@@ -34,8 +42,20 @@ export interface CaptionsSettings {
      * Still read when `highlightColor` is not set; will be removed in 2.0.
      */
     aplifiedWordColor?: string;
+    /**
+     * Color of strongly emphasized words (emphasis × expressiveness ≥ 0.5)
+     * while they are not the active word. Unset: emphasis changes size only.
+     */
+    emphasisColor?: string;
     backgroundColor: string;
   };
+  /**
+   * How strongly the style reacts to word emphasis, 0–1. 0 (the default) is
+   * the look without emphasis; at 1 a fully emphasized word is drawn
+   * {@link EMPHASIS_MAX_SCALE} times larger. Words without `emphasis` never
+   * change.
+   */
+  expressiveness?: number;
   linesPerPage: number;
   lineSpacing?: number | null;
   position: "auto" | "top" | "middle" | "bottom";
@@ -68,4 +88,10 @@ export interface Caption {
   paragraphStartTime?: number;
   paragraphEndTime?: number;
   speaker?: number;
+  /**
+   * How strongly to stress the word, 0–1. Drawn larger as the preset's
+   * `expressiveness` allows. Set it in the data, with `*word*` markup, or
+   * from an annotations file (`applyAnnotations`).
+   */
+  emphasis?: number;
 }
