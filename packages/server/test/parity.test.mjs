@@ -10,6 +10,13 @@
 // check measures the renderers, not font availability. Fonts are loaded per
 // preset with a weight range, so Chromium never synthesizes bold or italic.
 //
+// Also checks layout exactly: LAYOUT_SAMPLE (English and Russian) must break
+// into the same screens and lines in Chromium at 360x640, 540x960 and
+// 1080x1920 as on the server at 540x960 and 1080x1920. A layout mismatch always
+// fails the run. Words the preset font has no glyphs for (Cyrillic in Kanit,
+// Lato, Poppins, Permanent Marker) are left out: each engine draws them in its
+// own fallback font, so neither widths nor glyphs can match.
+//
 // Writes test/parity-out/report.md, report.json and, for every frame over the
 // limit, the browser frame and a diff image.
 //
@@ -22,10 +29,18 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { createRequire } from "node:module";
 import { chromium } from "playwright";
-import { getPreset, presetNames } from "captions.js";
+import Konva from "konva";
+import "konva/skia-backend";
+import { FontLibrary } from "skia-canvas";
+import { getPreset, presetNames, renderFrame } from "captions.js";
 import { resolveFontFile } from "../dist/render/fonts.js";
+import { fontCovers } from "./cmap.mjs";
 import { BLOCK_TOLERANCE, compare } from "./compare.mjs";
-import { PHRASE, SIZES, TIMES, slugify } from "./frames.mjs";
+import { LAYOUT_SAMPLE, PHRASE, SIZES, TIMES, layoutScreens, slugify } from "./frames.mjs";
+
+// Layout is checked against the server at 1080x1920.
+const LAYOUT_BROWSER_SIZES = [[360, 640], [540, 960], [1080, 1920]];
+const LAYOUT_SERVER_SIZES = [[540, 960]];
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const baselineDir = path.join(here, "golden");
@@ -56,6 +71,7 @@ const page_html = `<!doctype html><html><head>
 <script type="module">
   import Konva from "konva";
   import { getPreset, renderFrame } from "captions.js";
+  import { layoutScreens } from "${ORIGIN}/frames.mjs";
   Konva.pixelRatio = 1;
   window.setFont = async ({ family, url, italic }) => {
     document.fonts.clear();
@@ -78,6 +94,8 @@ const page_html = `<!doctype html><html><head>
     stage.destroy();
     return url.slice(url.indexOf(",") + 1);
   };
+  window.layout = ({ name, size, captions }) =>
+    layoutScreens({ Konva, renderFrame, captionsSettings: getPreset(name).captionsSettings, captions, size });
   window.ready = true;
 </script></body></html>`;
 
@@ -90,6 +108,7 @@ await page.route(`${ORIGIN}/**`, (route) => {
   const serve = (file, contentType) =>
     route.fulfill({ body: fs.readFileSync(file), contentType, headers: { "access-control-allow-origin": "*" } });
   if (pathname === "/") return route.fulfill({ body: page_html, contentType: "text/html" });
+  if (pathname === "/frames.mjs") return serve(path.join(here, "frames.mjs"), "text/javascript");
   if (pathname.startsWith("/core/")) return serve(path.join(coreDist, pathname.slice(6)), "text/javascript");
   if (pathname.startsWith("/konva/")) return serve(path.join(konvaDir, pathname.slice(7)), "text/javascript");
   if (pathname.startsWith("/fonts/")) return serve(fontFiles[Number(pathname.slice(7))], "font/ttf");
@@ -100,6 +119,8 @@ await page.waitForFunction(() => window.ready === true);
 
 const rows = [];
 let over = 0;
+const layoutMismatches = [];
+const registered = new Set();
 fs.rmSync(outDir, { recursive: true, force: true });
 
 for (const name of names) {
@@ -107,11 +128,39 @@ for (const name of names) {
   const { fontFamily, fontWeight, italic } = captionsSettings.style.font;
   const file = await resolveFontFile({ fontFamily, fontWeight, italic }, { download: false });
   fontFiles.push(file);
+  if (!registered.has(file)) {
+    FontLibrary.use(fontFamily, [file]);
+    registered.add(file);
+  }
   await page.evaluate((font) => window.setFont(font), {
     family: fontFamily,
     url: `${ORIGIN}/fonts/${fontFiles.length - 1}`,
     italic: Boolean(italic),
   });
+
+  // exact layout: same screens and lines everywhere
+  const sample = LAYOUT_SAMPLE.filter(({ word }) => fontCovers(file, word));
+  const layoutAt = (size) =>
+    layoutScreens({ Konva, renderFrame, captionsSettings, captions: sample, size });
+  const reference = layoutAt([1080, 1920]);
+  const candidates = [
+    ...LAYOUT_SERVER_SIZES.map((size) => [`server ${size.join("x")}`, layoutAt(size)]),
+    ...(await Promise.all(
+      LAYOUT_BROWSER_SIZES.map(async (size) => [
+        `browser ${size.join("x")}`,
+        await page.evaluate((args) => window.layout(args), { name, size, captions: sample }),
+      ]),
+    )),
+  ];
+  let layoutOk = true;
+  for (const [where, screens] of candidates) {
+    const at = screens.findIndex((screen, i) => screen !== reference[i]);
+    if (at !== -1 || screens.length !== reference.length) {
+      layoutOk = false;
+      const i = at === -1 ? Math.min(screens.length, reference.length) : at;
+      layoutMismatches.push(`${name}, ${where}: "${screens[i]}" vs server 1080x1920 "${reference[i]}"`);
+    }
+  }
 
   const slug = slugify(name);
   const frames = [];
@@ -136,6 +185,9 @@ for (const name of names) {
   if (failed.length) over++;
   rows.push({
     preset: name,
+    layoutScreens: reference.length,
+    layoutWords: sample.length,
+    layoutMatches: layoutOk,
     worstBlockDelta: Number(worst.toFixed(1)),
     maxChangedPixels: Number((changed * 100).toFixed(3)),
     framesOverLimit: failed.length,
@@ -150,7 +202,8 @@ for (const name of names) {
   console.log(
     `${failed.length ? "FAIL" : "ok  "} ${name.padEnd(16)} worst block Δ ${worst.toFixed(1).padStart(5)}` +
       `   pixels off ≤ ${(changed * 100).toFixed(2)}%` +
-      (failed.length ? `   ${failed.length} frame(s) over ${BLOCK_TOLERANCE}` : ""),
+      (failed.length ? `   ${failed.length} frame(s) over ${BLOCK_TOLERANCE}` : "") +
+      (layoutOk ? "" : "   LAYOUT DIFFERS"),
   );
 }
 await browser.close();
@@ -163,13 +216,21 @@ const md = [
   `Same preset, phrase, time, size and font files. Block = 8 px at 540 wide, 16 px at 1080.`,
   `A frame is over the limit when a block's average differs by more than ${BLOCK_TOLERANCE} (of 255).`,
   ``,
-  `| Preset | Worst block Δ | Max pixels off (>2) | Frames over limit |`,
-  `| --- | ---: | ---: | ---: |`,
-  ...rows.map((r) => `| ${r.preset} | ${r.worstBlockDelta} | ${r.maxChangedPixels}% | ${r.framesOverLimit} / ${r.frames.length} |`),
+  `Layout: the ${LAYOUT_SAMPLE.length}-word sample must give the same screens and lines in Chromium at`,
+  `${LAYOUT_BROWSER_SIZES.map((s) => s.join("x")).join(", ")} and on the server at ${[...LAYOUT_SERVER_SIZES, [1080, 1920]].map((s) => s.join("x")).join(", ")}.`,
+  ``,
+  `| Preset | Layout (screens) | Worst block Δ | Max pixels off (>2) | Frames over limit |`,
+  `| --- | --- | ---: | ---: | ---: |`,
+  ...rows.map((r) => `| ${r.preset} | ${r.layoutMatches ? "same" : "**differs**"} (${r.layoutScreens} screens${r.layoutWords < LAYOUT_SAMPLE.length ? ", no Cyrillic in font" : ""}) | ${r.worstBlockDelta} | ${r.maxChangedPixels}% | ${r.framesOverLimit} / ${r.frames.length} |`),
   ``,
 ].join("\n");
 fs.writeFileSync(path.join(outDir, "report.md"), md);
 console.log(`\nreport: ${path.relative(process.cwd(), path.join(outDir, "report.md"))}`);
+if (layoutMismatches.length) {
+  console.log(`\nLayout differs in ${layoutMismatches.length} case(s):`);
+  for (const line of layoutMismatches) console.log(`  ${line}`);
+  process.exitCode = 1;
+}
 if (over) {
   console.log(`${over} preset(s) differ between browser and server beyond the limit`);
   if (values.strict) process.exit(1);

@@ -105,9 +105,10 @@ npx captions.js presets   # list preset names
 
 Preset fonts are fetched from Google Fonts on first use and cached. Font size follows
 the same rule as the browser overlay (`videoHeight / 480`), so the export matches the
-preview. Browser and server draw text with different engines (Chromium vs Skia), so
-edges can differ by a pixel; every preset is measured against the browser in
-[`docs/v2/parity.md`](./docs/v2/parity.md). Driving `renderFrame` yourself (custom pipelines, other encoders) — see
+preview. Line breaks are measured in font units, so the preview and the export
+break lines in the same places at any size. Browser and server draw text with
+different engines (Chromium vs Skia), so glyph edges can differ by a pixel; every
+preset is measured against the browser in [`docs/v2/parity.md`](./docs/v2/parity.md). Driving `renderFrame` yourself (custom pipelines, other encoders) — see
 [`packages/server/src/render/burnCaptions.ts`](./packages/server/src/render/burnCaptions.ts).
 
 ## Captions input
@@ -167,7 +168,8 @@ const captions = trackToCaptions(track);
   `slide-left`, `slide-up`, `slide-down`, `none`.
 - **Full typography control** — family, weight, size, stroke, shadow, capitalization,
   italic, underline, active/past word colors.
-- **Sentence-aware chunking** — lines break on sentence structure instead of raw word count,
+- **Sentence-aware chunking** — screens end at sentences, speaker changes and pauses; lines
+  break on measured text width, identically in the browser and on the server,
   with `linesPerPage`, `lineSpacing` and `position` (`auto` / `top` / `middle` / `bottom`).
 - **Google Fonts loading** via `preloadGoogleFont`, with the resolved metrics cached
   so layout is stable frame to frame.

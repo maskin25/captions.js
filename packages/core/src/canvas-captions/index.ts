@@ -9,12 +9,18 @@ import {
   detectAlphabetKind,
   fontWeightToFontStyle,
   getAlphabet,
-  getAverageSymbolsInLine,
   getCaptionsGroupY,
   getFillColor,
-  splitCaptionsBySentenceAwareBlocks,
+  splitIntoPhrases,
 } from "./utils";
 
+import {
+  LAYOUT_UNITS_PER_EM,
+  withFontReadiness,
+  layoutFont,
+  measureUnits,
+  packScreens,
+} from "./layout";
 import { Timeline } from "../entities/timeline/timeline.types";
 import { fonts } from "./fonts.config";
 import { StylePreset } from "../stylePresets/stylePresets.config";
@@ -25,10 +31,10 @@ type ChunkRange = {
   start: number;
   end: number;
   chunk: Caption[];
+  lines: Caption[][];
 };
 
 type ChunkCacheEntry = {
-  chunks: Caption[][];
   ranges: ChunkRange[];
 };
 
@@ -45,104 +51,121 @@ const wordPriorityAnimations = new Set<CaptionsSettings["animation"]>([
   "box-word",
 ]);
 
-const symbolsPerLineCache = new WeakMap<CaptionsSettings, Map<string, number>>();
 const chunkCache = new WeakMap<Caption[], Map<string, ChunkCacheEntry>>();
 
-const getSymbolsPerLineCacheKey = (
+/**
+ * Room kept free on each side of a line, in average letter widths of the
+ * preset font. Box and bounce draw beyond the word (padding, overshoot), so
+ * they keep more.
+ */
+const lineMarginLetters = (animation: CaptionsSettings["animation"]) =>
+  animation === "box" || animation === "bounce" ? LINE_MARGIN_LETTERS + 1 : LINE_MARGIN_LETTERS;
+const LINE_MARGIN_LETTERS = 2;
+
+/**
+ * Word gaps have fixed-pixel parts (bounce, capitals) tuned on a 960 px tall
+ * frame. Layout takes the gap at that size, as a share of the font size, so
+ * line breaks do not depend on the output resolution.
+ */
+const LAYOUT_REFERENCE_COEF = 960 / 480;
+
+const getWordSpacing = (
+  captionsSettings: CaptionsSettings,
+  targetFontSize: number,
+) =>
+  targetFontSize * 0.1 +
+  (captionsSettings.animation === "bounce" ? 8 : 0) +
+  (captionsSettings.style.font.fontCapitalize ? 2 : 0) +
+  // the box around the active word reaches into the gap on both sides
+  (captionsSettings.animation === "box-word"
+    ? 2 * boxWordMetrics(targetFontSize).paddingX
+    : 0);
+
+const layoutRanges = (
+  captionsSettings: CaptionsSettings,
+  captions: Caption[],
+  font: string,
   layerWidth: number,
   targetFontSize: number,
-  captionsSettings: CaptionsSettings,
-) => {
-  const font = captionsSettings.style.font;
-  return [
-    layerWidth,
-    targetFontSize,
-    font.fontFamily,
-    font.fontWeight,
-    font.italic ? 1 : 0,
-    font.fontStrokeWidth || 0,
-    font.fontCapitalize ? 1 : 0,
-    captionsSettings.animation,
-    captionsSettings.linesPerPage,
-  ].join("|");
-};
+): ChunkRange[] => {
+  const { fontCapitalize } = captionsSettings.style.font;
+  const { linesPerPage, animation } = captionsSettings;
+  // Everything below is in whole layout units (1/1000 em), so the same words
+  // break into the same lines at any resolution and in any canvas engine.
+  const toUnits = LAYOUT_UNITS_PER_EM / targetFontSize;
+  const display = (word: string) =>
+    (fontCapitalize ? word.toUpperCase() : word).trim();
 
-const getTotalSymbolInLineCached = (
-  captionsSettings: CaptionsSettings,
-  captions: Caption[],
-  layer: Konva.Layer,
-  targetFontSize: number,
-) => {
-  const layerWidth = layer.getWidth()!;
-  const cacheKey = getSymbolsPerLineCacheKey(
-    layerWidth,
-    targetFontSize,
-    captionsSettings,
-  );
-
-  let cacheByKey = symbolsPerLineCache.get(captionsSettings);
-  if (!cacheByKey) {
-    cacheByKey = new Map<string, number>();
-    symbolsPerLineCache.set(captionsSettings, cacheByKey);
-  }
-
-  const cached = cacheByKey.get(cacheKey);
-  if (typeof cached === "number") {
-    return cached;
-  }
-
-  const textForDetectAlphabet = captions
-    .slice(0, 10)
-    .map((x) => x.word)
-    .join("");
-
-  const alphabetKind = detectAlphabetKind(textForDetectAlphabet);
-  const alphabet = getAlphabet(alphabetKind);
-
-  const alphabetText = new Konva.Text({
-    text: captionsSettings.style.font.fontCapitalize
-      ? alphabet.toUpperCase()
-      : alphabet,
-    x: 0,
-    y: 0,
-    fontSize: targetFontSize,
-    fontFamily: captionsSettings.style.font.fontFamily,
-    fontStyle: fontWeightToFontStyle(
-      captionsSettings.style.font.fontWeight,
-      captionsSettings.style.font.italic,
+  const alphabet = display(
+    getAlphabet(
+      detectAlphabetKind(
+        captions
+          .slice(0, 10)
+          .map((x) => x.word)
+          .join(""),
+      ),
     ),
-    stroke: captionsSettings.style.font.fontStrokeColor,
-    strokeWidth: captionsSettings.style.font.fontStrokeWidth
-      ? captionsSettings.style.font.fontStrokeWidth / 10
-      : 0,
-    textDecoration: captionsSettings.style.font.underline ? "underline" : "",
-    fill: "black",
+  );
+  const averageLetter = measureUnits(alphabet, font) / [...alphabet].length;
+  const referenceFontSize =
+    captionsSettings.style.font.fontSize * LAYOUT_REFERENCE_COEF;
+  const spacing = Math.round(
+    (getWordSpacing(captionsSettings, referenceFontSize) / referenceFontSize) *
+      LAYOUT_UNITS_PER_EM,
+  );
+  const maxLineWidth =
+    Math.floor(layerWidth * toUnits + 1e-6) -
+    Math.round(2 * lineMarginLetters(animation) * averageLetter);
+
+  const ranges: ChunkRange[] = [];
+  splitIntoPhrases(captions).forEach((phrase) => {
+    packScreens(
+      phrase,
+      (caption) => measureUnits(display(caption.word), font),
+      spacing,
+      Math.max(0, maxLineWidth),
+      linesPerPage,
+    ).forEach((lines) => {
+      const chunk = lines.flat();
+      ranges.push({
+        start: chunk[0].startTime,
+        end: chunk[chunk.length - 1].endTime,
+        chunk,
+        lines,
+      });
+    });
   });
 
-  alphabetText.fillAfterStrokeEnabled(true);
-
-  const totalSymbolInLine = getAverageSymbolsInLine(
-    layerWidth,
-    alphabetText.getWidth(),
-    alphabet.length,
-    captionsSettings,
-  );
-
-  cacheByKey.set(cacheKey, totalSymbolInLine);
-  return totalSymbolInLine;
+  return ranges;
 };
 
-const getChunkCacheKey = (
-  totalSymbolInLine: number,
-  linesPerPage: number,
-) => `${totalSymbolInLine}|${linesPerPage}`;
-
+/**
+ * Splits captions into screens of lines. Line breaks use layout widths
+ * (see layout.ts), so the browser and the server break lines identically.
+ */
 const getChunksCached = (
+  captionsSettings: CaptionsSettings,
   captions: Caption[],
-  totalSymbolInLine: number,
-  linesPerPage: number,
+  layerWidth: number,
+  targetFontSize: number,
 ): ChunkCacheEntry => {
-  const cacheKey = getChunkCacheKey(totalSymbolInLine, linesPerPage);
+  const { fontFamily, fontWeight, italic, fontCapitalize } =
+    captionsSettings.style.font;
+  const font = layoutFont(
+    fontFamily,
+    fontWeightToFontStyle(fontWeight, Boolean(italic)),
+  );
+  const { linesPerPage, animation } = captionsSettings;
+  const cacheKey = [
+    font,
+    layerWidth,
+    targetFontSize,
+    // word gaps are taken at the preset's own size (see LAYOUT_REFERENCE_COEF)
+    captionsSettings.style.font.fontSize,
+    fontCapitalize ? 1 : 0,
+    animation,
+    linesPerPage,
+  ].join("|");
 
   let cacheByKey = chunkCache.get(captions);
   if (!cacheByKey) {
@@ -155,19 +178,12 @@ const getChunksCached = (
     return cached;
   }
 
-  const chunks = splitCaptionsBySentenceAwareBlocks(
-    captions,
-    totalSymbolInLine,
-    linesPerPage,
+  const { result: ranges, ready } = withFontReadiness(() =>
+    layoutRanges(captionsSettings, captions, font, layerWidth, targetFontSize),
   );
-  const ranges: ChunkRange[] = chunks.map((chunk) => ({
-    start: chunk[0].startTime,
-    end: chunk[chunk.length - 1].endTime,
-    chunk,
-  }));
-
-  const next: ChunkCacheEntry = { chunks, ranges };
-  cacheByKey.set(cacheKey, next);
+  const next: ChunkCacheEntry = { ranges };
+  // widths taken before the font loaded are a fallback font's: measure again
+  if (ready) cacheByKey.set(cacheKey, next);
   return next;
 };
 
@@ -177,7 +193,7 @@ const SCREEN_HOLD_SEC = 1;
 const findChunkByTime = (
   ranges: ChunkRange[],
   currentTime: number,
-): Caption[] | undefined => {
+): ChunkRange | undefined => {
   let low = 0;
   let high = ranges.length - 1;
 
@@ -194,7 +210,7 @@ const findChunkByTime = (
       continue;
     }
 
-    return range.chunk;
+    return range;
   }
 
   // In a silence between screens, keep the finished screen up for a moment
@@ -202,7 +218,7 @@ const findChunkByTime = (
   // started before `currentTime`.
   const previous = ranges[high];
   if (previous && currentTime - previous.end <= SCREEN_HOLD_SEC) {
-    return previous.chunk;
+    return previous;
   }
 
   return undefined;
@@ -243,28 +259,21 @@ export const renderFrame: RenderFrameFn = (
   const [width, height] = targetSize;
   const targetFontSize = captionsSettings.style.font.fontSize * (toCoef ?? 1);
   const showDebugBoundingBoxes = Boolean(debug);
-  const totalSymbolInLine = getTotalSymbolInLineCached(
+  const wordSpacing = getWordSpacing(captionsSettings, targetFontSize);
+  const { ranges } = getChunksCached(
     captionsSettings,
     captions,
-    layer,
+    layer.getWidth()!,
     targetFontSize,
   );
-  const { ranges } = getChunksCached(
-    captions,
-    totalSymbolInLine,
-    captionsSettings.linesPerPage,
-  );
-  const currentChunk = findChunkByTime(ranges, currentTime);
-
-  const xOffset = targetFontSize * 0.1;
-  const wordSpacing =
-    xOffset +
-    (captionsSettings.animation === "bounce" ? 8 : 0) +
-    (captionsSettings.style.font.fontCapitalize ? 2 : 0) +
-    // the box around the active word reaches into the gap on both sides
-    (captionsSettings.animation === "box-word"
-      ? 2 * boxWordMetrics(targetFontSize).paddingX
-      : 0);
+  const currentRange = findChunkByTime(ranges, currentTime);
+  const currentChunk = currentRange?.chunk;
+  // index in currentChunk of the last word of each line
+  const lineEnds = new Set<number>();
+  currentRange?.lines.reduce((count, line) => {
+    lineEnds.add(count + line.length - 1);
+    return count + line.length;
+  }, 0);
   const yOffset = captionsSettings.lineSpacing ?? 4;
 
   if (currentChunk) {
@@ -279,7 +288,6 @@ export const renderFrame: RenderFrameFn = (
     let line: Konva.Group = new Konva.Group({
       drawBorder: true,
     });
-    let currentSymbolsLength = 0;
 
     let activeCaptionState: ActiveCaptionRenderState | undefined = undefined;
     let activeCaptionText: Konva.Text | null = null;
@@ -323,13 +331,7 @@ export const renderFrame: RenderFrameFn = (
         captionsSettings,
       );
 
-      const isLastWordInLine =
-        currentSymbolsLength +
-          caption.word.length +
-          (index < currentChunk.length - 1
-            ? currentChunk[index + 1].word.length
-            : 0) >
-          totalSymbolInLine || currentChunk.length - 1 === index;
+      const isLastWordInLine = lineEnds.has(index);
 
       let word = captionsSettings.style.font.fontCapitalize
         ? caption.word.toUpperCase()
@@ -443,9 +445,6 @@ export const renderFrame: RenderFrameFn = (
         line = new Konva.Group({
           drawBorder: true,
         });
-        currentSymbolsLength = 0;
-      } else {
-        currentSymbolsLength += caption.word.length + 1;
       }
     });
 

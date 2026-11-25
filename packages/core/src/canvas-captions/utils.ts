@@ -24,47 +24,6 @@ export const splitCaptionsBy = (captions: Caption[], by: number) => {
   return result;
 };
 
-export const splitCaptionsBytotalWordsToDisplay = (
-  captions: Caption[],
-  totalWordsToDisplay: number,
-  linesPerPage: number
-) => {
-  const result: Caption[][] = [];
-  let currentCaptionIndex = 0;
-  let currentSymbolsLength = 0;
-  let currentBlock: Caption[] = [];
-  let currentLine = 1;
-
-  while (currentCaptionIndex < captions.length) {
-    const caption = captions[currentCaptionIndex];
-    if (currentSymbolsLength + caption.word.length + 1 <= totalWordsToDisplay) {
-      currentBlock.push(caption);
-      currentSymbolsLength += caption.word.length + 1;
-      currentCaptionIndex++;
-    } else if (linesPerPage > currentLine) {
-      currentBlock.push(caption);
-      currentCaptionIndex++;
-      currentSymbolsLength = caption.word.length;
-      currentLine++;
-    } else {
-      if (currentBlock.length > 0) {
-        result.push(currentBlock);
-      }
-      currentBlock = [];
-      currentBlock.push(caption);
-      currentSymbolsLength = caption.word.length;
-      currentCaptionIndex++;
-      currentLine = 1;
-    }
-  }
-
-  if (currentBlock.length > 0) {
-    result.push(currentBlock);
-  }
-
-  return result;
-};
-
 const hasFiniteTime = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value);
 
@@ -123,33 +82,21 @@ export const isScreenBreak = (previous: Caption, next: Caption): boolean => {
 };
 
 /**
- * Splits captions into screens. Screens never cross a break found by
- * {@link isScreenBreak}; within a phrase, words are packed by
- * `totalWordsToDisplay` characters per line and `linesPerPage` lines.
+ * Splits captions into phrases at every break found by {@link isScreenBreak}.
+ * A screen never spans two phrases; layout packs each phrase into screens.
  */
-export const splitCaptionsBySentenceAwareBlocks = (
-  captions: Caption[],
-  totalWordsToDisplay: number,
-  linesPerPage: number
-) => {
-  const result: Caption[][] = [];
+export const splitIntoPhrases = (captions: Caption[]): Caption[][] => {
+  const phrases: Caption[][] = [];
   let phrase: Caption[] = [];
-
-  const flushPhrase = () => {
-    if (!phrase.length) return;
-    splitCaptionsBytotalWordsToDisplay(phrase, totalWordsToDisplay, linesPerPage).forEach(
-      (chunk) => result.push(chunk)
-    );
-    phrase = [];
-  };
-
   captions.forEach((caption, index) => {
-    if (phrase.length && isScreenBreak(captions[index - 1], caption)) flushPhrase();
+    if (phrase.length && isScreenBreak(captions[index - 1], caption)) {
+      phrases.push(phrase);
+      phrase = [];
+    }
     phrase.push(caption);
   });
-  flushPhrase();
-
-  return result;
+  if (phrase.length) phrases.push(phrase);
+  return phrases;
 };
 
 export const fontWeightToFontStyle = (
@@ -334,21 +281,6 @@ export const alphabetRU =
 
 export const alphabetArabic =
   "ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي";
-
-export const getAverageSymbolsInLine = (
-  targetWidth: number,
-  textWidth: number,
-  alphabetLength: number,
-  captionsSettings: CaptionsSettings
-) => {
-  const offset =
-    captionsSettings.animation === "box" ||
-    captionsSettings.animation === "bounce"
-      ? 4
-      : 2;
-  const avg = Math.round(targetWidth / (textWidth / alphabetLength)) - offset;
-  return avg > 0 ? avg : 0;
-};
 
 export const getAlphabet = (kind: AlphabetKinds) => {
   switch (kind) {

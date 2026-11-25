@@ -20,3 +20,58 @@ export const SIZES = [
 export const slugify = (name) =>
   name.toLowerCase().replace(/&/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
+
+// Longer text for the layout check: every line of every screen must hold the
+// same words in the browser and on the server. English and Russian, mixed word
+// lengths, numbers and punctuation; 0.3 s per word, so screens break only at
+// sentence ends.
+const SAMPLE_TEXT = [
+  "So here is the thing nobody tells you about editing short videos.",
+  "The preview always looks perfect, and then the export comes back with lines broken in different places.",
+  "We measured 26 presets, two resolutions and thousands of words to make sure that never happens again.",
+  "Extraordinarily long words like internationalization or counterproductive still have to fit somewhere.",
+  "Short ones? Fine. A, I, OK, go!",
+  "Мы проверили каждый пресет на русском тексте, потому что кириллица заметно шире латиницы.",
+  "Высокогорный альпинизм требует подготовки, терпения и хорошей погоды.",
+  "Достопримечательности, переосмысление и восьмидесятилетний — длинные слова тоже должны помещаться.",
+].join(" ");
+
+export const LAYOUT_SAMPLE = SAMPLE_TEXT.split(" ").map((word, i) => ({
+  word,
+  startTime: i * 0.3,
+  endTime: i * 0.3 + 0.28,
+}));
+
+/**
+ * Renders the first moment of every word and returns the distinct screens as
+ * lines of words. Runs in Node and in the browser (no imports): pass Konva and
+ * renderFrame in.
+ */
+export const layoutScreens = ({ Konva, renderFrame, captionsSettings, captions, size }) => {
+  const [width, height] = size;
+  const stage = new Konva.Stage(typeof document === "undefined" ? { width, height } : { container: document.createElement("div"), width, height });
+  const screens = [];
+  for (const caption of captions) {
+    const layer = new Konva.Layer({ listening: false });
+    stage.add(layer);
+    renderFrame(captionsSettings, undefined, captions, caption.startTime + 0.01, size, layer, height / 480);
+    const group = layer.getChildren()[0];
+    const lines = group
+      ? group
+          .getChildren((node) => node.getClassName() === "Group")
+          .map((line) =>
+            line
+              .getChildren((node) => node.getClassName() === "Text")
+              .slice()
+              .sort((a, b) => a.x() - b.x())
+              .map((text) => text.text().trim())
+              .join(" "),
+          )
+      : [];
+    const screen = lines.join(" / ");
+    if (screen && screen !== screens[screens.length - 1]) screens.push(screen);
+    layer.destroy();
+  }
+  stage.destroy();
+  return screens;
+};
