@@ -78,3 +78,6 @@ packages/server/previews/
 # golden-frame mismatches (packages/server/test/golden.test.mjs)
 packages/server/test/golden-out/
 packages/server/test/parity-out/
+
+# Next.js examples
+.next/

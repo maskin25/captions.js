@@ -1,0 +1,26 @@
+{
+  "name": "example-react-vite",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vite build && node test.mjs"
+  },
+  "dependencies": {
+    "@captionsjs/react": "workspace:*",
+    "captions.js": "workspace:*",
+    "konva": "^10.0.8",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.1.0",
+    "playwright": "1.56.1",
+    "typescript": "^5.6.3",
+    "vite": "^7.2.2"
+  }
+}

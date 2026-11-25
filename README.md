@@ -46,10 +46,12 @@ running on plain canvas.
 ## Installation
 
 ```bash
-npm install captions.js
+npm install captions.js konva
 # or
-pnpm add captions.js
+pnpm add captions.js konva
 ```
+
+Konva is a peer dependency, so your app keeps a single copy.
 
 ## Browser: overlay on a `<video>`
 
@@ -73,8 +75,34 @@ instance.destroy();
 ```
 
 The overlay is a positioned Konva stage above the video, scaled to the element's
-display size and driven by `requestAnimationFrame` off `video.currentTime`.
-Fonts are pulled from Google Fonts on demand.
+display size. It redraws on each presented video frame (`requestVideoFrameCallback`,
+falling back to `requestAnimationFrame`). Fonts are pulled from Google Fonts on demand.
+
+## React
+
+```bash
+npm install @captionsjs/react captions.js konva
+```
+
+```tsx
+import { useRef } from "react";
+import { Captions } from "@captionsjs/react";
+
+export function Player({ words }) {
+  const video = useRef<HTMLVideoElement>(null);
+  return (
+    <div>
+      <video ref={video} src="/clip.mp4" controls />
+      <Captions video={video} captions={words} preset="Karaoke" />
+    </div>
+  );
+}
+```
+
+`useCaptions(video, { preset, captions })` does the same as a hook and returns the
+controller. Both work under StrictMode and in the Next.js App Router. See
+[packages/react](./packages/react) and the [Vite](./examples/react-vite) and
+[Next.js](./examples/react-next) examples.
 
 ## Node: burn into video with FFmpeg
 
