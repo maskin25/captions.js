@@ -54,3 +54,34 @@ for (const [presetName, animation] of [
   for (const t of texts) assert.ok(Number.isFinite(t.scaleX()), "scale is NaN");
   console.log("ok   zero-length word renders");
 }
+
+// screens break at sentence ends, speaker changes and pauses, even when the
+// transcript has no sentence times (Whisper, SRT, plain word lists)
+{
+  const { captionsSettings } = getPreset("Classic");
+  const words = (list) => list.map(([word, startTime, endTime, speaker]) => ({ word, startTime, endTime, speaker }));
+  const onScreen = (list, time) => {
+    layer.destroyChildren();
+    renderFrame(captionsSettings, undefined, list, time, size, layer, 0.5);
+    return layer.find("Text").map((t) => t.text().trim().toLowerCase());
+  };
+  const sentence = words([["Yeah.", 0, 0.3], ["And", 0.3, 0.5], ["that", 0.5, 0.7], ["way.", 0.7, 1], ["I", 1, 1.1], ["mean", 1.1, 1.3]]);
+  assert.deepEqual(onScreen(sentence, 0.6), ["and", "that", "way."]);
+  assert.deepEqual(onScreen(sentence, 1.2), ["i", "mean"]);
+
+  const abbreviations = words([["Talk", 0, 0.3], ["to", 0.3, 0.4], ["Dr.", 0.4, 0.6], ["Smith", 0.6, 1]]);
+  assert.deepEqual(onScreen(abbreviations, 0.8), ["talk", "to", "dr.", "smith"]);
+
+  const pause = words([["before", 0, 0.5], ["the", 0.5, 0.6], ["pause", 0.6, 1], ["after", 1.7, 2]]);
+  assert.deepEqual(onScreen(pause, 1.8), ["after"]);
+  // the finished screen stays up through a short silence, then clears
+  assert.deepEqual(onScreen(pause, 1.3), ["before", "the", "pause"]);
+  const longPause = words([["gone", 0, 0.5], ["later", 3, 3.5]]);
+  assert.deepEqual(onScreen(longPause, 2), []);
+  const shortGap = words([["no", 0, 0.5], ["real", 0.8, 1], ["pause", 1.1, 1.5]]);
+  assert.deepEqual(onScreen(shortGap, 1.2), ["no", "real", "pause"]);
+
+  const speakers = words([["hi", 0, 0.3, 0], ["there", 0.3, 0.6, 0], ["hello", 0.6, 1, 1]]);
+  assert.deepEqual(onScreen(speakers, 0.8), ["hello"]);
+  console.log("ok   screens break at sentence ends, pauses and speaker changes");
+}

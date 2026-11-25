@@ -3,7 +3,7 @@ import { RenderFrameFn } from "./types";
 
 import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
 import { LayoutSettings } from "../entities/layout/layout.types";
-import { animate } from "./animate";
+import { animate, boxWordMetrics } from "./animate";
 import {
   alignLinesInGroup,
   detectAlphabetKind,
@@ -171,6 +171,9 @@ const getChunksCached = (
   return next;
 };
 
+/** How long a finished screen stays up during a silence, in seconds. */
+const SCREEN_HOLD_SEC = 1;
+
 const findChunkByTime = (
   ranges: ChunkRange[],
   currentTime: number,
@@ -192,6 +195,14 @@ const findChunkByTime = (
     }
 
     return range.chunk;
+  }
+
+  // In a silence between screens, keep the finished screen up for a moment
+  // instead of blinking to an empty frame. `high` is the last screen that
+  // started before `currentTime`.
+  const previous = ranges[high];
+  if (previous && currentTime - previous.end <= SCREEN_HOLD_SEC) {
+    return previous.chunk;
   }
 
   return undefined;
@@ -249,7 +260,11 @@ export const renderFrame: RenderFrameFn = (
   const wordSpacing =
     xOffset +
     (captionsSettings.animation === "bounce" ? 8 : 0) +
-    (captionsSettings.style.font.fontCapitalize ? 2 : 0);
+    (captionsSettings.style.font.fontCapitalize ? 2 : 0) +
+    // the box around the active word reaches into the gap on both sides
+    (captionsSettings.animation === "box-word"
+      ? 2 * boxWordMetrics(targetFontSize).paddingX
+      : 0);
   const yOffset = captionsSettings.lineSpacing ?? 4;
 
   if (currentChunk) {

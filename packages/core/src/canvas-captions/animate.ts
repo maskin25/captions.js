@@ -4,6 +4,13 @@ import { Ease, mapEaseToFn } from "./easing";
 import { getBoxWordBackgroundColor, getHighlightColor } from "./utils";
 
 const BOUNCE_ATTACK_SEC = 0.15;
+
+/** Padding and corner radius of the `box-word` highlight for a font size in px. */
+export const boxWordMetrics = (fontSize: number) => ({
+  paddingX: (fontSize * 6) / 56,
+  paddingY: fontSize / 56,
+  cornerRadius: (fontSize * 4) / 56,
+});
 const UNDERLINE_DRAW_SEC = 0.25;
 
 const clamp01 = (value: number) =>
@@ -108,9 +115,10 @@ export const animate = (
       break;
     case "box-word":
       if (current) {
-        const boxPaddingX = 6;
-        const boxPaddingY = 1;
-        const cornerRadius = 4;
+        // Proportional to the font, so the box keeps its shape at every
+        // frame size (6 / 1 / 4 px at Focus Box's 56 px on a 540x960 frame).
+        const { paddingX: boxPaddingX, paddingY: boxPaddingY, cornerRadius } =
+          boxWordMetrics(current.text.fontSize());
         const box = new Konva.Rect({
           id: "box-word",
           x: current.text.x() - boxPaddingX,
