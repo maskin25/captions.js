@@ -27,12 +27,21 @@ jobs:
         run: |
           pnpm --filter captions.js build
           pnpm --filter @captionsjs/server build
+          pnpm --filter @captionsjs/react build
       - name: Typecheck configurator
         run: pnpm --filter @maskin25/captions-configurator exec tsc --noEmit -p .
       - name: Test core (exports/types under every moduleResolution)
         run: pnpm --filter captions.js test
       - name: Test server (animations, CLI end-to-end, golden frames)
         run: pnpm --filter @captionsjs/server test
+      - name: Test React (server import, then the Vite and Next.js examples in Chromium)
+        run: |
+          pnpm --filter @captionsjs/react test
+          pnpm --filter @captionsjs/react exec playwright install --with-deps chromium
+          pnpm --filter example-react-vite test
+          pnpm --filter example-react-next test
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
       - name: Upload golden-frame diffs
         if: failure()
         uses: actions/upload-artifact@v4

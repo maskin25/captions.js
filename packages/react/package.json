@@ -1,0 +1,56 @@
+{
+  "name": "@captionsjs/react",
+  "version": "0.1.0",
+  "private": false,
+  "license": "MIT",
+  "homepage": "https://captionsjs.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maskin25/captions.js",
+    "directory": "packages/react"
+  },
+  "description": "React component and hook for captions.js: animated word-level captions over a <video>.",
+  "keywords": ["captions", "subtitles", "react", "video", "animated-captions", "word-level", "captions.js"],
+  "type": "module",
+  "files": ["dist", "README.md"],
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "node test/ssr.test.mjs",
+    "test:browser": "node test/browser.test.mjs",
+    "prepublishOnly": "pnpm run build"
+  },
+  "peerDependencies": {
+    "captions.js": "^2.0.0-0",
+    "konva": "^10.0.2",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "captions.js": "workspace:*",
+    "konva": "^10.0.8",
+    "playwright": "1.56.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.3"
+  }
+}

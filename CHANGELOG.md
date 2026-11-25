@@ -90,6 +90,16 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   `underlineDraw`, `boxPaddingX`, `boxPaddingY`, `boxRadius`, `slideOffset`.
 - `CaptionsSettings.animation` is typed `BuiltInAnimation | string`.
 
+### @captionsjs/react 0.1.0 (new)
+- `<Captions video={ref} captions={words} preset="Karaoke" />` and
+  `useCaptions(video, options)`: the captions.js overlay as a React component
+  and hook. Presets by name or object; changes to `preset` and `captions`
+  update the overlay without re-creating it. Works under StrictMode, imports
+  and renders on the server, and ships with `"use client"` for the App Router.
+- Peers: `react` 18 or 19, `captions.js` 2, `konva` 10.
+- Vite and Next.js App Router examples in `examples/`, each with a browser test.
+- The unused `useRemoteCaptions` hook in `packages/demo` is removed.
+
 ### @captionsjs/server
 - **Added:** `burnCaptions({ expressiveness, annotations })`, CLI
   `--expressiveness/-e` and `--annotations/-a`, and `npx captions.js prompt
