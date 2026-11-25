@@ -201,13 +201,42 @@ npx captions.js burn talk.mp4 words.json -a reply.json -e 0.7
 
 > Emphasis, annotations and `expressiveness` arrive in 2.0.
 
+## Custom effects
+
+An effect is one function that runs every frame on freshly built Konva nodes.
+It sees the whole screen, not just the active word:
+
+```ts
+import { registerEffect } from "captions.js";
+
+registerEffect("fade-ahead", {
+  apply({ words }) {
+    for (const word of words) {
+      if (word.state === "future") word.text.opacity(0.35);
+    }
+  },
+});
+
+preset.captionsSettings.animation = "fade-ahead";
+```
+
+Each word carries its `caption`, Konva `text` node, `line`, `state`, `progress`
+through the word and `elapsed` seconds; the context also has the screen
+`group`, its size, `screenProgress` for entrances, `time`, `scale` and the
+preset's `animationOptions`. Register the same effect in the browser and on the
+server and the export keeps matching the preview.
+
+> `registerEffect` and `animationOptions` arrive in 2.0.
+
 ## What's in the box
 
 - **26 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
   each a plain object you can clone and edit. `getPreset("Karaoke")` fetches one by name.
   **[See them all animated →](https://captionsjs.dev/styles)**
 - **10 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
-  `slide-left`, `slide-up`, `slide-down`, `none`.
+  `slide-left`, `slide-up`, `slide-down`, `none`, tunable with `animationOptions`
+  (e.g. `{ bounceScale: 0.2 }`). Add your own with `registerEffect` (2.0): an effect
+  sees every word on screen with its state (past, active, future), line and timing.
 - **Full typography control** — family, weight, size, stroke, shadow, capitalization,
   italic, underline, active/past word colors.
 - **Sentence-aware chunking** — screens end at sentences, speaker changes and pauses; lines

@@ -3,7 +3,7 @@ import { RenderFrameFn } from "./types";
 
 import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
 import { LayoutSettings } from "../entities/layout/layout.types";
-import { animate, boxWordMetrics } from "./animate";
+import { boxWordMetrics, getEffect, type EffectWord } from "./effects";
 import {
   alignLinesInGroup,
   detectAlphabetKind,
@@ -43,13 +43,6 @@ type ChunkCacheEntry = {
   ranges: ChunkRange[];
 };
 
-type ActiveCaptionRenderState = {
-  caption: Caption;
-  text: Konva.Text;
-  progress: number;
-  elapsed: number;
-  textTrim?: Konva.Text | null;
-};
 
 const wordPriorityAnimations = new Set<CaptionsSettings["animation"]>([
   "bounce",
@@ -315,7 +308,9 @@ export const renderFrame: RenderFrameFn = (
     let lineTexts: Konva.Text[] = [];
     const layoutFontOf = (t: Konva.Text) => layoutFont(t.fontFamily(), t.fontStyle());
 
-    let activeCaptionState: ActiveCaptionRenderState | undefined = undefined;
+    const effectWords: EffectWord[] = [];
+    const lineGroups: Konva.Group[] = [];
+    let activeWord: EffectWord | undefined = undefined;
     let activeCaptionText: Konva.Text | null = null;
 
     const activeBoxWordCaptionIndex =
@@ -436,24 +431,35 @@ export const renderFrame: RenderFrameFn = (
             )
           : null;
 
+      const effectWord: EffectWord = {
+        caption,
+        text,
+        trimmed: textTrim,
+        index,
+        line: lineGroups.length,
+        state: isPastCaption
+          ? "past"
+          : caption.startTime > currentTime
+            ? "future"
+            : "active",
+        progress:
+          caption.endTime > caption.startTime
+            ? Math.min(
+                1,
+                Math.max(
+                  0,
+                  (currentTime - caption.startTime) /
+                    (caption.endTime - caption.startTime),
+                ),
+              )
+            : currentTime >= caption.startTime
+              ? 1
+              : 0,
+        elapsed: currentTime - caption.startTime,
+      };
+      effectWords.push(effectWord);
       if (isCurrentCaption) {
-        activeCaptionState = {
-          caption,
-          text,
-          progress:
-            caption.endTime > caption.startTime
-              ? Math.min(
-                  1,
-                  Math.max(
-                    0,
-                    (currentTime - caption.startTime) /
-                      (caption.endTime - caption.startTime),
-                  ),
-                )
-              : 1,
-          elapsed: Math.max(0, currentTime - caption.startTime),
-          textTrim: textTrim,
-        };
+        activeWord = { ...effectWord, state: "active", elapsed: Math.max(0, effectWord.elapsed) };
         activeCaptionText = text;
       }
 
@@ -466,6 +472,7 @@ export const renderFrame: RenderFrameFn = (
 
       if (isLastWordInLine) {
         group.add(line);
+        lineGroups.push(line);
         x = 0;
 
         // words of different sizes (emphasis) share one baseline
@@ -519,16 +526,19 @@ export const renderFrame: RenderFrameFn = (
       ),
     );
 
-    animate(
-      captionsSettings,
-      progress,
-      {
-        group: group,
-        width: maxGroupWidth,
-        height: groupHeight,
-      },
-      activeCaptionState,
-    );
+    getEffect(captionsSettings.animation).apply({
+      settings: captionsSettings,
+      options: captionsSettings.animationOptions ?? {},
+      group,
+      width: maxGroupWidth,
+      height: groupHeight,
+      lines: lineGroups,
+      words: effectWords,
+      active: activeWord,
+      screenProgress: progress,
+      time: currentTime,
+      scale: toCoef ?? 1,
+    });
 
     if (showDebugBoundingBoxes) {
       drawDebugBoundingBox(group, maxGroupWidth, groupHeight, "#ff4081");
