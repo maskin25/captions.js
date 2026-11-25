@@ -84,9 +84,9 @@ export const animate = (
         const underline = new Konva.Line({
           points: [
             current.text.x(),
-            current.text.height(),
+            current.text.y() + current.text.height(),
             current.text.x() + current.text.width() * e,
-            current.text.height(),
+            current.text.y() + current.text.height(),
           ],
           lineCap: "round",
           stroke: current.caption.highlightColor
@@ -122,7 +122,7 @@ export const animate = (
         const box = new Konva.Rect({
           id: "box-word",
           x: current.text.x() - boxPaddingX,
-          y: -boxPaddingY,
+          y: current.text.y() - boxPaddingY,
           width: current.textTrim!.width() + boxPaddingX * 2,
           height: current.textTrim!.height() + boxPaddingY * 2,
           fill: getBoxWordBackgroundColor(current.caption, captionsSettings),

@@ -75,6 +75,18 @@ export {
   type TrackIssue,
   type TrackValidation,
 } from "./track/track.helpers";
+/** Emphasis annotations (e.g. written by an LLM): prompt, parse, apply. */
+export {
+  ANNOTATIONS_SCHEMA,
+  annotationPrompt,
+  applyAnnotations,
+  parseAnnotations,
+  type AnnotationIssue,
+  type AnnotationResult,
+  type CaptionAnnotations,
+  type EmphasisAnnotation,
+} from "./track/annotations";
+export { EMPHASIS_MAX_SCALE } from "./entities/captions/captions.types";
 export type { DeepgramResponse } from "./captions-adapters/deepgram";
 
 /** Default export is the `captionsjs()` factory for ergonomic imports. */

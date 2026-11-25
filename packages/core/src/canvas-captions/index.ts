@@ -16,6 +16,9 @@ import {
 
 import {
   LAYOUT_UNITS_PER_EM,
+  baselineRatio,
+  emphasisScale,
+  emphasisStrength,
   withFontReadiness,
   layoutFont,
   measureUnits,
@@ -32,6 +35,8 @@ type ChunkRange = {
   end: number;
   chunk: Caption[];
   lines: Caption[][];
+  /** Per line: font scale that makes an over-wide line fit (1 = as is). */
+  fits: number[];
 };
 
 type ChunkCacheEntry = {
@@ -117,11 +122,17 @@ const layoutRanges = (
     Math.floor(layerWidth * toUnits + 1e-6) -
     Math.round(2 * lineMarginLetters(animation) * averageLetter);
 
+  const widthOf = (caption: Caption) =>
+    Math.round(
+      measureUnits(display(caption.word), font) *
+        emphasisScale(caption, captionsSettings),
+    );
+
   const ranges: ChunkRange[] = [];
   splitIntoPhrases(captions).forEach((phrase) => {
     packScreens(
       phrase,
-      (caption) => measureUnits(display(caption.word), font),
+      widthOf,
       spacing,
       Math.max(0, maxLineWidth),
       linesPerPage,
@@ -132,6 +143,15 @@ const layoutRanges = (
         end: chunk[chunk.length - 1].endTime,
         chunk,
         lines,
+        // only a single word can be wider than the line; it shrinks to fit
+        fits: lines.map((line) => {
+          const width =
+            line.reduce((sum, caption) => sum + widthOf(caption), 0) +
+            spacing * (line.length - 1);
+          return maxLineWidth > 0 && width > maxLineWidth
+            ? maxLineWidth / width
+            : 1;
+        }),
       });
     });
   });
@@ -165,6 +185,7 @@ const getChunksCached = (
     fontCapitalize ? 1 : 0,
     animation,
     linesPerPage,
+    captionsSettings.expressiveness ?? 0,
   ].join("|");
 
   let cacheByKey = chunkCache.get(captions);
@@ -268,12 +289,14 @@ export const renderFrame: RenderFrameFn = (
   );
   const currentRange = findChunkByTime(ranges, currentTime);
   const currentChunk = currentRange?.chunk;
-  // index in currentChunk of the last word of each line
+  // index in currentChunk of the last word of each line, and each word's
+  // shrink-to-fit scale
   const lineEnds = new Set<number>();
-  currentRange?.lines.reduce((count, line) => {
-    lineEnds.add(count + line.length - 1);
-    return count + line.length;
-  }, 0);
+  const wordFits: number[] = [];
+  currentRange?.lines.forEach((line, lineIndex) => {
+    line.forEach(() => wordFits.push(currentRange.fits[lineIndex]));
+    lineEnds.add(wordFits.length - 1);
+  });
   const yOffset = captionsSettings.lineSpacing ?? 4;
 
   if (currentChunk) {
@@ -288,6 +311,9 @@ export const renderFrame: RenderFrameFn = (
     let line: Konva.Group = new Konva.Group({
       drawBorder: true,
     });
+
+    let lineTexts: Konva.Text[] = [];
+    const layoutFontOf = (t: Konva.Text) => layoutFont(t.fontFamily(), t.fontStyle());
 
     let activeCaptionState: ActiveCaptionRenderState | undefined = undefined;
     let activeCaptionText: Konva.Text | null = null;
@@ -324,12 +350,21 @@ export const renderFrame: RenderFrameFn = (
 
       const isPastCaption = caption.endTime < currentTime;
 
-      const fillColor = getFillColor(
-        caption,
-        isCurrentCaption,
-        isPastCaption,
-        captionsSettings,
-      );
+      const strength = emphasisStrength(caption, captionsSettings);
+      const { emphasisColor } = captionsSettings.style;
+      const fillColor =
+        emphasisColor && strength >= 0.5 && !isCurrentCaption
+          ? emphasisColor
+          : getFillColor(
+              caption,
+              isCurrentCaption,
+              isPastCaption,
+              captionsSettings,
+            );
+      const wordFontSize =
+        targetFontSize *
+        emphasisScale(caption, captionsSettings) *
+        (wordFits[index] ?? 1);
 
       const isLastWordInLine = lineEnds.has(index);
 
@@ -382,7 +417,7 @@ export const renderFrame: RenderFrameFn = (
       const text = createKonvaText(
         word,
         x,
-        targetFontSize,
+        wordFontSize,
         captionsSettings,
         fillColor,
         false,
@@ -394,7 +429,7 @@ export const renderFrame: RenderFrameFn = (
           ? createKonvaText(
               word,
               x,
-              targetFontSize,
+              wordFontSize,
               captionsSettings,
               fillColor,
               true,
@@ -427,16 +462,25 @@ export const renderFrame: RenderFrameFn = (
 
       line.y(y);
       line.add(text);
+      lineTexts.push(text);
 
       if (isLastWordInLine) {
         group.add(line);
         x = 0;
 
+        // words of different sizes (emphasis) share one baseline
+        const largest = Math.max(...lineTexts.map((t) => t.fontSize()));
+        lineTexts.forEach((t) =>
+          t.y((largest - t.fontSize()) * baselineRatio(layoutFontOf(t))),
+        );
+        const lineHeight = Math.max(...lineTexts.map((t) => t.y() + t.height()));
+        lineTexts = [];
+
         const isLastLine = index + 1 === currentChunk.length;
 
-        y += text.height() + yOffset;
+        y += lineHeight + yOffset;
 
-        groupHeight += text.height() + (isLastLine ? 0 : yOffset);
+        groupHeight += lineHeight + (isLastLine ? 0 : yOffset);
 
         if (groupWidth > maxGroupWidth) {
           maxGroupWidth = groupWidth;

@@ -1,5 +1,14 @@
 import fs from "node:fs";
-import { toCaptions, type Caption } from "captions.js";
+import {
+  applyAnnotations,
+  parseAnnotations,
+  toCaptions,
+  toTrack,
+  trackToCaptions,
+  type AnnotationIssue,
+  type Caption,
+  type CaptionAnnotations,
+} from "captions.js";
 import { download } from "../utils/download.js";
 
 /**
@@ -34,4 +43,35 @@ export const loadCaptions = async (
     throw new Error(`Captions file not found: ${file}`);
   }
   return normalizeCaptions(fs.readFileSync(file, "utf-8"));
+};
+
+/** Reads a file path or http(s) URL as text. */
+const readSource = async (source: string) => {
+  const file = /^https?:\/\//i.test(source) ? await download(source) : source;
+  if (!fs.existsSync(file)) {
+    throw new Error(`File not found: ${file}`);
+  }
+  return fs.readFileSync(file, "utf-8");
+};
+
+/**
+ * Loads an annotations file (see `applyAnnotations` in captions.js) from an
+ * object, from JSON text (an LLM reply with prose or a code fence around it
+ * is fine), from a file path or from an http(s) URL.
+ */
+export const loadAnnotations = async (
+  source: string | CaptionAnnotations | Record<string, unknown>,
+): Promise<CaptionAnnotations> => {
+  if (typeof source !== "string") return parseAnnotations(source);
+  const looksInline = /^\s*\{/.test(source) || source.includes("```");
+  return parseAnnotations(looksInline ? source : await readSource(source.trim()));
+};
+
+/** Applies annotations to captions; manual emphasis in the captions wins. */
+export const annotateCaptions = (
+  captions: Caption[],
+  annotations: CaptionAnnotations,
+): { captions: Caption[]; applied: number; issues: AnnotationIssue[] } => {
+  const { track, applied, issues } = applyAnnotations(toTrack(captions), annotations);
+  return { captions: trackToCaptions(track), applied, issues };
 };

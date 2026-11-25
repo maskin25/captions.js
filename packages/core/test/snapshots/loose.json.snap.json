@@ -49,17 +49,20 @@
    "word": "really",
    "startTime": 0.3,
    "endTime": 0.7,
+   "emphasis": 1,
    "speaker": 2
   },
   {
    "word": "mean",
    "startTime": 0.7,
-   "endTime": 0.9
+   "endTime": 0.9,
+   "emphasis": 1
   },
   {
    "word": "it!",
    "startTime": 0.9,
-   "endTime": 1.2
+   "endTime": 1.2,
+   "emphasis": 1
   }
  ]
 }

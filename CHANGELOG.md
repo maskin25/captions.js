@@ -47,7 +47,28 @@
   Kanit, Lato, Poppins, Permanent Marker) still falls back to each engine's
   own font and can wrap differently.
 
+- **Added:** emphasis on screen. `Caption.emphasis` (0–1) and a preset's
+  `expressiveness` (0–1, default 0) draw emphasized words up to 1.4× larger
+  (`EMPHASIS_MAX_SCALE`), on a shared baseline, with layout making room.
+  `style.emphasisColor` optionally colors strongly emphasized words. At
+  `expressiveness: 0` nothing changes: every golden frame is the same.
+  `*word*` markup and `emphasis` in the data now reach the renderer (they
+  were dropped by `trackToCaptions` before).
+- **Added:** annotations: emphasis chosen outside the library, e.g. by an LLM.
+  `annotationPrompt(track)` writes the request with numbered words,
+  `parseAnnotations()` reads the reply (raw, in prose or a code fence),
+  `applyAnnotations(track, reply)` applies it and reports issues (shifted or
+  missing words, values out of range, duplicates); manual emphasis wins.
+  `ANNOTATIONS_SCHEMA` is the JSON Schema of the file. captions.js never calls
+  a model.
+- **Added:** a line too wide for the frame (a single long word, more likely
+  with emphasis) shrinks to fit instead of running off the edge.
+
 ### @captionsjs/server
+- **Added:** `burnCaptions({ expressiveness, annotations })`, CLI
+  `--expressiveness/-e` and `--annotations/-a`, and `npx captions.js prompt
+  <transcript>`, which prints the LLM request. The CLI reports annotation
+  issues and says so when words have emphasis but expressiveness is 0.
 - The CLI and `loadCaptions()` use the core adapters, so `npx captions.js burn
   talk.mp4 talk.srt` works, as do `.vtt` files and every JSON format above.
   Whisper input now carries segment bounds, so screens break at segment ends.

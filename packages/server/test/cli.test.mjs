@@ -2,7 +2,7 @@
 // and check the output differs from the input where the captions are.
 // Run after `pnpm build`: node test/cli.test.mjs  (needs ffmpeg + network or cached fonts)
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -44,6 +44,32 @@ let srtChanged = 0;
 for (let i = 0; i < a.length; i++) if (Math.abs(a[i] - fromSrt[i]) > 40) srtChanged++;
 assert.ok(srtChanged > 500, `SRT captions not visible (changed px: ${srtChanged})`);
 console.log(`ok   CLI burn from .srt (${srtChanged} px changed at t=0.5s)`);
+
+// LLM annotations: prompt lists the numbered words; the reply makes a word larger
+const prompt = execFileSync(process.execPath, [cli, "prompt", words]).toString();
+assert.match(prompt, /0:Hello 1:world/);
+console.log("ok   prompt lists numbered words");
+const reply = path.join(dir, "reply.txt");
+fs.writeFileSync(reply, 'Here:\n```json\n{"version":1,"emphasis":[{"index":1,"text":"world"},{"index":0,"text":"nope"}]}\n```');
+const annotatedOut = path.join(dir, "annotated.mp4");
+const run = (args) => {
+  const res = spawnSync(process.execPath, [cli, "burn", input, words, "-q", ...args], { encoding: "utf8" });
+  assert.equal(res.status, 0, res.stderr);
+  return res.stderr;
+};
+const stderr = run(["-a", reply, "-e", "1", "-o", annotatedOut]);
+assert.match(stderr, /1 word\(s\) emphasized/);
+assert.match(stderr, /entry 1: "nope" is not at word 0/);
+const plainOut = path.join(dir, "plain.mp4");
+assert.match(run(["-a", reply, "-o", plainOut]), /expressiveness is 0/);
+// "world" is on screen from 0.9 s; at expressiveness 1 it is larger
+const loud = frameAt(annotatedOut, 1.2);
+const quietFrame = frameAt(plainOut, 1.2);
+let grown = 0;
+for (let i = 0; i < loud.length; i++) if (Math.abs(loud[i] - quietFrame[i]) > 40) grown++;
+assert.ok(grown > 500, `annotated word looks the same (changed px: ${grown})`);
+console.log(`ok   CLI burn with annotations (${grown} px differ from expressiveness 0)`);
+assert.throws(() => execFileSync(process.execPath, [cli, "burn", input, words, "-e", "2"], { stdio: "pipe" }));
 
 assert.throws(() => execFileSync(process.execPath, [cli, "burn", input, words, "-p", "nope"], { stdio: "pipe" }));
 console.log("ok   unknown preset fails");

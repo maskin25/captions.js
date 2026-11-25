@@ -59,6 +59,10 @@ export const fromCaptions = (captions: Caption[]): CaptionTrack => {
     const speaker = speakerId(c.speaker);
     if (speaker !== undefined) word.speaker = speaker;
     if (c.highlightColor) word.highlightColor = c.highlightColor;
+    if (typeof c.emphasis === "number" && Number.isFinite(c.emphasis)) {
+      word.emphasis = c.emphasis;
+      word.emphasisSource = "manual";
+    }
     if (c.sentenceStartTime !== undefined && c.sentenceEndTime !== undefined) {
       sentences.set(`${c.sentenceStartTime}|${c.sentenceEndTime}`, { start: c.sentenceStartTime, end: c.sentenceEndTime });
     }

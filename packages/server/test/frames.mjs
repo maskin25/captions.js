@@ -42,6 +42,11 @@ export const LAYOUT_SAMPLE = SAMPLE_TEXT.split(" ").map((word, i) => ({
   endTime: i * 0.3 + 0.28,
 }));
 
+/** The same sample with every fifth word emphasized (strengths 0.4–1). */
+export const EMPHASIS_SAMPLE = LAYOUT_SAMPLE.map((caption, i) =>
+  i % 5 === 2 ? { ...caption, emphasis: [1, 0.4, 0.7][i % 3] } : caption,
+);
+
 /**
  * Renders the first moment of every word and returns the distinct screens as
  * lines of words. Runs in Node and in the browser (no imports): pass Konva and
