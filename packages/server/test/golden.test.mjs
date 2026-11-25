@@ -53,7 +53,7 @@ const renderPng = async (captionsSettings, size, time) => {
   const layer = new Konva.Layer({ listening: false });
   stage.add(layer);
   // Same scale rule as burnCaptions() and the browser overlay.
-  renderFrame(captionsSettings, undefined, PHRASE, time, size, layer, height / 480);
+  renderFrame({ settings: captionsSettings, captions: PHRASE, time, size, layer });
   layer.draw();
   const png = await layer.getNativeCanvasElement().toBuffer("png");
   stage.destroy();

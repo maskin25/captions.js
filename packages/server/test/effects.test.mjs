@@ -75,3 +75,16 @@ const classic = getPreset("Classic").captionsSettings;
   assert.throws(() => registerEffect("", { apply() {} }), /needs a name/);
   console.log("ok   unknown animation names fall back to none");
 }
+
+// renderFrame: the options object and the deprecated positional form draw the
+// same frame; the options form defaults scale to height / 480
+{
+  const karaoke = getPreset("Karaoke").captionsSettings;
+  render(karaoke, 1.45);
+  const positional = await hash();
+  layer.destroyChildren();
+  renderFrame({ settings: karaoke, captions, time: 1.45, size, layer });
+  layer.draw();
+  assert.equal(await hash(), positional);
+  console.log("ok   renderFrame options object matches the positional form");
+}

@@ -91,7 +91,8 @@ the layout of the sample in Chromium with the server's, and any difference
 there fails the run. It needs
 `pnpm --filter @captionsjs/server exec playwright install chromium` once; on an
 Ubuntu release newer than Playwright knows, prefix both commands with
-`PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64`. It is not a CI gate; pixel
+`PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64`. `test:overlay` plays a short WebM in Chromium under `captionsjs()` and checks
+the overlay follows video frames. Neither is a CI gate; pixel
 differences are only reported unless you pass `--strict`.
 
 ```bash

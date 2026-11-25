@@ -89,7 +89,7 @@ const page_html = `<!doctype html><html><head>
     const stage = new Konva.Stage({ container: "stage", width, height });
     const layer = new Konva.Layer({ listening: false });
     stage.add(layer);
-    renderFrame(captionsSettings, undefined, phrase, time, size, layer, height / 480);
+    renderFrame({ settings: captionsSettings, captions: phrase, time, size, layer });
     layer.draw();
     const url = layer.getNativeCanvasElement().toDataURL("image/png");
     stage.destroy();
