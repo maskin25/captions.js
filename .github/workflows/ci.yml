@@ -37,11 +37,13 @@ jobs:
       - name: Test React (server import, then the Vite and Next.js examples in Chromium)
         run: |
           pnpm --filter @captionsjs/react test
-          pnpm --filter @captionsjs/react exec playwright install --with-deps chromium
+          pnpm --filter @captionsjs/react exec playwright install chromium
           pnpm --filter example-react-vite test
           pnpm --filter example-react-next test
         env:
           NEXT_TELEMETRY_DISABLED: 1
+          # Playwright 1.56 has no build for the runner's Ubuntu 26.04; the 24.04 one runs
+          PLAYWRIGHT_HOST_PLATFORM_OVERRIDE: ubuntu24.04-x64
       - name: Upload golden-frame diffs
         if: failure()
         uses: actions/upload-artifact@v4
