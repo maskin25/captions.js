@@ -37,6 +37,7 @@ export {
 /** Effects: one module per animation; add your own with registerEffect. */
 export {
   attack,
+  DECORATION,
   getEffect,
   numberOption,
   registerEffect,

@@ -19,7 +19,17 @@ const pixels = async (png) => {
   const canvas = new Canvas(img.width, img.height);
   const ctx = canvas.getContext("2d");
   ctx.drawImage(img, 0, 0);
-  return { width: img.width, height: img.height, data: ctx.getImageData(0, 0, img.width, img.height).data };
+  const data = ctx.getImageData(0, 0, img.width, img.height).data;
+  // Compare premultiplied colors (color × alpha), which is what shows over the
+  // video. Raw RGBA would count a nearly transparent glow pixel as a full
+  // 255 difference when one engine gives it alpha 1 and the other alpha 0.
+  for (let i = 0; i < data.length; i += 4) {
+    const alpha = data[i + 3] / 255;
+    data[i] = Math.round(data[i] * alpha);
+    data[i + 1] = Math.round(data[i + 1] * alpha);
+    data[i + 2] = Math.round(data[i + 2] * alpha);
+  }
+  return { width: img.width, height: img.height, data };
 };
 
 /**

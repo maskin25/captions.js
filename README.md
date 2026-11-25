@@ -32,7 +32,7 @@ and every existing option makes you choose one side.
 | Server-side burn-in               | ✅ Node + FFmpeg | —                   | ✅                     | ✅           | ✅                |
 | Headless Chrome in production     | not needed      | n/a                  | **required**           | not needed   | not needed        |
 | Word-level highlighting           | ✅              | timing data only     | build it yourself      | karaoke tags only | ❌           |
-| Modern kinetic typography         | ✅ 26 presets   | —                    | build it yourself      | ❌           | ❌                |
+| Modern kinetic typography         | ✅ 30 presets   | —                    | build it yourself      | ❌           | ❌                |
 | Preview and export share one code path | ✅         | n/a                  | ✅ (via Chrome)        | n/a          | n/a               |
 
 `@remotion/captions` converts transcription formats — it does not render anything.
@@ -254,15 +254,22 @@ through the word and `elapsed` seconds; the context also has the screen
 preset's `animationOptions`. Register the same effect in the browser and on the
 server and the export keeps matching the preview.
 
+An effect may add nodes for looks, such as glow or depth copies of a word. Name
+extra `Text` nodes `DECORATION` (`name: DECORATION`, exported) so tools that read
+the words back from a layer can skip them. Size everything from the word's own
+`text.fontSize()`, so the effect looks the same at every frame size.
+
 > `registerEffect` and `animationOptions` arrive in 2.0.
 
 ## What's in the box
 
-- **26 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
+- **30 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
+  plus Spring Pop, Highlight Sweep, Neon Bloom and Hard Extrude, new in 2.0;
   each a plain object you can clone and edit. `getPreset("Karaoke")` fetches one by name.
   **[See them all animated →](https://captionsjs.dev/styles)**
-- **10 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
-  `slide-left`, `slide-up`, `slide-down`, `none`, tunable with `animationOptions`
+- **14 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
+  `slide-left`, `slide-up`, `slide-down`, `none`, and in 2.0 `spring`, `highlight-sweep`,
+  `neon`, `extrude`, tunable with `animationOptions`
   (e.g. `{ bounceScale: 0.2 }`). Add your own with `registerEffect` (2.0): an effect
   sees every word on screen with its state (past, active, future), line and timing.
 - **Full typography control** — family, weight, size, stroke, shadow, capitalization,

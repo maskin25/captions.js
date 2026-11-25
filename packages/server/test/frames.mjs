@@ -66,7 +66,7 @@ export const layoutScreens = ({ Konva, renderFrame, captionsSettings, captions, 
           .getChildren((node) => node.getClassName() === "Group")
           .map((line) =>
             line
-              .getChildren((node) => node.getClassName() === "Text")
+              .getChildren((node) => node.getClassName() === "Text" && !node.hasName("decoration"))
               .slice()
               .sort((a, b) => a.x() - b.x())
               .map((text) => text.text().trim())

@@ -47,7 +47,11 @@ export type StylePresetName =
   | "Old Money"
   | "Cinema"
   | "Midnight Serif"
-  | "Aurora Ink";
+  | "Aurora Ink"
+  | "Spring Pop"
+  | "Highlight Sweep"
+  | "Neon Bloom"
+  | "Hard Extrude";
 
 /**
  * Curated set of presets that ship with captions.js out of the box.
@@ -732,6 +736,105 @@ export const stylePresets: StylePreset[] = [
       animation: "underline",
       linesPerPage: 2,
       positionTopOffset: 0,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 26,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Montserrat",
+          fontWeight: "black",
+          fontCapitalize: true,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Spring Pop",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/spring-pop.jpg",
+        highlightColor: "#FFD43BFF",
+      },
+      position: "bottom",
+      animation: "spring",
+      linesPerPage: 2,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 24,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Rubik",
+          fontWeight: "bold",
+          fontCapitalize: false,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Highlight Sweep",
+        backgroundColor: "#7C3AEDFF",
+        verticalCoverImg: "https://captionsjs.dev/presets/highlight-sweep.jpg",
+        highlightColor: "#FFFFFFFF",
+      },
+      position: "bottom",
+      animation: "highlight-sweep",
+      linesPerPage: 2,
+      lineSpacing: 8,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 26,
+          fontColor: "#3DE8FFFF",
+          underline: false,
+          fontFamily: "Comfortaa",
+          fontWeight: "bold",
+          fontCapitalize: false,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Neon Bloom",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/neon-bloom.jpg",
+        highlightColor: "#FF3DF2FF",
+      },
+      position: "bottom",
+      animation: "neon",
+      linesPerPage: 2,
+      lineSpacing: 10,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 28,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Rubik",
+          fontWeight: "black",
+          fontCapitalize: true,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Hard Extrude",
+        backgroundColor: "#E0245EFF",
+        verticalCoverImg: "https://captionsjs.dev/presets/hard-extrude.jpg",
+        highlightColor: "#FFE14DFF",
+      },
+      position: "bottom",
+      animation: "extrude",
+      linesPerPage: 2,
+      lineSpacing: 10,
     },
   },
 ];
