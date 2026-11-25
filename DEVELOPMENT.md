@@ -78,13 +78,21 @@ exact pixels differ between your machine and the CI runner. A block fails when
 its average moves by more than 32 in any channel, which catches layout, timing
 and animation changes but not small color shifts.
 
+`test/layout.test.mjs` (part of `test`) checks that every preset breaks a longer
+English and Russian sample into the same screens and lines at 360×640, 540×960 and
+1080×1920, and that no line runs off the frame. Line breaking measures text in
+font units at 1000 px (`packages/core/src/canvas-captions/layout.ts`), so it does
+not depend on resolution or on the canvas engine.
+
 `pnpm --filter @captionsjs/server test:parity` renders the same frames in headless
 Chromium and reports how far they are from the server renders, per preset
-(`test/parity-out/report.md`; findings in `docs/v2/parity.md`). It needs
+(`test/parity-out/report.md`; findings in `docs/v2/parity.md`). It also compares
+the layout of the sample in Chromium with the server's, and any difference
+there fails the run. It needs
 `pnpm --filter @captionsjs/server exec playwright install chromium` once; on an
 Ubuntu release newer than Playwright knows, prefix both commands with
-`PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64`. It is a report, not a CI gate;
-`--strict` makes it fail over the limit.
+`PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64`. It is not a CI gate; pixel
+differences are only reported unless you pass `--strict`.
 
 ```bash
 pnpm --filter captions.js build && pnpm --filter @captionsjs/server build

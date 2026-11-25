@@ -35,6 +35,17 @@
   most visibly at 1080×1920 ("ВБАЗОВОМ"). The highlight box now scales with
   the font and the gap between words leaves room for it. Focus Box goldens
   changed; no other preset did.
+- **Changed:** line breaks are decided from text widths in font units instead
+  of an average letter count, so the browser preview and the server export
+  break lines identically, at any output size. Before, Chromium and Skia could
+  disagree near a rounding edge (From at 1080×1920 showed "BROWSER" in the
+  browser and "IN YOUR BROWSER" on the server), and a small preview could wrap
+  differently from the full-size export. Lines now hold about as many
+  characters as before on average, but where they break changes for most
+  presets; Russian lines are a little shorter, because Cyrillic is measured
+  rather than estimated. Text a preset font has no glyphs for (Cyrillic in
+  Kanit, Lato, Poppins, Permanent Marker) still falls back to each engine's
+  own font and can wrap differently.
 
 ### @captionsjs/server
 - The CLI and `loadCaptions()` use the core adapters, so `npx captions.js burn
@@ -43,7 +54,10 @@
 
 ### Repo
 - Golden frames: 260 PNGs (26 presets × 5 moments × 2 sizes) compared on
-  every PR; see DEVELOPMENT.md.
+  every PR; see DEVELOPMENT.md. 140 of them changed with the new line breaks.
+- Layout test: every preset must give the same screens and lines at three
+  sizes (CI), and in Chromium (`test:parity`, with the layout check failing the
+  run).
 
 ## captions.js 1.10.0 · @captionsjs/server 0.1.1 — 2026-10-01
 
