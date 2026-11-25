@@ -64,6 +64,18 @@
 - **Added:** a line too wide for the frame (a single long word, more likely
   with emphasis) shrinks to fit instead of running off the edge.
 
+- **Added:** effects as modules (`canvas-captions/effects/`). Each animation
+  is an `Effect` with `apply(context)`, where the context holds every word on
+  screen with its state (past, active, future), line, progress and elapsed
+  time, plus the screen group, `screenProgress`, `time` and `scale`.
+  `registerEffect(name, effect)` adds one that `animation` can name; unknown
+  names draw no animation. The ten built-in animations are ported unchanged:
+  all 260 golden frames are byte-identical.
+- **Added:** `animationOptions` on settings, per-effect parameters with
+  today's values as defaults: `bounceScale`, `bounceAttack`, `underlineWidth`,
+  `underlineDraw`, `boxPaddingX`, `boxPaddingY`, `boxRadius`, `slideOffset`.
+- `CaptionsSettings.animation` is typed `BuiltInAnimation | string`.
+
 ### @captionsjs/server
 - **Added:** `burnCaptions({ expressiveness, annotations })`, CLI
   `--expressiveness/-e` and `--annotations/-a`, and `npx captions.js prompt

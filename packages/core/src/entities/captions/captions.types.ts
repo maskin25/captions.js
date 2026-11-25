@@ -60,18 +60,34 @@ export interface CaptionsSettings {
   lineSpacing?: number | null;
   position: "auto" | "top" | "middle" | "bottom";
   positionTopOffset?: number;
-  animation:
-    | "none"
-    | "bounce"
-    | "underline"
-    | "box"
-    | "pop"
-    | "scale"
-    | "slide-left"
-    | "slide-up"
-    | "slide-down"
-    | "box-word";
+  /**
+   * Effect name: a built-in one, or one added with `registerEffect`.
+   */
+  animation: BuiltInAnimation | (string & {});
+  /**
+   * Parameters for the effect, e.g. `{ bounceScale: 0.2 }` or
+   * `{ underlineWidth: 6 }`. Each effect documents its keys and defaults;
+   * unknown keys are ignored.
+   */
+  animationOptions?: Record<string, unknown>;
 }
+
+/**
+ * The effects built into captions.js.
+ *
+ * @public
+ */
+export type BuiltInAnimation =
+  | "none"
+  | "bounce"
+  | "underline"
+  | "box"
+  | "pop"
+  | "scale"
+  | "slide-left"
+  | "slide-up"
+  | "slide-down"
+  | "box-word";
 
 /**
  * Single timed word/segment that will be highlighted as audio plays.

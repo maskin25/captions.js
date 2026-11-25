@@ -31,6 +31,18 @@ export {
 } from "./captions/Captions";
 
 export { renderFrame, renderStylePreset } from "./canvas-captions";
+
+/** Effects: one module per animation; add your own with registerEffect. */
+export {
+  attack,
+  getEffect,
+  numberOption,
+  registerEffect,
+  type Effect,
+  type EffectContext,
+  type EffectWord,
+  type WordState,
+} from "./canvas-captions/effects";
 export { getHighlightColor } from "./canvas-captions/utils";
 
 export {
@@ -39,7 +51,10 @@ export {
   type CaptionsInput,
 } from "./captions-adapters";
 
-export type { CaptionsSettings } from "./entities/captions/captions.types";
+export type {
+  BuiltInAnimation,
+  CaptionsSettings,
+} from "./entities/captions/captions.types";
 
 /** Normalized caption track, its input adapters and validation. */
 export type {
