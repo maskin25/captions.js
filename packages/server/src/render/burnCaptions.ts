@@ -1,5 +1,6 @@
 import {
   getPreset,
+  frameScale,
   renderFrame,
   resolveSafeArea,
   type AnnotationIssue,
@@ -62,7 +63,7 @@ export interface BurnCaptionsParams {
   /** x264 CRF. Defaults to 20. */
   crf?: number;
   /**
-   * Font-size multiplier passed to `renderFrame`. Defaults to `height / 480`,
+   * Font-size multiplier passed to `renderFrame`. Defaults to `frameScale(height)` (height / 480),
    * the same rule the browser overlay uses, so the export matches the preview.
    */
   scale?: number;
@@ -151,7 +152,7 @@ export const burnCaptions = async (
     size: [probe.width, probe.height],
     duration: probe.duration,
     fps,
-    scale: params.scale ?? probe.height / 480,
+    scale: params.scale ?? frameScale(probe.height),
     x264Preset: params.x264Preset ?? "veryfast",
     crf: params.crf ?? 20,
     onProgress: params.onProgress,

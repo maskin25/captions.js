@@ -6,19 +6,20 @@ import { numberOption, type Effect } from "./types";
 /**
  * A rounded plate behind the whole screen.
  *
- * Options: `boxPaddingX` (px, 12), `boxPaddingY` (px, 5), `boxRadius` (px, 6).
+ * Options, in px on a `REFERENCE_HEIGHT` frame: `boxPaddingX` (12), `boxPaddingY`
+ * (5), `boxRadius` (6).
  */
 export const box: Effect = {
-  apply({ group, width, height, options, settings }) {
-    const paddingX = numberOption(options, "boxPaddingX", 12);
-    const paddingY = numberOption(options, "boxPaddingY", 5);
+  apply({ group, width, height, options, settings, scale }) {
+    const paddingX = numberOption(options, "boxPaddingX", 12) * scale;
+    const paddingY = numberOption(options, "boxPaddingY", 5) * scale;
     const plate = new Konva.Rect({
       x: -paddingX,
-      y: -paddingY - 2,
+      y: -paddingY - 2 * scale,
       width: width + 2 * paddingX,
-      height: height + 2 * paddingY + 2,
+      height: height + 2 * paddingY + 2 * scale,
       fill: settings.style.backgroundColor,
-      cornerRadius: numberOption(options, "boxRadius", 6),
+      cornerRadius: numberOption(options, "boxRadius", 6) * scale,
     });
     group.add(plate);
     plate.moveToBottom();

@@ -767,6 +767,7 @@ export const stylePresets: StylePreset[] = [
       },
       position: "bottom",
       animation: "spring",
+      lineSpacing: 2,
       linesPerPage: 2,
     },
   },
@@ -792,7 +793,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "highlight-sweep",
       linesPerPage: 2,
-      lineSpacing: 8,
+      lineSpacing: 4,
     },
   },
   {
@@ -817,7 +818,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "neon",
       linesPerPage: 2,
-      lineSpacing: 10,
+      lineSpacing: 5,
     },
   },
   {
@@ -842,7 +843,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "extrude",
       linesPerPage: 2,
-      lineSpacing: 10,
+      lineSpacing: 5,
     },
   },
   {
@@ -867,7 +868,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "karaoke-fill",
       linesPerPage: 2,
-      lineSpacing: 6,
+      lineSpacing: 3,
     },
   },
   {
@@ -892,7 +893,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "gradient-wave",
       linesPerPage: 2,
-      lineSpacing: 6,
+      lineSpacing: 3,
       animationOptions: { gradientColors: ["#FF4D8D", "#FFA62B", "#8C6BFF"] },
     },
   },
@@ -918,7 +919,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "pill",
       linesPerPage: 2,
-      lineSpacing: 16,
+      lineSpacing: 8,
     },
   },
   {
@@ -943,7 +944,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "chroma-glitch",
       linesPerPage: 2,
-      lineSpacing: 8,
+      lineSpacing: 4,
     },
   },
   {
@@ -968,7 +969,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "typewriter",
       linesPerPage: 2,
-      lineSpacing: 6,
+      lineSpacing: 3,
     },
   },
   {
@@ -993,7 +994,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "sticker-tape",
       linesPerPage: 2,
-      lineSpacing: 14,
+      lineSpacing: 7,
     },
   },
   {
@@ -1017,6 +1018,7 @@ export const stylePresets: StylePreset[] = [
       },
       position: "bottom",
       animation: "slam",
+      lineSpacing: 2,
       linesPerPage: 2,
     },
   },
@@ -1042,7 +1044,7 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "speaker-tags",
       linesPerPage: 2,
-      lineSpacing: 6,
+      lineSpacing: 3,
     },
   },
 ];

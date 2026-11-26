@@ -131,9 +131,10 @@ npx captions.js burn talk.mp4 words.json --preset "Focus Box" -o out.mp4
 npx captions.js presets   # list preset names
 ```
 
-Preset fonts are fetched from Google Fonts on first use and cached. Font size follows
-the same rule as the browser overlay (`videoHeight / 480`), so the export matches the
-preview. Line breaks are measured in font units, so the preview and the export
+Preset fonts are fetched from Google Fonts on first use and cached. Presets are
+written for a 480 px tall frame (`REFERENCE_HEIGHT`); at any other size the font,
+outlines, shadows, spacing and boxes all grow by `frameScale(height)`, the same rule
+as the browser overlay, so the export looks exactly like the preview. Line breaks are measured in font units, so the preview and the export
 break lines in the same places at any size. Browser and server draw text with
 different engines (Chromium vs Skia), so glyph edges can differ by a pixel; every
 preset is measured against the browser in [`docs/v2/parity.md`](./docs/v2/parity.md). Driving `renderFrame` yourself (custom pipelines, other encoders) — see

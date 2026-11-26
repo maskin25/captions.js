@@ -122,6 +122,15 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   `underlineDraw`, `boxPaddingX`, `boxPaddingY`, `boxRadius`, `slideOffset`.
 - `CaptionsSettings.animation` is typed `BuiltInAnimation | string`.
 
+- **Changed:** strokes, shadows, line spacing, the fixed parts of word gaps,
+  the underline, slide distance and box padding now scale with the frame like
+  the font does. A preset looks the same in a small preview and a 1080×1920
+  export: the look it had on a 480 px tall frame. 1.x exports had thinner
+  outlines and shadows than the preview; see MIGRATION.md. The 12 new presets
+  keep the look they had in the gallery (their `lineSpacing` is halved to
+  match). The reference height is exported as `REFERENCE_HEIGHT` (480), with
+  `frameScale(height)`.
+
 ### @captionsjs/react 0.1.0 (new)
 - `<Captions video={ref} captions={words} preset="Karaoke" />` and
   `useCaptions(video, options)`: the captions.js overlay as a React component

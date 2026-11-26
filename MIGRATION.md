@@ -35,6 +35,20 @@ else below keeps working, or affects only code that used the removed parts.
 
 ## Changes you will see
 
+- **Outlines, shadows and boxes scale with the frame.** In 1.x the font grew
+  with the frame (`height / 480`) but stroke width, shadow blur and offset,
+  line spacing, the extra word gap of bounce and capitalized presets, the
+  underline, the slide distance and the box padding stayed fixed pixels. So
+  a preset looked bold in a small preview and thin in a 1080×1920 export.
+  Now every one of them scales too, and every preset looks at every size the
+  way it looked on a 480 px tall frame. **Exports at 1080×1920 get about four
+  times thicker outlines and shadows than in 1.x**, matching what the preview
+  showed. Bounce and capitalized presets also get wider word gaps, so their
+  lines can break in different places. Pixel values in your own presets and
+  in `animationOptions` (`underlineWidth`, `boxPaddingX`, `slideOffset`, …)
+  are now px on a 480 px tall frame (`REFERENCE_HEIGHT`). To keep a 1.x
+  export look at 1080×1920, divide them by 4.
+
 - **Line breaks move.** Lines break on measured text width instead of a letter
   count, identically in the browser and on the server at any size. Most presets
   break the same text in different places than 1.x.
