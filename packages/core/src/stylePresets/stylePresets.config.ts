@@ -55,7 +55,10 @@ export type StylePresetName =
   | "Karaoke Fill"
   | "Gradient Wave"
   | "Pill"
-  | "Chroma Glitch";
+  | "Chroma Glitch"
+  | "Typewriter"
+  | "Sticker Tape"
+  | "Slam";
 
 /**
  * Curated set of presets that ship with captions.js out of the box.
@@ -940,6 +943,80 @@ export const stylePresets: StylePreset[] = [
       animation: "chroma-glitch",
       linesPerPage: 2,
       lineSpacing: 8,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 24,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Fira Sans",
+          fontWeight: "bold",
+          fontCapitalize: false,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Typewriter",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/typewriter.jpg",
+        highlightColor: "#FFC94DFF",
+      },
+      position: "bottom",
+      animation: "typewriter",
+      linesPerPage: 2,
+      lineSpacing: 6,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 24,
+          fontColor: "#141414FF",
+          underline: false,
+          fontFamily: "Balsamiq Sans",
+          fontWeight: "bold",
+          fontCapitalize: false,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Sticker Tape",
+        backgroundColor: "#FFFFFFFF",
+        verticalCoverImg: "https://captionsjs.dev/presets/sticker-tape.jpg",
+        highlightColor: "#FFE03AFF",
+      },
+      position: "bottom",
+      animation: "sticker-tape",
+      linesPerPage: 2,
+      lineSpacing: 14,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 26,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Oswald",
+          fontWeight: "bold",
+          fontCapitalize: true,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Slam",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/slam.jpg",
+        highlightColor: "#FFFFFFFF",
+      },
+      position: "bottom",
+      animation: "slam",
+      linesPerPage: 2,
     },
   },
 ];

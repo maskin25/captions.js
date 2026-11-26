@@ -32,6 +32,9 @@ export interface EffectContext {
   /** Screen size before effects, in px. */
   width: number;
   height: number;
+  /** Size of the whole frame (the layer), in px. */
+  frameWidth: number;
+  frameHeight: number;
   /** Line groups, top to bottom. */
   lines: Konva.Group[];
   /** Every word on the screen, in reading order. */
@@ -54,6 +57,12 @@ export interface EffectContext {
  */
 export interface Effect {
   apply(context: EffectContext): void;
+  /**
+   * Extra space between words this effect needs, in em, for example for a
+   * plate around every word. Layout adds it to the gap, so lines break with
+   * room for it. Gets `animationOptions` (or `{}`).
+   */
+  wordGap?(options: Record<string, unknown>): number;
 }
 
 /**

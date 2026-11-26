@@ -11,6 +11,9 @@ import { karaokeFill } from "./karaoke-fill";
 import { gradientWave } from "./gradient-wave";
 import { pill } from "./pill";
 import { glitch } from "./glitch";
+import { typewriter } from "./typewriter";
+import { sticker } from "./sticker";
+import { slam } from "./slam";
 
 export type { Effect, EffectContext, EffectWord, WordState } from "./types";
 export { attack, numberOption, DECORATION } from "./types";
@@ -38,13 +41,17 @@ const registry = new Map<string, Effect>([
   ["gradient-wave", gradientWave],
   ["pill", pill],
   ["chroma-glitch", glitch],
+  ["typewriter", typewriter],
+  ["sticker-tape", sticker],
+  ["slam", slam],
 ]);
 
 /**
  * Adds an effect under a name that `animation` can then use, or replaces
  * one. Built-in names: none, bounce, underline, box, box-word, pop, scale,
  * slide-down, slide-up, slide-left, spring, highlight-sweep, neon, extrude,
- * karaoke-fill, gradient-wave, pill, chroma-glitch.
+ * karaoke-fill, gradient-wave, pill, chroma-glitch, typewriter, sticker-tape,
+ * slam.
  *
  * @public
  */

@@ -33,7 +33,7 @@ import { chromium } from "playwright";
 import Konva from "konva";
 import "konva/skia-backend";
 import { FontLibrary } from "skia-canvas";
-import { getPreset, presetNames, renderFrame } from "captions.js";
+import { getEffect, getPreset, presetNames, registerEffect, renderFrame } from "captions.js";
 import { resolveFontFile } from "../dist/render/fonts.js";
 import { fontCovers } from "./cmap.mjs";
 import { BLOCK_TOLERANCE, compare } from "./compare.mjs";
@@ -71,7 +71,7 @@ const page_html = `<!doctype html><html><head>
 </head><body><div id="stage"></div>
 <script type="module">
   import Konva from "konva";
-  import { getPreset, renderFrame } from "captions.js";
+  import { getEffect, getPreset, registerEffect, renderFrame } from "captions.js";
   import { layoutScreens } from "${ORIGIN}/frames.mjs";
   Konva.pixelRatio = 1;
   window.setFont = async ({ family, url, italic }) => {
@@ -96,7 +96,7 @@ const page_html = `<!doctype html><html><head>
     return url.slice(url.indexOf(",") + 1);
   };
   window.layout = ({ name, size, captions, expressiveness }) =>
-    layoutScreens({ Konva, renderFrame, captionsSettings: { ...getPreset(name).captionsSettings, expressiveness }, captions, size });
+    layoutScreens({ Konva, renderFrame, getEffect, registerEffect, captionsSettings: { ...getPreset(name).captionsSettings, expressiveness }, captions, size });
   window.ready = true;
 </script></body></html>`;
 
@@ -149,7 +149,7 @@ for (const name of names) {
     [covered(EMPHASIS_SAMPLE), 1, ", emphasized"],
   ]) {
     const settings = { ...captionsSettings, expressiveness };
-    const layoutAt = (size) => layoutScreens({ Konva, renderFrame, captionsSettings: settings, captions, size });
+    const layoutAt = (size) => layoutScreens({ Konva, renderFrame, getEffect, registerEffect, captionsSettings: settings, captions, size });
     const serverReference = layoutAt([1080, 1920]);
     if (!label) reference = serverReference;
     const candidates = [

@@ -32,7 +32,7 @@ and every existing option makes you choose one side.
 | Server-side burn-in               | ✅ Node + FFmpeg | —                   | ✅                     | ✅           | ✅                |
 | Headless Chrome in production     | not needed      | n/a                  | **required**           | not needed   | not needed        |
 | Word-level highlighting           | ✅              | timing data only     | build it yourself      | karaoke tags only | ❌           |
-| Modern kinetic typography         | ✅ 34 presets   | —                    | build it yourself      | ❌           | ❌                |
+| Modern kinetic typography         | ✅ 37 presets   | —                    | build it yourself      | ❌           | ❌                |
 | Preview and export share one code path | ✅         | n/a                  | ✅ (via Chrome)        | n/a          | n/a               |
 
 `@remotion/captions` converts transcription formats — it does not render anything.
@@ -263,14 +263,15 @@ the words back from a layer can skip them. Size everything from the word's own
 
 ## What's in the box
 
-- **34 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
+- **37 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
   plus Spring Pop, Highlight Sweep, Neon Bloom, Hard Extrude, Karaoke Fill,
-  Gradient Wave, Pill and Chroma Glitch, new in 2.0;
+  Gradient Wave, Pill, Chroma Glitch, Typewriter, Sticker Tape and Slam, new in 2.0;
   each a plain object you can clone and edit. `getPreset("Karaoke")` fetches one by name.
   **[See them all animated →](https://captionsjs.dev/styles)**
-- **18 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
+- **21 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
   `slide-left`, `slide-up`, `slide-down`, `none`, and in 2.0 `spring`, `highlight-sweep`,
   `neon`, `extrude`, `karaoke-fill`, `gradient-wave`, `pill`, `chroma-glitch`,
+  `typewriter`, `sticker-tape`, `slam`,
   tunable with `animationOptions`
   (e.g. `{ bounceScale: 0.2 }`). Add your own with `registerEffect` (2.0): an effect
   sees every word on screen with its state (past, active, future), line and timing.
