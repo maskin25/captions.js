@@ -14,6 +14,7 @@ import { glitch } from "./glitch";
 import { typewriter } from "./typewriter";
 import { sticker } from "./sticker";
 import { slam } from "./slam";
+import { speakerTags } from "./speaker-tags";
 
 export type { Effect, EffectContext, EffectWord, WordState } from "./types";
 export { attack, numberOption, DECORATION } from "./types";
@@ -44,6 +45,7 @@ const registry = new Map<string, Effect>([
   ["typewriter", typewriter],
   ["sticker-tape", sticker],
   ["slam", slam],
+  ["speaker-tags", speakerTags],
 ]);
 
 /**
@@ -51,7 +53,7 @@ const registry = new Map<string, Effect>([
  * one. Built-in names: none, bounce, underline, box, box-word, pop, scale,
  * slide-down, slide-up, slide-left, spring, highlight-sweep, neon, extrude,
  * karaoke-fill, gradient-wave, pill, chroma-glitch, typewriter, sticker-tape,
- * slam.
+ * slam, speaker-tags.
  *
  * @public
  */

@@ -6,7 +6,9 @@ export const PHRASE = [
   ["browser", 1.15, 1.6], ["preview", 1.6, 2.1], ["and", 2.35, 2.5], ["in", 2.5, 2.6],
   ["your", 2.6, 2.8], ["final", 2.8, 3.15], ["export", 3.15, 3.7], ["pixel", 3.85, 4.2],
   ["for", 4.2, 4.35], ["pixel", 4.35, 4.85],
-].map(([word, startTime, endTime]) => ({ word, startTime, endTime }));
+// one speaker throughout: Speaker Tags shows its tag, and screens break as
+// they would without speakers
+].map(([word, startTime, endTime]) => ({ word, startTime, endTime, speaker: 0 }));
 
 // Moments chosen to hit different states, not just settled frames:
 // 0.20 entry animation of the first word, 0.62 mid-word, 1.55 late in a word

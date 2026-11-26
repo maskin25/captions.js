@@ -73,4 +73,26 @@ assert.throws(() => execFileSync(process.execPath, [cli, "burn", input, words, "
 
 assert.throws(() => execFileSync(process.execPath, [cli, "burn", input, words, "-p", "nope"], { stdio: "pipe" }));
 console.log("ok   unknown preset fails");
+// speakers: names from WebVTT voices reach Speaker Tags; --speakers wins
+const { loadTranscript } = await import("../dist/render/loadCaptions.js");
+const vtt = "WEBVTT\n\n00:00.100 --> 00:00.900\n<v Ann>Hello\n\n00:00.900 --> 00:01.800\n<v Bob>world\n";
+const transcript = await loadTranscript(vtt);
+assert.deepEqual(transcript.speakers, [{ label: "Ann" }, { label: "Bob" }]);
+assert.deepEqual(transcript.captions.map((c) => c.speaker), [0, 1]);
+assert.deepEqual((await loadTranscript(words)).speakers, [], "speakers without names");
+const vttFile = path.join(dir, "talk.vtt");
+fs.writeFileSync(vttFile, vtt);
+const tagged = (args) => {
+  const out = path.join(dir, `tags-${args.length}.mp4`);
+  const res = spawnSync(process.execPath, [cli, "burn", input, vttFile, "-q", "-p", "speaker tags", "-o", out, ...args], { encoding: "utf8" });
+  assert.equal(res.status, 0, res.stderr);
+  return frameAt(out, 0.5);
+};
+const fromVoices = tagged([]);
+const renamed = tagged(["-s", "Annabelle Smith:#FF0000"]);
+let retagged = 0;
+for (let i = 0; i < fromVoices.length; i++) if (Math.abs(fromVoices[i] - renamed[i]) > 40) retagged++;
+assert.ok(retagged > 200, `--speakers did not change the tag (changed px: ${retagged})`);
+assert.throws(() => execFileSync(process.execPath, [cli, "burn", input, words, "-s", "Ann:red"], { stdio: "pipe" }));
+console.log(`ok   speakers from WebVTT voices and --speakers (${retagged} px differ)`);
 fs.rmSync(dir, { recursive: true, force: true });

@@ -337,3 +337,16 @@ export const getHighlightColor = (captionsSettings: CaptionsSettings): string =>
   captionsSettings.style.highlightColor ??
   captionsSettings.style.aplifiedWordColor ??
   captionsSettings.style.font.fontColor;
+
+/** The `speakers` entry for a caption's speaker, if any. */
+export const speakerStyle = (caption: Caption, captionsSettings: CaptionsSettings) =>
+  caption.speaker === undefined ? undefined : captionsSettings.speakers?.[caption.speaker];
+
+/**
+ * The caption with its speaker's color as `highlightColor`, unless it has
+ * its own. Unchanged when there is no speaker color.
+ */
+export const withSpeakerColor = (caption: Caption, captionsSettings: CaptionsSettings): Caption => {
+  const color = speakerStyle(caption, captionsSettings)?.color;
+  return color && !caption.highlightColor ? { ...caption, highlightColor: color } : caption;
+};

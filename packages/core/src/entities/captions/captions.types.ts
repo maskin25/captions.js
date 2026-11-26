@@ -65,11 +65,30 @@ export interface CaptionsSettings {
    */
   animation: BuiltInAnimation | (string & {});
   /**
+   * Look per speaker, by `Caption.speaker` (0 is the first speaker). Each
+   * speaker's `color` replaces the highlight color for their words in every
+   * preset; Speaker Tags also shows their `label`. A word's own
+   * `highlightColor` still wins.
+   */
+  speakers?: SpeakerStyle[];
+  /**
    * Parameters for the effect, e.g. `{ bounceScale: 0.2 }` or
    * `{ underlineWidth: 6 }`. Each effect documents its keys and defaults;
    * unknown keys are ignored.
    */
   animationOptions?: Record<string, unknown>;
+}
+
+/**
+ * How one speaker looks: see {@link CaptionsSettings.speakers}.
+ *
+ * @public
+ */
+export interface SpeakerStyle {
+  /** Highlight color for this speaker's words. */
+  color?: string;
+  /** Name shown by Speaker Tags, e.g. "Scott". */
+  label?: string;
 }
 
 /**
@@ -98,7 +117,8 @@ export type BuiltInAnimation =
   | "chroma-glitch"
   | "typewriter"
   | "sticker-tape"
-  | "slam";
+  | "slam"
+  | "speaker-tags";
 
 /**
  * Single timed word/segment that will be highlighted as audio plays.

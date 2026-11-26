@@ -58,7 +58,8 @@ export type StylePresetName =
   | "Chroma Glitch"
   | "Typewriter"
   | "Sticker Tape"
-  | "Slam";
+  | "Slam"
+  | "Speaker Tags";
 
 /**
  * Curated set of presets that ship with captions.js out of the box.
@@ -1017,6 +1018,31 @@ export const stylePresets: StylePreset[] = [
       position: "bottom",
       animation: "slam",
       linesPerPage: 2,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 24,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Onest",
+          fontWeight: "bold",
+          fontCapitalize: false,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Speaker Tags",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/speaker-tags.jpg",
+        highlightColor: "#FFD43BFF",
+      },
+      position: "bottom",
+      animation: "speaker-tags",
+      linesPerPage: 2,
+      lineSpacing: 6,
     },
   },
 ];
