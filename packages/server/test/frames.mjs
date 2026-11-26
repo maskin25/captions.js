@@ -54,12 +54,13 @@ export const EMPHASIS_SAMPLE = LAYOUT_SAMPLE.map((caption, i) =>
  *
  * It reads the layout, not what an effect draws on it: effects may hide, move
  * or retype words (Typewriter, Slam). So the preset's effect is swapped for
- * one that does nothing while it reads, under the same name, since some
- * animations change the layout itself (box margins, Focus Box screens).
+ * one that does nothing while it reads, under the same name and with the
+ * same `wordGap`, since some animations change the layout itself (box
+ * margins, Focus Box screens, Sticker Tape gaps).
  */
 export const layoutScreens = ({ Konva, renderFrame, getEffect, registerEffect, captionsSettings, captions, size }) => {
   const effect = getEffect(captionsSettings.animation);
-  registerEffect(captionsSettings.animation, { apply() {} });
+  registerEffect(captionsSettings.animation, { apply() {}, wordGap: effect.wordGap });
   try {
     return readScreens({ Konva, renderFrame, captionsSettings, captions, size });
   } finally {

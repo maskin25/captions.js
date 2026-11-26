@@ -26,7 +26,9 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   (`sticker-tape`): each word on its own tilted strip of tape; the spoken
   word's strip is highlighted and pops in. **Slam** (`slam`): one word at a
   time, as big as fits the frame, entering by drop, slide or growth.
-- **Added:** `frameWidth` and `frameHeight` in the effect context.
+- **Added:** `frameWidth` and `frameHeight` in the effect context, and
+  `Effect.wordGap(options)`: extra space between words, in em, that layout
+  leaves for an effect (Sticker Tape uses it so strips do not touch).
 - **Added:** `DECORATION`, the Konva node name for nodes an effect adds only
   for looks.
 - **Breaking:** Konva is a peer dependency (`npm install captions.js konva`).

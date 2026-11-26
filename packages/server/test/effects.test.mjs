@@ -203,6 +203,14 @@ const classic = getPreset("Classic").captionsSettings;
   render(stickerPreset, 2.45);
   assert.deepEqual(layer.find("Rect").filter((r) => r.hasName("decoration")).map((r) => r.rotation()).sort(), angles, "tilts change between frames");
 
+  // ...and the strips of neighbouring words do not touch
+  render({ ...stickerPreset, animationOptions: { stickerTilt: 0, stickerPop: 0 } }, 1.45);
+  const flat = layer.find("Rect").filter((r) => r.hasName("decoration")).map((r) => ({ line: r.parent, box: r.getClientRect({ skipShadow: true }) }));
+  for (const a of flat) for (const b of flat) {
+    if (a === b || a.line !== b.line || a.box.x > b.box.x) continue;
+    assert.ok(a.box.x + a.box.width < b.box.x, "neighbouring strips overlap");
+  }
+
   // Slam: one word at a time, fitted to the frame, staying between words
   const slamPreset = getPreset("Slam").captionsSettings;
   const visible = (t) => (render(slamPreset, t), words().filter((w) => w.opacity() > 0).map((w) => w.text().trim().toLowerCase()));

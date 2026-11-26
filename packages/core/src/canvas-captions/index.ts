@@ -77,7 +77,10 @@ const getWordSpacing = (
   // the box around the active word reaches into the gap on both sides
   (captionsSettings.animation === "box-word"
     ? 2 * boxWordMetrics(targetFontSize).paddingX
-    : 0);
+    : 0) +
+  // room an effect asks for, e.g. a plate around every word
+  targetFontSize *
+    Math.max(0, getEffect(captionsSettings.animation).wordGap?.(captionsSettings.animationOptions ?? {}) ?? 0);
 
 const layoutRanges = (
   captionsSettings: CaptionsSettings,

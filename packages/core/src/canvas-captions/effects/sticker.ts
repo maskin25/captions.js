@@ -13,15 +13,20 @@ import { DECORATION, numberOption, type Effect } from "./types";
  * Colors: strips are `backgroundColor`, the spoken word's strip is
  * `highlightColor`, text is `fontColor`.
  *
+ * Layout widens the gap between words by the strips' padding plus
+ * `stickerGap`, so neighbouring strips do not touch.
+ *
  * Options: `stickerTilt` (largest tilt in degrees, 5), `stickerPaddingX`
- * (em, 0.16), `stickerPaddingY` (em, 0.04), `stickerPop` (how far the
+ * (em, 0.14), `stickerGap` (em of video between strips, 0.14), `stickerPaddingY` (em, 0.04), `stickerPop` (how far the
  * spoken strip starts below full size, 0–1, 0.2), `stickerShadow` (strip
  * shadow strength 0–1, 0.4).
  */
 export const sticker: Effect = {
+  wordGap: (options) =>
+    2 * numberOption(options, "stickerPaddingX", 0.14) + numberOption(options, "stickerGap", 0.14),
   apply({ words, active, options, settings }) {
     const tilt = numberOption(options, "stickerTilt", 5);
-    const padXEm = numberOption(options, "stickerPaddingX", 0.16);
+    const padXEm = numberOption(options, "stickerPaddingX", 0.14);
     const padYEm = numberOption(options, "stickerPaddingY", 0.04);
     const pop = numberOption(options, "stickerPop", 0.2);
     const shadow = numberOption(options, "stickerShadow", 0.4);
