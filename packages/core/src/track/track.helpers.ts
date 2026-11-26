@@ -1,4 +1,4 @@
-import type { Caption } from "../entities/captions/captions.types";
+import type { Caption, SpeakerStyle } from "../entities/captions/captions.types";
 import type {
   CaptionTrack,
   TrackEvent,
@@ -295,3 +295,17 @@ export const trackToCaptions = (track: CaptionTrack): Caption[] => {
     return caption;
   });
 };
+
+/**
+ * Speaker names from a track, in the order `trackToCaptions` numbers
+ * speakers, ready for `CaptionsSettings.speakers`. A speaker's `name` is
+ * the label; a non-numeric id (e.g. a WebVTT voice) is used when there is
+ * no name.
+ *
+ * @public
+ */
+export const speakersFromTrack = (track: CaptionTrack): SpeakerStyle[] =>
+  (track.speakers ?? []).map((s) => {
+    const label = s.name ?? (/^\d+$/.test(s.id) ? undefined : s.id);
+    return label ? { label } : {};
+  });

@@ -57,6 +57,7 @@ export {
 export type {
   BuiltInAnimation,
   CaptionsSettings,
+  SpeakerStyle,
 } from "./entities/captions/captions.types";
 
 /** Normalized caption track, its input adapters and validation. */
@@ -89,6 +90,7 @@ export {
 } from "./track/adapters";
 export {
   trackToCaptions,
+  speakersFromTrack,
   validate,
   type TrackIssue,
   type TrackValidation,

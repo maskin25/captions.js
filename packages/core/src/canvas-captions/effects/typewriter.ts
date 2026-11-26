@@ -9,7 +9,8 @@ import { DECORATION, numberOption, type Effect } from "./types";
  * blinks while waiting for the next word. Words not spoken yet are hidden.
  * Caret size follows the font size.
  *
- * Colors: words are `fontColor`, the caret is `highlightColor`.
+ * Colors: words are `fontColor`, the caret is `highlightColor` (or the
+ * word's own or its speaker's color).
  *
  * Options: `typeCharTime` (s per letter at most, 0.06; long words type no
  * slower than this), `typeShadow` (text shadow strength 0–1, 0.6),
@@ -57,7 +58,7 @@ export const typewriter: Effect = {
         y: text.y() + size * 0.12,
         width: size * caretEm,
         height: size * 0.92,
-        fill: getHighlightColor(settings),
+        fill: caption.highlightColor || getHighlightColor(settings),
         shadowColor: "#000000",
         shadowOpacity: Math.min(1, shadow),
         shadowBlur: size * 0.1,

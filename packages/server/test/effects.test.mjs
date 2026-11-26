@@ -221,4 +221,39 @@ const classic = getPreset("Classic").captionsSettings;
   assert.ok(two.scaleX() > 1.5, `the word is not enlarged: ${two.scaleX()}`);
   assert.ok(two.getClientRect().width <= size[0], "the word does not fit the frame");
   console.log("ok   Typewriter, Sticker Tape and Slam behave as described");
+  // speakers: a speaker's color is the highlight in any preset; a word's own
+  // color still wins
+  const talk = [
+    { word: "hello", startTime: 0, endTime: 0.9, speaker: 0 },
+    { word: "there", startTime: 1, endTime: 1.9, speaker: 0, highlightColor: "#00FF00" },
+  ];
+  const renderTalk = (settings, time) => {
+    layer.destroyChildren();
+    renderFrame({ settings, captions: talk, time, size, layer, scale: size[1] / 480 });
+    layer.draw();
+  };
+  const withSpeakers = { ...classic, speakers: [{ color: "#FF0000", label: "Ann" }] };
+  renderTalk(withSpeakers, 0.5);
+  assert.equal(byWord("hello").fill(), "#FF0000", "the speaker color is not the highlight");
+  renderTalk(withSpeakers, 1.5);
+  assert.equal(byWord("there").fill(), "#00FF00", "the speaker color beats the word's own");
+
+  // Speaker Tags: a tag with the speaker's label and color above the screen
+  const tags = getPreset("Speaker Tags").captionsSettings;
+  const tagText = () => layer.find("Text").filter((t) => t.hasName("decoration")).map((t) => t.text());
+  const tagFill = () => layer.find("Rect").filter((r) => r.hasName("decoration")).map((r) => r.fill());
+  renderTalk({ ...tags, speakers: [{ color: "#FF0000", label: "Ann" }] }, 0.5);
+  assert.deepEqual(tagText(), ["Ann"]);
+  assert.deepEqual(tagFill(), ["#FF0000"]);
+  assert.equal(byWord("hello").fill(), "#FF0000", "the spoken word is not in the speaker's color");
+  const tag = layer.find("Group").find((g) => g.hasName("decoration"));
+  const [tagBox, wordBox] = [tag, byWord("hello")].map((n) => n.getClientRect({ skipShadow: true }));
+  assert.ok(tagBox.y + tagBox.height <= wordBox.y, `the tag is not above the words: ${JSON.stringify([tagBox, wordBox])}`);
+  renderTalk(tags, 0.5);
+  assert.deepEqual(tagText(), ["Speaker 1"], "no fallback label");
+  renderTalk({ ...tags, animationOptions: { tagUnnamed: false } }, 0.5);
+  assert.deepEqual(tagText(), [], "a tag without a label");
+  render(tags, 1.45);
+  assert.deepEqual(tagText(), [], "a tag for words without a speaker");
+  console.log("ok   speakers color any preset; Speaker Tags shows the speaker");
 }

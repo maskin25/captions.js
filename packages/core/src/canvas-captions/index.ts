@@ -11,6 +11,7 @@ import {
   getAlphabet,
   getCaptionsGroupY,
   getFillColor,
+  withSpeakerColor,
   splitIntoPhrases,
 } from "./utils";
 
@@ -401,7 +402,8 @@ const drawFrame = (
           }, -1)
         : -1;
 
-    currentChunk.forEach((caption, index) => {
+    currentChunk.forEach((chunkCaption, index) => {
+      const caption = withSpeakerColor(chunkCaption, captionsSettings);
       const isCaptionAtCurrentTime =
         caption.startTime <= currentTime && caption.endTime >= currentTime;
 

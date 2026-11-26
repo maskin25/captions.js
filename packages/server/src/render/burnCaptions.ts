@@ -5,6 +5,7 @@ import {
   type Caption,
   type CaptionAnnotations,
   type CaptionsSettings,
+  type SpeakerStyle,
   type StylePreset,
 } from "captions.js";
 import Konva from "konva";
@@ -13,7 +14,7 @@ import { FontLibrary } from "skia-canvas";
 
 import path from "node:path";
 import { download } from "../utils/download.js";
-import { annotateCaptions, loadAnnotations, loadCaptions } from "./loadCaptions.js";
+import { annotateCaptions, loadAnnotations, loadTranscript } from "./loadCaptions.js";
 import { resolveFontFile, type ResolveFontOptions } from "./fonts.js";
 import { probeVideo, runFfmpeg } from "./ffmpeg.js";
 
@@ -39,6 +40,12 @@ export interface BurnCaptionsParams {
    * `expressiveness` is above 0.
    */
   annotations?: string | CaptionAnnotations | Record<string, unknown>;
+  /**
+   * Color and label per speaker (`Caption.speaker` 0, 1, …), merged over the
+   * preset's `speakers` and over names the transcript carries (WebVTT
+   * voices, named speakers).
+   */
+  speakers?: SpeakerStyle[];
   /** Override the output frame rate of the caption overlay. Defaults to the source fps. */
   fps?: number;
   /** Font lookup options, see {@link resolveFontFile}. */
@@ -95,7 +102,20 @@ export const burnCaptions = async (
     ? await download(params.video)
     : params.video;
 
-  let captions = await loadCaptions(params.captions);
+  const transcript = await loadTranscript(params.captions);
+  let captions = transcript.captions;
+  const speakerCount = Math.max(
+    transcript.speakers.length,
+    captionsSettings.speakers?.length ?? 0,
+    params.speakers?.length ?? 0,
+  );
+  if (speakerCount > 0) {
+    captionsSettings.speakers = Array.from({ length: speakerCount }, (_, i) => ({
+      ...transcript.speakers[i],
+      ...captionsSettings.speakers?.[i],
+      ...params.speakers?.[i],
+    }));
+  }
   let annotated: number | undefined;
   let annotationIssues: AnnotationIssue[] | undefined;
   if (params.annotations !== undefined) {

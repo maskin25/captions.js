@@ -26,6 +26,12 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   (`sticker-tape`): each word on its own tilted strip of tape; the spoken
   word's strip is highlighted and pops in. **Slam** (`slam`): one word at a
   time, as big as fits the frame, entering by drop, slide or growth.
+- **Added:** `speakers` in the settings: a color and a label per speaker
+  (`Caption.speaker`). Every preset takes the color as the highlight for that
+  speaker's words; a word's own `highlightColor` still wins. New preset
+  **Speaker Tags** (`speaker-tags`): a name tag in the speaker's color above
+  each screen. `speakersFromTrack(track)` reads names a transcript carries
+  (WebVTT voices, named speakers). `SpeakerStyle` is exported.
 - **Added:** `frameWidth` and `frameHeight` in the effect context, and
   `Effect.wordGap(options)`: extra space between words, in em, that layout
   leaves for an effect (Sticker Tape uses it so strips do not touch).
@@ -127,6 +133,9 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
 - The unused `useRemoteCaptions` hook in `packages/demo` is removed.
 
 ### @captionsjs/server
+- **Added:** `burnCaptions({ speakers })` and CLI `--speakers/-s "Scott,Neal:#4DD2FF"`;
+  WebVTT voice names are used when no names are given. `loadTranscript()`
+  returns the captions with the speaker names the transcript carries.
 - **Added:** `burnCaptions({ expressiveness, annotations })`, CLI
   `--expressiveness/-e` and `--annotations/-a`, and `npx captions.js prompt
   <transcript>`, which prints the LLM request. The CLI reports annotation

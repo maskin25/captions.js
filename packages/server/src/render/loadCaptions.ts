@@ -3,8 +3,10 @@ import {
   applyAnnotations,
   parseAnnotations,
   toCaptions,
+  speakersFromTrack,
   toTrack,
   trackToCaptions,
+  type SpeakerStyle,
   type AnnotationIssue,
   type Caption,
   type CaptionAnnotations,
@@ -24,25 +26,39 @@ export const normalizeCaptions = (input: unknown): Caption[] => {
   return captions;
 };
 
+/** The transcript itself: parsed input, inline text, or a file's text. */
+const transcriptInput = async (source: string | unknown[] | Record<string, unknown>) => {
+  if (typeof source !== "string") return source;
+  const trimmed = source.trim();
+  if (trimmed.startsWith("[") || trimmed.startsWith("{") || /-->/.test(trimmed)) return trimmed;
+  const file = /^https?:\/\//i.test(trimmed) ? await download(trimmed) : trimmed;
+  if (!fs.existsSync(file)) {
+    throw new Error(`Captions file not found: ${file}`);
+  }
+  return fs.readFileSync(file, "utf-8");
+};
+
 /**
  * Loads captions from an array or object, from JSON / SRT / WebVTT text, from
  * a file path or from an http(s) URL.
  */
 export const loadCaptions = async (
   source: string | unknown[] | Record<string, unknown>,
-): Promise<Caption[]> => {
-  if (typeof source !== "string") return normalizeCaptions(source);
+): Promise<Caption[]> => normalizeCaptions(await transcriptInput(source));
 
-  const trimmed = source.trim();
-  if (trimmed.startsWith("[") || trimmed.startsWith("{") || /-->/.test(trimmed)) {
-    return normalizeCaptions(trimmed);
-  }
-
-  const file = /^https?:\/\//i.test(trimmed) ? await download(trimmed) : trimmed;
-  if (!fs.existsSync(file)) {
-    throw new Error(`Captions file not found: ${file}`);
-  }
-  return normalizeCaptions(fs.readFileSync(file, "utf-8"));
+/**
+ * Like {@link loadCaptions}, plus speaker names the transcript carries
+ * (WebVTT voices, named speakers in a caption track), as
+ * `CaptionsSettings.speakers`.
+ */
+export const loadTranscript = async (
+  source: string | unknown[] | Record<string, unknown>,
+): Promise<{ captions: Caption[]; speakers: SpeakerStyle[] }> => {
+  const input = await transcriptInput(source);
+  const captions = normalizeCaptions(input);
+  const speakers = speakersFromTrack(toTrack(input));
+  // numbered speakers without names add nothing
+  return { captions, speakers: speakers.some((s) => s.label) ? speakers : [] };
 };
 
 /** Reads a file path or http(s) URL as text. */

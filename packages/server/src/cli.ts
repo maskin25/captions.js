@@ -26,6 +26,9 @@ Options for burn
                          How strongly emphasized words stand out (default: 0, off)
   -a, --annotations <file>
                          Emphasis chosen by an LLM; see \`prompt\` below
+  -s, --speakers <list>  Names (and colors) of speakers 1, 2, … in order, e.g.
+                         "Scott,Neal" or "Scott:#FFD43B,Neal:#4DD2FF". Every
+                         preset takes the colors; Speaker Tags shows the names.
   -q, --quiet            No progress output
   -h, --help
 
@@ -66,6 +69,16 @@ const checkFfmpeg = () => {
   }
 };
 
+/** "Scott,Neal:#4DD2FF" → [{ label: "Scott" }, { label: "Neal", color: "#4DD2FF" }]. */
+const parseSpeakers = (list: string) =>
+  list.split(",").map((entry) => {
+    const [label, color] = entry.split(":").map((part) => part.trim());
+    if (color !== undefined && !/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(color)) {
+      fail(`--speakers: "${color}" is not a hex color like #FFD43B`);
+    }
+    return { ...(label ? { label } : {}), ...(color ? { color } : {}) };
+  });
+
 const burn = async (argv: string[]) => {
   const { values, positionals } = parseArgs({
     args: argv,
@@ -78,6 +91,7 @@ const burn = async (argv: string[]) => {
       crf: { type: "string" },
       expressiveness: { type: "string", short: "e" },
       annotations: { type: "string", short: "a" },
+      speakers: { type: "string", short: "s" },
       quiet: { type: "boolean", short: "q" },
       help: { type: "boolean", short: "h" },
     },
@@ -109,6 +123,7 @@ const burn = async (argv: string[]) => {
     crf: values.crf ? Number(values.crf) : undefined,
     expressiveness,
     annotations: values.annotations,
+    speakers: values.speakers !== undefined ? parseSpeakers(values.speakers) : undefined,
     fonts: { fontsDir: values["fonts-dir"] },
     onProgress: quiet
       ? undefined
