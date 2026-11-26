@@ -51,7 +51,11 @@ export type StylePresetName =
   | "Spring Pop"
   | "Highlight Sweep"
   | "Neon Bloom"
-  | "Hard Extrude";
+  | "Hard Extrude"
+  | "Karaoke Fill"
+  | "Gradient Wave"
+  | "Pill"
+  | "Chroma Glitch";
 
 /**
  * Curated set of presets that ship with captions.js out of the box.
@@ -835,6 +839,107 @@ export const stylePresets: StylePreset[] = [
       animation: "extrude",
       linesPerPage: 2,
       lineSpacing: 10,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 26,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Montserrat",
+          fontWeight: "black",
+          fontCapitalize: true,
+          fontStrokeColor: "#000000FF",
+          fontStrokeWidth: 0,
+        },
+        name: "Karaoke Fill",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/karaoke-fill.jpg",
+        highlightColor: "#2BEA7CFF",
+      },
+      position: "bottom",
+      animation: "karaoke-fill",
+      linesPerPage: 2,
+      lineSpacing: 6,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 28,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Fira Sans",
+          fontWeight: "black",
+          fontCapitalize: false,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Gradient Wave",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/gradient-wave.jpg",
+        highlightColor: "#FFFFFFFF",
+      },
+      position: "bottom",
+      animation: "gradient-wave",
+      linesPerPage: 2,
+      lineSpacing: 6,
+      animationOptions: { gradientColors: ["#FF4D8D", "#FFA62B", "#8C6BFF"] },
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 22,
+          fontColor: "#A6A6A6FF",
+          underline: false,
+          fontFamily: "Nunito",
+          fontWeight: "black",
+          fontCapitalize: false,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Pill",
+        backgroundColor: "#E7E5E7FF",
+        verticalCoverImg: "https://captionsjs.dev/presets/pill.jpg",
+        highlightColor: "#1C1E1DFF",
+      },
+      position: "bottom",
+      animation: "pill",
+      linesPerPage: 2,
+      lineSpacing: 16,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 26,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Onest",
+          fontWeight: "black",
+          fontCapitalize: true,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Chroma Glitch",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/chroma-glitch.jpg",
+        highlightColor: "#FFFFFFFF",
+      },
+      position: "bottom",
+      animation: "chroma-glitch",
+      linesPerPage: 2,
+      lineSpacing: 8,
     },
   },
 ];

@@ -14,6 +14,13 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   follows the word's font size, and every frame is reproducible. Options are
   documented on each effect (`springDamping`, `sweepColor`, `neonRest`,
   `extrudeDepth`, …).
+- **Added:** four more. **Karaoke Fill** (`karaoke-fill`): the highlight color
+  fills each word from left to right as it is spoken. **Gradient Wave**
+  (`gradient-wave`): one gradient band drifts across the whole caption
+  (`gradientColors`). **Pill** (`pill`): each line on a light rounded plate,
+  grey words turning dark as they are spoken. **Chroma Glitch**
+  (`chroma-glitch`): red and cyan passes beside each word jump apart when it
+  is spoken, with a seeded jitter.
 - **Added:** `DECORATION`, the Konva node name for nodes an effect adds only
   for looks.
 - **Breaking:** Konva is a peer dependency (`npm install captions.js konva`).
