@@ -34,6 +34,10 @@ const PHRASE = [
   ["for", 4.2, 4.35], ["pixel", 4.35, 4.85],
 ].map(([word, startTime, endTime]) => ({ word, startTime, endTime }));
 
+// Speaker Tags needs a conversation: the same phrase as a two-person exchange.
+const DIALOGUE = PHRASE.map((caption, i) => ({ ...caption, speaker: i < 6 ? 0 : 1 }));
+const DIALOGUE_SPEAKERS = [{ label: "Maya" }, { label: "Leo" }];
+
 const slugify = (name) =>
   name.toLowerCase().replace(/&/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -55,12 +59,20 @@ for (const name of names) {
   const slug = slugify(name);
   const mp4 = path.join(outDir, `${slug}.mp4`);
   const started = Date.now();
-  await burnCaptions({ video: background, captions: PHRASE, preset: name, output: mp4, crf: 23 });
+  const { captionsSettings } = getPreset(name);
+  const talk = captionsSettings.animation === "speaker-tags";
+  await burnCaptions({
+    video: background,
+    captions: talk ? DIALOGUE : PHRASE,
+    ...(talk ? { speakers: DIALOGUE_SPEAKERS } : {}),
+    preset: name,
+    output: mp4,
+    crf: 23,
+  });
   ff(["-i", mp4, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "38", "-row-mt", "1", "-an",
       path.join(outDir, `${slug}.webm`)]);
   ff(["-ss", String(POSTER_AT), "-i", mp4, "-frames:v", "1", "-q:v", "3", path.join(outDir, `${slug}.jpg`)]);
 
-  const { captionsSettings } = getPreset(name);
   manifest.push({
     name,
     slug,
