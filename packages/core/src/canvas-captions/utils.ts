@@ -1,3 +1,4 @@
+import type { SafeAreaInsets } from "./safe-area";
 import Konva from "konva";
 import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
 
@@ -221,8 +222,23 @@ export const getCaptionsGroupY = (
   canvasHeight: number,
   position: CaptionsSettings["position"],
   offset: number,
-  toCoef: number
+  toCoef: number,
+  safe?: SafeAreaInsets
 ) => {
+  if (safe) {
+    // inside the safe area, with the same small gap from its edge as from
+    // the frame's edge without one
+    const top = safe.top * canvasHeight;
+    const bottom = (1 - safe.bottom) * canvasHeight;
+    switch (position) {
+      case "top":
+        return top + (offset + 20) * toCoef + groupHeight / 2;
+      case "middle":
+        return (top + bottom) / 2 + offset * toCoef;
+      default:
+        return bottom - groupHeight / 2 - (20 + offset) * toCoef;
+    }
+  }
   const aspectRatio = canvasWidth / canvasHeight;
   const socialOffset = aspectRatio <= 1 ? SOCIAL_NETWORK_OFFSET * toCoef : 0;
 

@@ -95,4 +95,27 @@ for (let i = 0; i < fromVoices.length; i++) if (Math.abs(fromVoices[i] - renamed
 assert.ok(retagged > 200, `--speakers did not change the tag (changed px: ${retagged})`);
 assert.throws(() => execFileSync(process.execPath, [cli, "burn", input, words, "-s", "Ann:red"], { stdio: "pipe" }));
 console.log(`ok   speakers from WebVTT voices and --speakers (${retagged} px differ)`);
+
+// --safe-area: Shorts covers the bottom 35%, so captions sit higher
+const lowestCaptionRow = (args) => {
+  const out = path.join(dir, `safe-${args.join("_").replace(/[^a-z0-9]/gi, "")}.mp4`);
+  const res = spawnSync(process.execPath, [cli, "burn", input, words, "-q", "-p", "classic", "-o", out, ...args], { encoding: "utf8" });
+  assert.equal(res.status, 0, res.stderr);
+  const frame = frameAt(out, 0.5);
+  let lowest = -1;
+  for (let i = 0; i < frame.length; i++) if (Math.abs(frame[i] - a[i]) > 40) lowest = Math.floor(i / 360);
+  return lowest;
+};
+const plain = lowestCaptionRow([]);
+const shorts = lowestCaptionRow(["--safe-area", "shorts"]);
+const custom = lowestCaptionRow(["--safe-area", "0,0.5,0,0"]);
+assert.ok(shorts < 640 * (1 - 0.35), `--safe-area shorts: captions reach row ${shorts} of 640`);
+assert.ok(shorts < plain, `--safe-area shorts did not move captions up (${shorts} vs ${plain})`);
+assert.ok(custom < 320, `--safe-area 0,0.5,0,0: captions reach row ${custom}`);
+for (const bad of ["snapchat", "0.5,0.6,0,0", "1,2,3"]) {
+  const res = spawnSync(process.execPath, [cli, "burn", input, words, "--safe-area", bad], { encoding: "utf8" });
+  assert.equal(res.status, 1, `--safe-area ${bad} should fail`);
+  assert.match(res.stderr, /--safe-area/);
+}
+console.log(`ok   --safe-area moves captions above the platform's interface (lowest row ${plain} → ${shorts})`);
 fs.rmSync(dir, { recursive: true, force: true });

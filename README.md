@@ -214,6 +214,50 @@ names and colors in speaker order:
 npx captions.js burn talk.mp4 talk.json -p "Speaker Tags" -s "Scott,Neal:#4DD2FF"
 ```
 
+## Safe areas
+
+TikTok, Reels and Shorts draw their buttons and captions over the bottom and
+right of the video. `safeArea` keeps captions clear of them: `position` then
+places captions inside the safe area and lines wrap to its width.
+
+```js
+const settings = { ...getPreset("Karaoke").captionsSettings, safeArea: "shorts" };
+// or your own margins, as fractions of the frame
+settings.safeArea = { top: 0.1, bottom: 0.3, left: 0.05, right: 0.15 };
+```
+
+| `safeArea` | Top | Bottom | Left | Right | Source |
+| --- | --- | --- | --- | --- | --- |
+| `"shorts"` | 15% | 35% | 4.4% | 17.8% | Google's [vertical safe-zone overlay](https://support.google.com/google-ads/answer/13547298) (288, 672, 48, 192 px of 1080×1920) |
+| `"reels"` | 14% | 35% | 6% | 6% | Meta's [Reels ad specs](https://www.facebook.com/business/ads-guide/update/video/instagram-reels) |
+| `"tiktok"` | 12.5% | 34.4% | 11.1% | 11.1% | TikTok's [In-Feed safe-zone template](https://ads.tiktok.com/help/article/tiktok-auction-in-feed-ads) (240, 660, 120, 120 px of 1080×1920, as third-party guides report it; TikTok publishes only the template files) |
+| `"none"` | 0 | 0 | 0 | 0 | |
+
+Unset, captions keep the 1.x placement: a fixed margin above the bottom of
+portrait video. The values are in `SAFE_AREAS`. From the command line:
+`--safe-area shorts`, or `--safe-area 0.1,0.3,0.05,0.15` (top, bottom, left,
+right).
+
+## Customizing a preset
+
+`customizePreset` returns a copy of a preset with your accent color, font or
+text color. The original stays as it is, and the copy is a plain object you
+can store or customize again.
+
+```js
+import { customizePreset } from "captions.js";
+
+const brand = customizePreset("Karaoke", { accent: "#FF5A1F", font: "Inter" });
+const bold = customizePreset(brand, { font: { fontWeight: "black" }, textColor: "#FAFAFA" });
+```
+
+The accent goes where each style keeps it: the spoken word in most presets,
+the box in Focus Box, the plate in Highlight Sweep (the word on it turns black
+or white to stay readable), the gradient in Gradient Wave. Custom effects can
+say where theirs goes with `accent(settings, color)`. A new font has to be
+available where you render: loaded in the page (`preloadGoogleFont`), or
+found by the server.
+
 ## Emphasis
 
 Any word can carry `emphasis` from 0 to 1, and a preset's `expressiveness`
@@ -307,7 +351,8 @@ the words back from a layer can skip them. Size everything from the word's own
   italic, underline, active/past word colors.
 - **Sentence-aware chunking** — screens end at sentences, speaker changes and pauses; lines
   break on measured text width, identically in the browser and on the server,
-  with `linesPerPage`, `lineSpacing` and `position` (`auto` / `top` / `middle` / `bottom`).
+  with `linesPerPage`, `lineSpacing` and `position` (`auto` / `top` / `middle` / `bottom`),
+  inside a platform's [safe area](#safe-areas) if you set one.
 - **Google Fonts loading** via `preloadGoogleFont`, with the resolved metrics cached
   so layout is stable frame to frame.
 

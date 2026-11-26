@@ -1,6 +1,7 @@
 import {
   getPreset,
   renderFrame,
+  resolveSafeArea,
   type AnnotationIssue,
   type Caption,
   type CaptionAnnotations,
@@ -46,6 +47,12 @@ export interface BurnCaptionsParams {
    * voices, named speakers).
    */
   speakers?: SpeakerStyle[];
+  /**
+   * Keep captions clear of a platform's interface: `"tiktok"`, `"reels"`,
+   * `"shorts"`, `"none"` or insets as fractions of the frame (see
+   * `CaptionsSettings.safeArea`). Defaults to the preset's own value.
+   */
+  safeArea?: CaptionsSettings["safeArea"];
   /** Override the output frame rate of the caption overlay. Defaults to the source fps. */
   fps?: number;
   /** Font lookup options, see {@link resolveFontFile}. */
@@ -96,7 +103,10 @@ export const burnCaptions = async (
     ...(params.expressiveness !== undefined
       ? { expressiveness: params.expressiveness }
       : {}),
+    ...(params.safeArea !== undefined ? { safeArea: params.safeArea } : {}),
   };
+  // a bad value fails here, before any video work
+  resolveSafeArea(captionsSettings.safeArea);
 
   const video = /^https?:\/\//i.test(params.video)
     ? await download(params.video)

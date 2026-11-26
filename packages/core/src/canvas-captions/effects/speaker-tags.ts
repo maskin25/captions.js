@@ -1,17 +1,9 @@
 import Konva from "konva";
 import { speakerStyle } from "../utils";
-import { parseHex } from "./color";
+import { textOn } from "./color";
 import { DECORATION, numberOption, type Effect } from "./types";
 
 const PALETTE = ["#FFD43B", "#4DD2FF", "#FF6B9A", "#7CFF6B"];
-
-/** Black or white, whichever reads better on `color`. */
-const textOn = (color: string) => {
-  const c = parseHex(color);
-  if (!c) return "#000000";
-  const luminance = (0.299 * c.r + 0.587 * c.g + 0.114 * c.b) / 255;
-  return luminance > 0.6 ? "#111111" : "#FFFFFF";
-};
 
 /**
  * Speaker Tags: a small name tag in the speaker's color sits above each

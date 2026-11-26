@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { getBoxWordBackgroundColor } from "../utils";
+import { textOn } from "./color";
 import { numberOption, type Effect } from "./types";
 
 /**
@@ -37,6 +38,11 @@ export const boxWordMetrics = (fontSize: number) => ({
  * 540x960 frame).
  */
 export const boxWord: Effect = {
+  // the accent is the box; the word on it turns black or white to stay readable
+  accent: (settings, color) => ({
+    ...settings,
+    style: { ...settings.style, backgroundColor: color, highlightColor: textOn(color) },
+  }),
   apply({ active, settings }) {
     if (!active) return;
     const { text } = active;

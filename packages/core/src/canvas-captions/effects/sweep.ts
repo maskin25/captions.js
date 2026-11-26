@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { Ease, mapEaseToFn } from "../easing";
-import { colorOption } from "./color";
+import { colorOption, textOn } from "./color";
 import { numberOption, type Effect } from "./types";
 
 /**
@@ -13,6 +13,15 @@ import { numberOption, type Effect } from "./types";
  * `sweepShadow` (text shadow strength 0–1, 0.5).
  */
 export const sweep: Effect = {
+  // the accent is the plate; the word on it turns black or white to stay readable
+  accent: (settings, color) => {
+    const { sweepColor: _, ...options } = settings.animationOptions ?? {};
+    return {
+      ...settings,
+      style: { ...settings.style, backgroundColor: color, highlightColor: textOn(color) },
+      animationOptions: options,
+    };
+  },
   apply({ words, active, options, settings }) {
     const shadow = numberOption(options, "sweepShadow", 0.5);
     if (shadow > 0) {
