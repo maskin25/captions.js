@@ -1,14 +1,10 @@
+import { seeded } from "./measure";
 import { DECORATION, numberOption, type Effect } from "./types";
 
 /** Offset of the color passes while a word glitches in, by 0.04 s step. */
 const BURST = [1, 0.3, 0.8, -0.6, 0.5, 0.15];
 const BURST_STEP = 0.04;
 
-/** A fixed pseudo-random value in [-1, 1) for a word and a salt. */
-const seeded = (index: number, salt: number) => {
-  const x = Math.sin(index * 12.9898 + salt * 78.233) * 43758.5453;
-  return (x - Math.floor(x)) * 2 - 1;
-};
 
 /**
  * Chroma Glitch: every word has two color passes, red and cyan, offset to

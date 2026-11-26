@@ -95,7 +95,10 @@ export type BuiltInAnimation =
   | "karaoke-fill"
   | "gradient-wave"
   | "pill"
-  | "chroma-glitch";
+  | "chroma-glitch"
+  | "typewriter"
+  | "sticker-tape"
+  | "slam";
 
 /**
  * Single timed word/segment that will be highlighted as audio plays.

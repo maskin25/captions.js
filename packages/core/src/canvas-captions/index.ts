@@ -596,6 +596,8 @@ const drawFrame = (
       group,
       width: maxGroupWidth,
       height: groupHeight,
+      frameWidth: width,
+      frameHeight: height,
       lines: lineGroups,
       words: effectWords,
       active: activeWord,

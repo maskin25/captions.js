@@ -21,6 +21,12 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   grey words turning dark as they are spoken. **Chroma Glitch**
   (`chroma-glitch`): red and cyan passes beside each word jump apart when it
   is spoken, with a seeded jitter.
+- **Added:** three more. **Typewriter** (`typewriter`): words are typed letter
+  by letter as they are spoken, with a blinking caret. **Sticker Tape**
+  (`sticker-tape`): each word on its own tilted strip of tape; the spoken
+  word's strip is highlighted and pops in. **Slam** (`slam`): one word at a
+  time, as big as fits the frame, entering by drop, slide or growth.
+- **Added:** `frameWidth` and `frameHeight` in the effect context.
 - **Added:** `DECORATION`, the Konva node name for nodes an effect adds only
   for looks.
 - **Breaking:** Konva is a peer dependency (`npm install captions.js konva`).

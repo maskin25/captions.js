@@ -49,10 +49,25 @@ export const EMPHASIS_SAMPLE = LAYOUT_SAMPLE.map((caption, i) =>
 
 /**
  * Renders the first moment of every word and returns the distinct screens as
- * lines of words. Runs in Node and in the browser (no imports): pass Konva and
- * renderFrame in.
+ * lines of words. Runs in Node and in the browser (no imports): pass Konva,
+ * renderFrame, getEffect and registerEffect in.
+ *
+ * It reads the layout, not what an effect draws on it: effects may hide, move
+ * or retype words (Typewriter, Slam). So the preset's effect is swapped for
+ * one that does nothing while it reads, under the same name, since some
+ * animations change the layout itself (box margins, Focus Box screens).
  */
-export const layoutScreens = ({ Konva, renderFrame, captionsSettings, captions, size }) => {
+export const layoutScreens = ({ Konva, renderFrame, getEffect, registerEffect, captionsSettings, captions, size }) => {
+  const effect = getEffect(captionsSettings.animation);
+  registerEffect(captionsSettings.animation, { apply() {} });
+  try {
+    return readScreens({ Konva, renderFrame, captionsSettings, captions, size });
+  } finally {
+    registerEffect(captionsSettings.animation, effect);
+  }
+};
+
+const readScreens = ({ Konva, renderFrame, captionsSettings, captions, size }) => {
   const [width, height] = size;
   const stage = new Konva.Stage(typeof document === "undefined" ? { width, height } : { container: document.createElement("div"), width, height });
   const screens = [];

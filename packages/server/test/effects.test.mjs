@@ -179,4 +179,38 @@ const classic = getPreset("Classic").captionsSettings;
   render(chroma, 1.02);
   assert.equal(await hash(), glitched, "glitch frames are not reproducible");
   console.log("ok   Karaoke Fill, Gradient Wave, Pill and Chroma Glitch behave as described");
+  // Typewriter: letters appear as the word is spoken, with a caret after them
+  const typing = getPreset("Typewriter").captionsSettings;
+  const typed = (t) => (render(typing, t), words()[2].text().trim());
+  assert.equal((render(typing, 1.45), byWord("three").opacity()), 0, "a future word is visible");
+  const firstLetters = typed(2.02);
+  assert.ok(firstLetters.length > 0 && firstLetters.length < 5, `not typing: "${firstLetters}"`);
+  assert.equal(typed(2.6), "three", "the word is not fully typed");
+  render(typing, 2.1);
+  const caret = layer.find("Rect").filter((r) => r.hasName("decoration"));
+  assert.equal(caret.length, 1, "no caret while typing");
+  const three = words()[2];
+  assert.ok(caret[0].x() > three.x() + three.width() - 1, "the caret is not after the letters");
+
+  // Sticker Tape: one tilted strip per word; the spoken strip is highlighted
+  const stickerPreset = getPreset("Sticker Tape").captionsSettings;
+  render(stickerPreset, 1.45);
+  const strips = layer.find("Rect").filter((r) => r.hasName("decoration"));
+  assert.equal(strips.length, 4, "not one strip per word");
+  assert.ok(strips.some((r) => r.rotation() !== 0), "no tilt");
+  assert.equal(strips.filter((r) => r.fill() === stickerPreset.style.highlightColor).length, 1, "not one highlighted strip");
+  const angles = strips.map((r) => r.rotation()).sort();
+  render(stickerPreset, 2.45);
+  assert.deepEqual(layer.find("Rect").filter((r) => r.hasName("decoration")).map((r) => r.rotation()).sort(), angles, "tilts change between frames");
+
+  // Slam: one word at a time, fitted to the frame, staying between words
+  const slamPreset = getPreset("Slam").captionsSettings;
+  const visible = (t) => (render(slamPreset, t), words().filter((w) => w.opacity() > 0).map((w) => w.text().trim().toLowerCase()));
+  assert.deepEqual(visible(1.45), ["two"]);
+  assert.deepEqual(visible(1.95), ["two"], "the last word does not stay between words");
+  render(slamPreset, 1.8);
+  const two = byWord("two");
+  assert.ok(two.scaleX() > 1.5, `the word is not enlarged: ${two.scaleX()}`);
+  assert.ok(two.getClientRect().width <= size[0], "the word does not fit the frame");
+  console.log("ok   Typewriter, Sticker Tape and Slam behave as described");
 }
