@@ -1,3 +1,4 @@
+import { rotateHue } from "./color";
 import { attack, numberOption, type Effect } from "./types";
 
 const DEFAULT_COLORS = ["#FF4D8D", "#FFA62B", "#8C6BFF"];
@@ -15,6 +16,15 @@ const DEFAULT_COLORS = ["#FF4D8D", "#FFA62B", "#8C6BFF"];
  * `gradientShadow` (text shadow strength 0–1, 0.6).
  */
 export const gradientWave: Effect = {
+  // the accent and its two neighbours on the color wheel
+  accent: (settings, color) => ({
+    ...settings,
+    style: { ...settings.style, highlightColor: color },
+    animationOptions: {
+      ...settings.animationOptions,
+      gradientColors: [color, rotateHue(color, 40), rotateHue(color, -40)],
+    },
+  }),
   apply({ words, active, options, width, time }) {
     const colors = Array.isArray(options.gradientColors)
       ? options.gradientColors.filter((c): c is string => typeof c === "string" && c !== "")

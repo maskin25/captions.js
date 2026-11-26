@@ -1,3 +1,4 @@
+import type { SafeAreaInsets, SafeAreaName } from "../../canvas-captions/safe-area";
 /**
  * Size of a fully emphasized word at `expressiveness: 1`, relative to the
  * preset's font size.
@@ -60,6 +61,15 @@ export interface CaptionsSettings {
   lineSpacing?: number | null;
   position: "auto" | "top" | "middle" | "bottom";
   positionTopOffset?: number;
+  /**
+   * Keeps captions clear of a platform's interface: `"tiktok"`, `"reels"`,
+   * `"shorts"`, `"none"`, or insets as fractions of the frame, e.g.
+   * `{ top: 0.1, bottom: 0.3, left: 0.05, right: 0.15 }`. `position` then
+   * places captions inside that area and lines wrap to its width. Unset, the
+   * renderer keeps its fixed margin above the bottom of portrait video. See
+   * {@link SAFE_AREAS} for the values and their sources.
+   */
+  safeArea?: SafeAreaName | SafeAreaInsets;
   /**
    * Effect name: a built-in one, or one added with `registerEffect`.
    */

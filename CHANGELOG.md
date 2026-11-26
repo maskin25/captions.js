@@ -132,7 +132,21 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
 - Vite and Next.js App Router examples in `examples/`, each with a browser test.
 - The unused `useRemoteCaptions` hook in `packages/demo` is removed.
 
+- **Added:** `safeArea` in the settings: `"tiktok"`, `"reels"`, `"shorts"`,
+  `"none"` or insets as fractions of the frame. Captions are placed inside
+  the area and lines wrap to its width. The platform values come from each
+  platform's published ad guidance and are exported as `SAFE_AREAS`, with
+  `resolveSafeArea()`. Unset keeps the old fixed bottom margin, so existing
+  renders do not move. Effects see the usable width as `areaWidth`; Slam
+  fits words to it.
+- **Added:** `customizePreset(preset, { accent, font, textColor, name })`
+  returns a new plain preset. The accent goes where each style keeps it
+  (highlight, Focus Box's box, Highlight Sweep's plate, Gradient Wave's
+  gradient); effects can define `accent(settings, color)` for their own.
+
 ### @captionsjs/server
+- **Added:** `burnCaptions({ safeArea })` and CLI `--safe-area
+  shorts|reels|tiktok|none|top,bottom,left,right`.
 - **Added:** `burnCaptions({ speakers })` and CLI `--speakers/-s "Scott,Neal:#4DD2FF"`;
   WebVTT voice names are used when no names are given. `loadTranscript()`
   returns the captions with the speaker names the transcript carries.

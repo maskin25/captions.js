@@ -35,6 +35,11 @@ export interface EffectContext {
   /** Size of the whole frame (the layer), in px. */
   frameWidth: number;
   frameHeight: number;
+  /**
+   * Width of the part of the frame captions may use: the frame, or the
+   * `safeArea` inside it. Effects that size words to fit use this.
+   */
+  areaWidth: number;
   /** Line groups, top to bottom. */
   lines: Konva.Group[];
   /** Every word on the screen, in reading order. */
@@ -63,6 +68,12 @@ export interface Effect {
    * room for it. Gets `animationOptions` (or `{}`).
    */
   wordGap?(options: Record<string, unknown>): number;
+  /**
+   * Puts an accent color where this effect keeps it, for `customizePreset`.
+   * Returns new settings; never changes `settings`. Without it the accent
+   * becomes `style.highlightColor`.
+   */
+  accent?(settings: CaptionsSettings, color: string): CaptionsSettings;
 }
 
 /**

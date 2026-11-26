@@ -13,6 +13,18 @@ export {
   getPreset,
   presetNames,
 } from "./stylePresets/stylePresets.config";
+export {
+  customizePreset,
+  type PresetCustomization,
+} from "./stylePresets/customize";
+
+/** Platform safe areas: where TikTok, Reels and Shorts cover the video. */
+export {
+  SAFE_AREAS,
+  resolveSafeArea,
+  type SafeAreaInsets,
+  type SafeAreaName,
+} from "./canvas-captions/safe-area";
 
 
 /** Strong typing for caption entries (word timing, styling etc). */

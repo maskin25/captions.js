@@ -2,7 +2,7 @@
 import { parseArgs } from "node:util";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
-import { annotationPrompt, presetNames, toTrack } from "captions.js";
+import { annotationPrompt, presetNames, resolveSafeArea, toTrack, type SafeAreaInsets, type SafeAreaName } from "captions.js";
 import { burnCaptions } from "./render/burnCaptions.js";
 import { loadCaptions } from "./render/loadCaptions.js";
 
@@ -29,6 +29,10 @@ Options for burn
   -s, --speakers <list>  Names (and colors) of speakers 1, 2, … in order, e.g.
                          "Scott,Neal" or "Scott:#FFD43B,Neal:#4DD2FF". Every
                          preset takes the colors; Speaker Tags shows the names.
+      --safe-area <name|insets>
+                         Keep clear of a platform's buttons and captions:
+                         tiktok, reels, shorts, none, or fractions of the frame
+                         as top,bottom,left,right, e.g. 0.15,0.35,0.05,0.18
   -q, --quiet            No progress output
   -h, --help
 
@@ -79,6 +83,23 @@ const parseSpeakers = (list: string) =>
     return { ...(label ? { label } : {}), ...(color ? { color } : {}) };
   });
 
+/** "shorts" or "0.15,0.35,0.05,0.18" (top,bottom,left,right) → a safeArea setting. */
+const parseSafeArea = (value: string): SafeAreaName | SafeAreaInsets => {
+  const parts = value.split(",").map((part) => part.trim());
+  const safeArea =
+    parts.length === 1
+      ? (value.trim() as SafeAreaName)
+      : parts.length === 4 && parts.every((part) => part !== "" && Number.isFinite(Number(part)))
+        ? { top: +parts[0], bottom: +parts[1], left: +parts[2], right: +parts[3] }
+        : fail(`--safe-area: "${value}" is not tiktok, reels, shorts, none or four numbers top,bottom,left,right`);
+  try {
+    resolveSafeArea(safeArea);
+  } catch (error) {
+    fail(`--safe-area: ${(error as Error).message.replace(/^captions\.js: /, "")}`);
+  }
+  return safeArea;
+};
+
 const burn = async (argv: string[]) => {
   const { values, positionals } = parseArgs({
     args: argv,
@@ -92,6 +113,7 @@ const burn = async (argv: string[]) => {
       expressiveness: { type: "string", short: "e" },
       annotations: { type: "string", short: "a" },
       speakers: { type: "string", short: "s" },
+      "safe-area": { type: "string" },
       quiet: { type: "boolean", short: "q" },
       help: { type: "boolean", short: "h" },
     },
@@ -100,6 +122,7 @@ const burn = async (argv: string[]) => {
 
   const [video, captions] = positionals;
   if (!video || !captions) fail("burn needs <video> and <transcript>. Run with --help.");
+  const safeArea = values["safe-area"] !== undefined ? parseSafeArea(values["safe-area"]) : undefined;
   checkFfmpeg();
 
   let expressiveness: number | undefined;
@@ -124,6 +147,7 @@ const burn = async (argv: string[]) => {
     expressiveness,
     annotations: values.annotations,
     speakers: values.speakers !== undefined ? parseSpeakers(values.speakers) : undefined,
+    safeArea,
     fonts: { fontsDir: values["fonts-dir"] },
     onProgress: quiet
       ? undefined

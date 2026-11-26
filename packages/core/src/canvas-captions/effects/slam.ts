@@ -7,12 +7,13 @@ import { numberOption, type Effect } from "./types";
  * own way, chosen by its index: it drops in, slides from the left, grows
  * from small, or slides from the right. Between words the last one stays.
  *
- * Options: `slamWidth` (share of the frame width a word may fill, 0.86),
+ * Options: `slamWidth` (share of the frame width, or of the safe area's
+ * width, a word may fill, 0.86),
  * `slamMax` (largest scale over the preset's size, 2.4), `slamShadow`
  * (text shadow strength 0–1, 0.6).
  */
 export const slam: Effect = {
-  apply({ words, active, options, width, height, frameWidth }) {
+  apply({ words, active, options, width, height, frameWidth, areaWidth }) {
     const share = numberOption(options, "slamWidth", 0.86);
     const maxScale = numberOption(options, "slamMax", 2.4);
     const shadow = numberOption(options, "slamShadow", 0.6);
@@ -24,7 +25,7 @@ export const slam: Effect = {
     const { text } = shown;
     const size = text.fontSize();
     const ink = inkWidth(text);
-    const fit = Math.min(maxScale, (frameWidth * share) / Math.max(1, ink));
+    const fit = Math.min(maxScale, (areaWidth * share) / Math.max(1, ink));
     const lineX = text.parent?.x() ?? 0;
     const lineY = text.parent?.y() ?? 0;
     // the centre of the screen, in the word's line coordinates

@@ -1,4 +1,5 @@
 import Konva from "konva";
+import { resolveSafeArea } from "./safe-area";
 import { RenderFrameFn } from "./types";
 
 import { Caption, CaptionsSettings } from "../entities/captions/captions.types";
@@ -342,10 +343,11 @@ const drawFrame = (
   const targetFontSize = captionsSettings.style.font.fontSize * (toCoef ?? 1);
   const showDebugBoundingBoxes = Boolean(debug);
   const wordSpacing = getWordSpacing(captionsSettings, targetFontSize);
+  const safe = resolveSafeArea(captionsSettings.safeArea);
   const { ranges } = getChunksCached(
     captionsSettings,
     captions,
-    layer.getWidth()!,
+    safe ? layer.getWidth()! * (1 - safe.left - safe.right) : layer.getWidth()!,
     targetFontSize,
   );
   const currentRange = findChunkByTime(ranges, currentTime);
@@ -583,7 +585,7 @@ const drawFrame = (
     group.offsetX(maxGroupWidth / 2);
     group.offsetY(groupHeight / 2);
 
-    group.x(width / 2);
+    group.x(safe ? width * (safe.left + (1 - safe.left - safe.right) / 2) : width / 2);
     group.y(
       getCaptionsGroupY(
         groupHeight,
@@ -592,6 +594,7 @@ const drawFrame = (
         captionsSettings.position,
         captionsSettings.positionTopOffset ?? 0,
         toCoef ?? 1,
+        safe,
       ),
     );
 
@@ -603,6 +606,7 @@ const drawFrame = (
       height: groupHeight,
       frameWidth: width,
       frameHeight: height,
+      areaWidth: safe ? width * (1 - safe.left - safe.right) : width,
       lines: lineGroups,
       words: effectWords,
       active: activeWord,
