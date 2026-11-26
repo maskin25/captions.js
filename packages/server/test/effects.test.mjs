@@ -129,4 +129,54 @@ const classic = getPreset("Classic").captionsSettings;
   render(extrudePreset, 1.45);
   assert.ok(byWord("two").y() < flatY, "the spoken word does not rise");
   console.log("ok   Spring Pop, Highlight Sweep, Neon Bloom and Hard Extrude behave as described");
+  // Karaoke Fill: the spoken word fills from the left; spoken words stay filled
+  const karaoke = getPreset("Karaoke Fill").captionsSettings;
+  const fill = (t) => (render(karaoke, t), layer.find("Group").find((g) => g.hasName("decoration"))?.clipWidth() ?? 0);
+  const [quarter, half] = [fill(1.225), fill(1.45)];
+  assert.ok(quarter > 0 && Math.abs(half / quarter - 2) < 0.15, `fill does not follow progress: ${quarter} → ${half}`);
+  assert.equal(byWord("one").fill(), karaoke.style.highlightColor, "a spoken word is not filled");
+  assert.equal(byWord("two").fill(), karaoke.style.font.fontColor, "the spoken word's base is filled");
+  assert.equal(byWord("three").fill(), karaoke.style.font.fontColor, "a future word is filled");
+  assert.equal(fill(0.95), 0, "a fill between words");
+
+  // Gradient Wave: one band across all words, moving with time
+  const wave = getPreset("Gradient Wave").captionsSettings;
+  const bandStart = (t, w) => {
+    render(wave, t);
+    const text = byWord(w);
+    return text.fillLinearGradientStartPoint().x + text.x() + text.parent.x();
+  };
+  assert.ok(Math.abs(bandStart(1.45, "one") - bandStart(1.45, "four")) < 1e-6, "the band is not continuous");
+  assert.notEqual(bandStart(1.45, "one"), bandStart(1.6, "one"), "the band does not move");
+  render(wave, 1.45);
+  assert.equal(byWord("one").fillPriority(), "linear-gradient");
+  assert.equal(byWord("four").opacity(), 0.6, "a future word is not dimmed");
+
+  // Pill: one fully rounded plate per line; words turn dark as spoken
+  const pillPreset = getPreset("Pill").captionsSettings;
+  render(pillPreset, 2.45);
+  const plates = layer.find("Rect").filter((r) => r.hasName("decoration"));
+  const lineCount = new Set(words().map((t) => t.parent)).size;
+  assert.equal(plates.length, lineCount, "not one plate per line");
+  for (const r of plates) assert.equal(r.cornerRadius(), r.height() / 2, "a plate is not a pill");
+  assert.equal(byWord("one").fill(), pillPreset.style.highlightColor, "a spoken word is not dark");
+  assert.equal(byWord("four").fill(), pillPreset.style.font.fontColor, "a future word is not grey");
+
+  // Chroma Glitch: two passes per word that jump apart, then settle
+  const chroma = getPreset("Chroma Glitch").captionsSettings;
+  const spread = (t) => {
+    render(chroma, t);
+    const two = byWord("two");
+    const passes = decorations().filter((d) => d.text() === two.text());
+    return Math.max(...passes.map((d) => Math.abs(d.x() - two.x())));
+  };
+  render(chroma, 1.45);
+  assert.equal(decorations().length, 4 * 2, "two passes per word");
+  const [burst, rest] = [spread(1.01), spread(1.45)];
+  assert.ok(burst > rest * 1.5, `no glitch burst: ${burst} vs ${rest}`);
+  render(chroma, 1.02);
+  const glitched = await hash();
+  render(chroma, 1.02);
+  assert.equal(await hash(), glitched, "glitch frames are not reproducible");
+  console.log("ok   Karaoke Fill, Gradient Wave, Pill and Chroma Glitch behave as described");
 }

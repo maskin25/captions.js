@@ -91,7 +91,11 @@ export type BuiltInAnimation =
   | "spring"
   | "highlight-sweep"
   | "neon"
-  | "extrude";
+  | "extrude"
+  | "karaoke-fill"
+  | "gradient-wave"
+  | "pill"
+  | "chroma-glitch";
 
 /**
  * Single timed word/segment that will be highlighted as audio plays.

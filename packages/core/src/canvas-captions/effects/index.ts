@@ -7,6 +7,10 @@ import { spring } from "./spring";
 import { sweep } from "./sweep";
 import { neon } from "./neon";
 import { extrude } from "./extrude";
+import { karaokeFill } from "./karaoke-fill";
+import { gradientWave } from "./gradient-wave";
+import { pill } from "./pill";
+import { glitch } from "./glitch";
 
 export type { Effect, EffectContext, EffectWord, WordState } from "./types";
 export { attack, numberOption, DECORATION } from "./types";
@@ -30,12 +34,17 @@ const registry = new Map<string, Effect>([
   ["highlight-sweep", sweep],
   ["neon", neon],
   ["extrude", extrude],
+  ["karaoke-fill", karaokeFill],
+  ["gradient-wave", gradientWave],
+  ["pill", pill],
+  ["chroma-glitch", glitch],
 ]);
 
 /**
  * Adds an effect under a name that `animation` can then use, or replaces
  * one. Built-in names: none, bounce, underline, box, box-word, pop, scale,
- * slide-down, slide-up, slide-left, spring, highlight-sweep, neon, extrude.
+ * slide-down, slide-up, slide-left, spring, highlight-sweep, neon, extrude,
+ * karaoke-fill, gradient-wave, pill, chroma-glitch.
  *
  * @public
  */
