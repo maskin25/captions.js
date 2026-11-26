@@ -18,11 +18,12 @@ export const scaleIn: Effect = {
 };
 
 /**
- * The screen slides in from `dx`, `dy` (in units of `slideOffset`, px, 7).
+ * The screen slides in from `dx`, `dy` (in units of `slideOffset`, px on a
+ * `REFERENCE_HEIGHT` frame, 7).
  */
 const slide = (dx: number, dy: number): Effect => ({
-  apply({ group, screenProgress, options }) {
-    const offset = numberOption(options, "slideOffset", 7);
+  apply({ group, screenProgress, options, scale }) {
+    const offset = numberOption(options, "slideOffset", 7) * scale;
     const rest = offset - offset * mapEaseToFn[Ease.linear](screenProgress);
     if (dx) group.x(group.x() + dx * rest);
     if (dy) group.y(group.y() + dy * rest);

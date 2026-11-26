@@ -27,6 +27,9 @@ export {
 } from "./canvas-captions/safe-area";
 
 
+/** Frame height presets are written for, and the scale for other sizes. */
+export { REFERENCE_HEIGHT, frameScale } from "./canvas-captions/reference";
+
 /** Strong typing for caption entries (word timing, styling etc). */
 export type { Caption } from "./entities/captions/captions.types";
 

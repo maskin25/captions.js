@@ -1,4 +1,5 @@
 import Konva from "konva";
+import { REFERENCE_HEIGHT, frameScale } from "./reference";
 import { resolveSafeArea } from "./safe-area";
 import { RenderFrameFn } from "./types";
 
@@ -63,19 +64,25 @@ const lineMarginLetters = (animation: CaptionsSettings["animation"]) =>
 const LINE_MARGIN_LETTERS = 2;
 
 /**
- * Word gaps have fixed-pixel parts (bounce, capitals) tuned on a 960 px tall
- * frame. Layout takes the gap at that size, as a share of the font size, so
- * line breaks do not depend on the output resolution.
+ * Layout measures at this frame scale. Every part of the gap scales with the
+ * font, so the choice does not change line breaks; it only fixes the units.
  */
-const LAYOUT_REFERENCE_COEF = 960 / 480;
+const LAYOUT_REFERENCE_COEF = 960 / REFERENCE_HEIGHT;
 
+/**
+ * Gap between words in px. Pixel amounts in settings and options (word gaps
+ * here, strokes, shadows, line spacing, effect sizes) are px on a
+ * `REFERENCE_HEIGHT` (480) px tall frame, multiplied by `scale`, so a preset looks the same at every size.
+ */
 const getWordSpacing = (
   captionsSettings: CaptionsSettings,
   targetFontSize: number,
+  scale: number,
 ) =>
   targetFontSize * 0.1 +
-  (captionsSettings.animation === "bounce" ? 8 : 0) +
-  (captionsSettings.style.font.fontCapitalize ? 2 : 0) +
+  ((captionsSettings.animation === "bounce" ? 8 : 0) +
+    (captionsSettings.style.font.fontCapitalize ? 2 : 0)) *
+    scale +
   // the box around the active word reaches into the gap on both sides
   (captionsSettings.animation === "box-word"
     ? 2 * boxWordMetrics(targetFontSize).paddingX
@@ -113,7 +120,7 @@ const layoutRanges = (
   const referenceFontSize =
     captionsSettings.style.font.fontSize * LAYOUT_REFERENCE_COEF;
   const spacing = Math.round(
-    (getWordSpacing(captionsSettings, referenceFontSize) / referenceFontSize) *
+    (getWordSpacing(captionsSettings, referenceFontSize, LAYOUT_REFERENCE_COEF) / referenceFontSize) *
       LAYOUT_UNITS_PER_EM,
   );
   const maxLineWidth =
@@ -281,7 +288,7 @@ export interface RenderFrameOptions {
   /** Konva layer to draw into; existing children are kept. */
   layer: Konva.Layer;
   /**
-   * Font-size multiplier. Defaults to `height / 480`, the rule the browser
+   * Font-size multiplier. Defaults to `frameScale(height)` (height / 480), the rule the browser
    * overlay and the server use, so preview and export match.
    */
   scale?: number;
@@ -298,7 +305,7 @@ export interface RenderFrameOptions {
 export function renderFrame(options: RenderFrameOptions): void;
 /**
  * @deprecated Use the options object: `renderFrame({ settings, captions, time,
- * size, layer, scale })`. Here `toCoef` defaults to 1, not `height / 480`.
+ * size, layer, scale })`. Here `toCoef` defaults to 1, not `frameScale(height)`.
  * `layoutSettings` is ignored.
  */
 export function renderFrame(
@@ -320,7 +327,7 @@ export function renderFrame(...args: unknown[]): void {
       options.time,
       options.size,
       options.layer,
-      options.scale ?? options.size[1] / 480,
+      options.scale ?? frameScale(options.size[1]),
       options.debug,
     );
     return;
@@ -342,7 +349,8 @@ const drawFrame = (
   const [width, height] = targetSize;
   const targetFontSize = captionsSettings.style.font.fontSize * (toCoef ?? 1);
   const showDebugBoundingBoxes = Boolean(debug);
-  const wordSpacing = getWordSpacing(captionsSettings, targetFontSize);
+  const scale = toCoef ?? 1;
+  const wordSpacing = getWordSpacing(captionsSettings, targetFontSize, scale);
   const safe = resolveSafeArea(captionsSettings.safeArea);
   const { ranges } = getChunksCached(
     captionsSettings,
@@ -360,7 +368,7 @@ const drawFrame = (
     line.forEach(() => wordFits.push(currentRange.fits[lineIndex]));
     lineEnds.add(wordFits.length - 1);
   });
-  const yOffset = captionsSettings.lineSpacing ?? 4;
+  const yOffset = (captionsSettings.lineSpacing ?? 4) * scale;
 
   if (currentChunk) {
     const group = new Konva.Group({
@@ -461,18 +469,18 @@ const drawFrame = (
           ),
           stroke: captionsSettings.style.font.fontStrokeColor,
           strokeWidth: captionsSettings.style.font.fontStrokeWidth
-            ? captionsSettings.style.font.fontStrokeWidth / 10
+            ? (captionsSettings.style.font.fontStrokeWidth / 10) * scale
             : 0,
           textDecoration: captionsSettings.style.font.underline
             ? "underline"
             : "",
           fill: fillColor,
           shadowColor: captionsSettings.style.font.shadow?.fontShadowColor,
-          shadowBlur: captionsSettings.style.font.shadow?.fontShadowBlur ?? 0,
+          shadowBlur: (captionsSettings.style.font.shadow?.fontShadowBlur ?? 0) * scale,
           shadowOffset: captionsSettings.style.font.shadow
             ? {
-                x: captionsSettings.style.font.shadow?.fontShadowOffsetX ?? 0,
-                y: captionsSettings.style.font.shadow?.fontShadowOffsetY ?? 0,
+                x: (captionsSettings.style.font.shadow?.fontShadowOffsetX ?? 0) * scale,
+                y: (captionsSettings.style.font.shadow?.fontShadowOffsetY ?? 0) * scale,
               }
             : undefined,
           listening: false,

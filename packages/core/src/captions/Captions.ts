@@ -1,3 +1,4 @@
+import { frameScale } from "../canvas-captions/reference";
 import Konva from "konva";
 import { renderFrame } from "../canvas-captions";
 import { loadGoogleFont2 } from "../fonts/googleFonts.helpers";
@@ -305,7 +306,7 @@ export class Captions {
 
     this.layer.destroyChildren();
     const currentVideoHeight = this.video.videoHeight || this.videoHeight;
-    const toCoef = currentVideoHeight > 0 ? currentVideoHeight / 480 : 1;
+    const toCoef = frameScale(currentVideoHeight);
 
     renderFrame({
       settings: this.presetState.captionsSettings,
