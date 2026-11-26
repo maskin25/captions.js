@@ -5,6 +5,17 @@
 Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
 
 ### captions.js
+- **Added:** four presets with new effects. **Spring Pop** (`spring`): words
+  appear as they are spoken, each on a damped spring with overshoot.
+  **Highlight Sweep** (`highlight-sweep`): a plate grows behind the spoken word
+  as it is said. **Neon Bloom** (`neon`): neon tubes that light up word by word,
+  glow from stacked blurred copies. **Hard Extrude** (`extrude`): block letters
+  with a solid 3D side; the spoken word rises out of it. Every size in them
+  follows the word's font size, and every frame is reproducible. Options are
+  documented on each effect (`springDamping`, `sweepColor`, `neonRest`,
+  `extrudeDepth`, …).
+- **Added:** `DECORATION`, the Konva node name for nodes an effect adds only
+  for looks.
 - **Breaking:** Konva is a peer dependency (`npm install captions.js konva`).
 - **Breaking:** `renderString` is removed.
 - **Breaking:** built-in presets have no `id` or `layoutSettings`; both are

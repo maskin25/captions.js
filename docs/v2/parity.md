@@ -56,7 +56,10 @@ the decision where lines break is engine-independent.
 
 Worst block Δ is the largest average difference of an 8×8 px block (16×16 at
 1080), out of 255; the golden test fails above 32. "Pixels off" counts pixels with
-any channel off by more than 2.
+any channel off by more than 2. Colors are compared premultiplied (color × alpha),
+as they show over video: without that, a nearly transparent glow pixel that one
+engine leaves at alpha 0 counted as a 255 difference (Neon Bloom read 255; with
+premultiplied colors it reads 35, inside the range of the other presets).
 
 | Preset | Layout | Worst block Δ | Max pixels off (>2) | Frames over limit |
 | --- | --- | ---: | ---: | ---: |

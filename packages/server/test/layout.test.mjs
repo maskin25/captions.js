@@ -47,7 +47,7 @@ for (const name of presetNames) {
     stage.add(layer);
     renderFrame(settings, undefined, captions, caption.startTime + 0.01, [width, height], layer, height / 480);
     const group = layer.getChildren()[0];
-    for (const text of group?.find("Text") ?? []) {
+    for (const text of (group?.find("Text") ?? []).filter((t) => !t.hasName("decoration"))) {
       // where the word is drawn on the frame, including animation scale
       const rect = text.getClientRect({ skipShadow: true, skipStroke: true });
       widest = Math.max(widest, rect.x + rect.width - width, -rect.x);

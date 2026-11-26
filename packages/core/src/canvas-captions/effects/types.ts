@@ -56,6 +56,15 @@ export interface Effect {
   apply(context: EffectContext): void;
 }
 
+/**
+ * Konva name for nodes an effect adds only for looks (glow or depth copies of
+ * a word, plates). Give extra `Text` nodes this name so code that reads the
+ * words from a layer, such as tests and tools, can skip them.
+ *
+ * @public
+ */
+export const DECORATION = "decoration";
+
 /** Reads a number from `options`, or `fallback`. */
 export const numberOption = (
   options: Record<string, unknown>,

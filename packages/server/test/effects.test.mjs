@@ -88,3 +88,45 @@ const classic = getPreset("Classic").captionsSettings;
   assert.equal(await hash(), positional);
   console.log("ok   renderFrame options object matches the positional form");
 }
+
+// 2.0 styles: behaviour that a golden frame would not explain
+{
+  const words = () => layer.find("Text").filter((t) => !t.hasName("decoration"));
+  const decorations = () => layer.find("Text").filter((t) => t.hasName("decoration"));
+  const byWord = (w) => words().find((t) => t.text().trim().toLowerCase() === w);
+
+  // Spring Pop: unspoken words are hidden; the spring overshoots, then settles
+  const springPop = getPreset("Spring Pop").captionsSettings;
+  render(springPop, 1.1);
+  assert.equal(byWord("three").opacity(), 0, "a future word is visible");
+  assert.equal(byWord("one").scaleX(), 1, "a settled word is not at scale 1");
+  const scales = [1.05, 1.15, 1.25, 1.4, 2.5].map((t) => (render(springPop, t), byWord("two").scaleX()));
+  assert.ok(Math.max(...scales) > 1.04, `no overshoot: ${scales}`);
+  assert.ok(Math.abs(scales.at(-1) - 1) < 0.01, `does not settle: ${scales}`);
+
+  // Highlight Sweep: the plate behind the spoken word grows with the word
+  const sweepPreset = getPreset("Highlight Sweep").captionsSettings;
+  const plate = (t) => (render(sweepPreset, t), layer.find("Rect")[0]?.width() ?? 0);
+  const [early, late] = [plate(1.05), plate(1.6)];
+  assert.ok(early > 0 && late > early, `plate does not grow: ${early} → ${late}`);
+  assert.equal(plate(0.95), 0, "a plate between words");
+
+  // Neon Bloom: unlit words have no glow; lit words get three named copies
+  const neonPreset = getPreset("Neon Bloom").captionsSettings;
+  render(neonPreset, 1.45);
+  assert.equal(decorations().length, 2 * 3, "glow copies for the two lit words");
+  assert.equal(words().length, 4, "decorations counted as words");
+  render(neonPreset, 1.45);
+  const neon = await hash();
+  render(neonPreset, 1.45);
+  assert.equal(await hash(), neon, "neon frames are not reproducible");
+
+  // Hard Extrude: every word has a side; the spoken word's face rises
+  const extrudePreset = getPreset("Hard Extrude").captionsSettings;
+  render({ ...extrudePreset, animationOptions: { extrudeLift: 0 } }, 1.45);
+  const flatY = byWord("two").y();
+  assert.ok(decorations().length >= 4 * 3, "too few side copies");
+  render(extrudePreset, 1.45);
+  assert.ok(byWord("two").y() < flatY, "the spoken word does not rise");
+  console.log("ok   Spring Pop, Highlight Sweep, Neon Bloom and Hard Extrude behave as described");
+}

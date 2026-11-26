@@ -87,7 +87,11 @@ export type BuiltInAnimation =
   | "slide-left"
   | "slide-up"
   | "slide-down"
-  | "box-word";
+  | "box-word"
+  | "spring"
+  | "highlight-sweep"
+  | "neon"
+  | "extrude";
 
 /**
  * Single timed word/segment that will be highlighted as audio plays.
