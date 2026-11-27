@@ -154,6 +154,16 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   gradient); effects can define `accent(settings, color)` for their own.
 
 ### @captionsjs/server
+- **Added:** `POST /render` in the HTTP service: JSON in (video URL, transcript
+  inline or by URL, preset, `customize`, `safeArea`, `speakers`, emphasis), the
+  captioned MP4 out, and errors as JSON with a 400, 422, 503 or 500 status. It
+  never reads a local path from the request and cleans up its temp files. The
+  Pub/Sub endpoint `POST /burnCaptions` stays for existing users.
+- **Fixed:** the CLI crashed with a segmentation fault now and then as it
+  exited, after a complete render, on machines with a GPU. Frames are now drawn
+  on the CPU (same pixels as CI and most servers); `CAPTIONSJS_GPU=1` brings the
+  GPU back.
+- **Changed:** downloads follow redirects and no longer print to stdout.
 - **Added:** `burnCaptions({ safeArea })` and CLI `--safe-area
   shorts|reels|tiktok|none|top,bottom,left,right`.
 - **Added:** `burnCaptions({ speakers })` and CLI `--speakers/-s "Scott,Neal:#4DD2FF"`;

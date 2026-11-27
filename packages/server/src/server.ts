@@ -3,9 +3,14 @@ import type { Server } from "http";
 import { env } from "./config/env.js";
 import { logger } from "./utils/logger.js";
 import { burnCaptions } from "./render/burnCaptions.js";
+import { handleRender } from "./http/render.js";
 
 export const createApp = (): express.Express => {
   const app = express();
+
+  // JSON in, MP4 out. See README "HTTP service".
+  app.post("/render", express.json({ limit: "20mb" }), handleRender);
+
   app.use(express.json());
 
   app.get("/health", (_req, res) => {
@@ -23,6 +28,9 @@ export const createApp = (): express.Express => {
     output_uri: string;
   };
 
+  // Legacy Google Pub/Sub push endpoint used by Shorty.plus: a base64
+  // `message.data` envelope, acknowledged before rendering so Pub/Sub does not
+  // redeliver. Errors only reach the log. New integrations use POST /render.
   app.post("/burnCaptions", async (req, res) => {
     const envelope = req.body;
     const message = envelope?.message;

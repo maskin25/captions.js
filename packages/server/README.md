@@ -66,12 +66,63 @@ works offline.
 docker run --rm -v "$PWD:/data" maskin25/captions.js-render \
   burn /data/talk.mp4 /data/words.json --preset Karaoke -o /data/out.mp4
 
-# HTTP service on :4000 (GET /health, POST /burnCaptions)
+# HTTP service on :4000
 docker run -p 4000:4000 maskin25/captions.js-render
 ```
 
-The HTTP endpoint currently takes the Pub/Sub push envelope used by Shorty.plus
-(`{ message: { data: base64({ preset, video_uri, captions_uri, output_uri }) } }`).
-A simpler upload-and-download API is planned.
+### HTTP service
+
+`POST /render` takes JSON and answers with the captioned MP4. The render runs while
+the request is open, so set a client timeout that fits your video length.
+
+```bash
+curl -X POST http://localhost:4000/render \
+  -H "Content-Type: application/json" \
+  -d '{
+    "video": "https://example.com/talk.mp4",
+    "captions": [{ "word": "Hello", "start": 0.1, "end": 0.6 }, { "word": "world", "start": 0.6, "end": 1.2 }],
+    "preset": "Karaoke",
+    "customize": { "accent": "#FF5A1F" },
+    "safeArea": "tiktok"
+  }' \
+  -o talk.captions.mp4
+```
+
+| Field | Required | Value |
+| --- | --- | --- |
+| `video` | yes | An http(s) URL the service can fetch. Redirects are followed. |
+| `captions` | yes | Word timings in any format the CLI reads (word array, Whisper, Deepgram, AssemblyAI, ElevenLabs JSON, …) inline, or an http(s) URL to them. |
+| `preset` | no | A preset name (default `Karaoke`) or a full preset object. |
+| `customize` | no | `{ accent, font, textColor }`, applied with `customizePreset`. |
+| `safeArea` | no | `"tiktok"`, `"reels"`, `"shorts"`, `"none"` or `{ top, bottom, left, right }` as fractions. |
+| `speakers` | no | `[{ color, label }]` per speaker 0, 1, … |
+| `expressiveness`, `annotations` | no | Word emphasis, as in the CLI's `-e` and `-a`. `annotations` inline or as a URL. |
+| `fps`, `crf` | no | Overlay frame rate and x264 quality. |
+
+On success the answer is `200` with `Content-Type: video/mp4` and the headers
+`X-Captions-Size` (`1080x1920`) and `X-Captions-Frames`. Errors are JSON, `{ "error": "…" }`:
+
+| Status | Meaning |
+| --- | --- |
+| `400` | The request is wrong: a missing or unknown field, an unknown preset, a bad safe area. `issues` lists each problem. |
+| `422` | The input could not be used: the video could not be downloaded or read, or the transcript has no words. |
+| `503` | Already rendering `MAX_CONCURRENT_RENDERS` videos (default 2). Retry after the `Retry-After` seconds. |
+| `500` | The render failed. `error` says why. |
+
+Strings in `video`, `captions` and `annotations` must be http(s) URLs; the service never
+reads a path on its own disk. It does fetch any URL it is given, so do not expose it
+to untrusted callers on a network that can reach internal services.
+
+`GET /health` answers `{ "status": "ok" }`. `POST /burnCaptions` is the older
+Google Pub/Sub push endpoint used by Shorty.plus (`{ message: { data:
+base64({ preset, video_uri, captions_uri, output_uri }) } }`). It acknowledges the
+message before rendering and only logs errors, so prefer `POST /render`.
+
+### GPU
+
+Frames are drawn on the CPU, which gives the same pixels on every machine and is fast
+enough for caption overlays. skia-canvas would otherwise pick a GPU when it finds one,
+and on some machines that crashed the process as it exited. Set `CAPTIONSJS_GPU=1` to
+let it use the GPU anyway.
 
 MIT © maskin25
