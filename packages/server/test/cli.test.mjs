@@ -118,4 +118,31 @@ for (const bad of ["snapchat", "0.5,0.6,0,0", "1,2,3"]) {
   assert.match(res.stderr, /--safe-area/);
 }
 console.log(`ok   --safe-area moves captions above the platform's interface (lowest row ${plain} → ${shorts})`);
+// the Docker entrypoint is the CLI: no arguments prints help, no server starts
+const entry = path.resolve(path.dirname(cli), "index.js");
+const bare = spawnSync(process.execPath, [entry], { encoding: "utf8", timeout: 20000 });
+assert.equal(bare.status, 0, bare.stderr);
+assert.match(bare.stdout, /Usage[\s\S]*serve/);
+assert.match(spawnSync(process.execPath, [entry, "presets"], { encoding: "utf8" }).stdout, /Karaoke/);
+console.log("ok   the image entrypoint runs the CLI (no arguments: help)");
+
+// `serve` starts the HTTP service on --port
+{
+  const port = 40000 + Math.floor(Math.random() * 20000);
+  const { spawn } = await import("node:child_process");
+  const server = spawn(process.execPath, [cli, "serve", "--port", String(port)], { stdio: "ignore" });
+  try {
+    let health;
+    for (let i = 0; i < 50 && !health; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      health = await fetch(`http://127.0.0.1:${port}/health`).then((r) => r.json()).catch(() => undefined);
+    }
+    assert.equal(health?.status, "ok", "serve did not answer /health");
+    const bad = await fetch(`http://127.0.0.1:${port}/render`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+    assert.equal(bad.status, 400);
+  } finally {
+    server.kill();
+  }
+  console.log("ok   serve starts the HTTP service");
+}
 fs.rmSync(dir, { recursive: true, force: true });

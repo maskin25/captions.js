@@ -1,15 +1,12 @@
+import { methods } from "./methods/index.js";
 import { runMethodFromCli } from "./methods/methodRunner.js";
-import { startServer } from "./server.js";
 
-const args = process.argv.slice(2);
-const CLI_COMMANDS = new Set(["burn", "presets", "help", "--help", "-h", "--version", "-v"]);
-
-if (args.length === 0) {
-  startServer();
-} else if (CLI_COMMANDS.has(args[0])) {
-  // `docker run … burn in.mp4 words.json` → the public CLI
-  await import("./cli.js");
+// The Docker entrypoint. Everything goes to the CLI (`burn`, `presets`,
+// `serve`, …; no arguments prints help), except the old method form
+// `node dist/index.js burnCaptions --video … --captions …`.
+const [first] = process.argv.slice(2);
+if (first && Object.hasOwn(methods, first)) {
+  runMethodFromCli(process.argv.slice(2));
 } else {
-  // legacy: `node dist/index.js burnCaptions --video … --captions …`
-  runMethodFromCli(args);
+  await import("./cli.js");
 }
