@@ -157,8 +157,9 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
 - **Added:** `POST /render` in the HTTP service: JSON in (video URL, transcript
   inline or by URL, preset, `customize`, `safeArea`, `speakers`, emphasis), the
   captioned MP4 out, and errors as JSON with a 400, 422, 503 or 500 status. It
-  never reads a local path from the request and cleans up its temp files. The
-  Pub/Sub endpoint `POST /burnCaptions` stays for existing users.
+  never reads a local path from the request and cleans up its temp files.
+- **Removed:** the Google Pub/Sub push endpoint `POST /burnCaptions`. Use
+  `POST /render`.
 - **Fixed:** the CLI crashed with a segmentation fault now and then as it
   exited, after a complete render, on machines with a GPU. Frames are now drawn
   on the CPU (same pixels as CI and most servers); `CAPTIONSJS_GPU=1` brings the
@@ -240,6 +241,6 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
 - Fonts come from Google Fonts on demand (cached in `~/.cache/captionsjs/fonts`),
   so the 57 MB of TTFs stay out of the npm tarball. `--fonts-dir` for offline use.
 - Font scale now follows the browser rule (`videoHeight / 480`), so the burned-in
-  file matches the preview. The legacy Pub/Sub `/burnCaptions` job keeps `scale: 1`.
+  file matches the preview.
 - Raw RGBA frames into FFmpeg instead of PNG per frame; output fps follows the source.
 - Dropped the `canvas` (node-canvas) dependency — skia-canvas does all the drawing.

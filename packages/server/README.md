@@ -113,10 +113,7 @@ Strings in `video`, `captions` and `annotations` must be http(s) URLs; the servi
 reads a path on its own disk. It does fetch any URL it is given, so do not expose it
 to untrusted callers on a network that can reach internal services.
 
-`GET /health` answers `{ "status": "ok" }`. `POST /burnCaptions` is the older
-Google Pub/Sub push endpoint used by Shorty.plus (`{ message: { data:
-base64({ preset, video_uri, captions_uri, output_uri }) } }`). It acknowledges the
-message before rendering and only logs errors, so prefer `POST /render`.
+`GET /health` answers `{ "status": "ok" }`.
 
 ### GPU
 
