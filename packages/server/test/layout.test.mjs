@@ -6,7 +6,7 @@
 // Run after building core: node test/layout.test.mjs
 import assert from "node:assert/strict";
 import Konva from "konva";
-import "konva/skia-backend";
+import "../dist/render/skia.js"; // Konva on skia-canvas, CPU only (as in the CLI)
 import { FontLibrary } from "skia-canvas";
 import { getEffect, getPreset, presetNames, registerEffect, renderFrame } from "captions.js";
 import { resolveFontFile } from "../dist/render/fonts.js";

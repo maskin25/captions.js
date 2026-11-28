@@ -2,11 +2,13 @@ import express from "express";
 import type { Server } from "http";
 import { env } from "./config/env.js";
 import { logger } from "./utils/logger.js";
-import { burnCaptions } from "./render/burnCaptions.js";
+import { handleRender } from "./http/render.js";
 
 export const createApp = (): express.Express => {
   const app = express();
-  app.use(express.json());
+
+  // JSON in, MP4 out. See README "HTTP service".
+  app.post("/render", express.json({ limit: "20mb" }), handleRender);
 
   app.get("/health", (_req, res) => {
     res.json({
@@ -14,51 +16,6 @@ export const createApp = (): express.Express => {
       uptime: process.uptime(),
       version: process.env.npm_package_version,
     });
-  });
-
-  type RenderJobPayload = {
-    preset: string;
-    video_uri: string;
-    captions_uri: string;
-    output_uri: string;
-  };
-
-  app.post("/burnCaptions", async (req, res) => {
-    const envelope = req.body;
-    const message = envelope?.message;
-
-    if (!message || !message.data) {
-      console.error("No message data");
-      return res.status(400).send("No message data");
-    }
-
-    const decoded = Buffer.from(message.data, "base64").toString("utf8");
-
-    let payload: RenderJobPayload;
-    try {
-      payload = JSON.parse(decoded);
-    } catch (e) {
-      console.error("Invalid JSON payload", e, decoded);
-      return res.status(400).send("Invalid JSON payload");
-    }
-
-    console.log("Got render job:", payload);
-
-    res.status(200).send("OK");
-
-    try {
-      await burnCaptions({
-        preset: payload.preset,
-        video: payload.video_uri,
-        captions: payload.captions_uri,
-        output: payload.output_uri,
-        // Legacy job format: keep the historical 1x font scale.
-        scale: 1,
-      });
-    } catch (error) {
-      console.error("Error burning captions:", error);
-      //return res.status(500).send("Error burning captions");
-    }
   });
 
   return app;

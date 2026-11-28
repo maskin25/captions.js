@@ -4,7 +4,7 @@
 // Run after building core: node test/scale.test.mjs
 import assert from "node:assert/strict";
 import Konva from "konva";
-import "konva/skia-backend";
+import "../dist/render/skia.js"; // Konva on skia-canvas, CPU only (as in the CLI)
 import { REFERENCE_HEIGHT, frameScale, getPreset, presetNames, renderFrame } from "captions.js";
 import { PHRASE } from "./frames.mjs";
 

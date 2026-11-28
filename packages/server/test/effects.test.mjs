@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import Konva from "konva";
-import "konva/skia-backend";
+import "../dist/render/skia.js"; // Konva on skia-canvas, CPU only (as in the CLI)
 import { getPreset, keywordEmphasis, registerEffect, renderFrame } from "captions.js";
 
 const size = [540, 960];
