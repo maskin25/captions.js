@@ -31,7 +31,7 @@ import { parseArgs } from "node:util";
 import { createRequire } from "node:module";
 import { chromium } from "playwright";
 import Konva from "konva";
-import "konva/skia-backend";
+import "../dist/render/skia.js"; // Konva on skia-canvas, CPU only (as in the CLI)
 import { FontLibrary } from "skia-canvas";
 import { getEffect, getPreset, presetNames, registerEffect, renderFrame } from "captions.js";
 import { resolveFontFile } from "../dist/render/fonts.js";

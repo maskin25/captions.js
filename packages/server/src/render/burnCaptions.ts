@@ -10,8 +10,7 @@ import {
   type SpeakerStyle,
   type StylePreset,
 } from "captions.js";
-import Konva from "konva";
-import "konva/skia-backend";
+import Konva from "./skia.js";
 import { FontLibrary } from "skia-canvas";
 
 import path from "node:path";
