@@ -191,6 +191,8 @@ const getChunksCached = (
     animation,
     linesPerPage,
     captionsSettings.expressiveness ?? 0,
+    captionsSettings.emphasisMaxScale ?? "",
+    JSON.stringify(captionsSettings.autoEmphasis ?? false),
   ].join("|");
 
   let cacheByKey = chunkCache.get(captions);

@@ -59,7 +59,9 @@ export type StylePresetName =
   | "Typewriter"
   | "Sticker Tape"
   | "Slam"
-  | "Speaker Tags";
+  | "Speaker Tags"
+  | "Keyword Blowup"
+  | "Blur Focus";
 
 /**
  * Curated set of presets that ship with captions.js out of the box.
@@ -1045,6 +1047,59 @@ export const stylePresets: StylePreset[] = [
       animation: "speaker-tags",
       linesPerPage: 2,
       lineSpacing: 3,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 24,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Anton",
+          fontWeight: "regular",
+          fontCapitalize: true,
+          fontStrokeColor: "#000000FF",
+          fontStrokeWidth: 40,
+        },
+        name: "Keyword Blowup",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/keyword-blowup.jpg",
+        highlightColor: "#FFD60AFF",
+      },
+      position: "bottom",
+      animation: "keyword-blowup",
+      expressiveness: 1,
+      emphasisMaxScale: 1.8,
+      autoEmphasis: true,
+      linesPerPage: 2,
+      lineSpacing: 2,
+    },
+  },
+  {
+    captionsSettings: {
+      style: {
+        font: {
+          italic: false,
+          fontSize: 30,
+          fontColor: "#FFFFFFFF",
+          underline: false,
+          fontFamily: "Crimson Pro",
+          fontWeight: "medium",
+          fontCapitalize: false,
+          fontStrokeColor: "#00000000",
+          fontStrokeWidth: 0,
+        },
+        name: "Blur Focus",
+        backgroundColor: "#00000000",
+        verticalCoverImg: "https://captionsjs.dev/presets/blur-focus.jpg",
+        highlightColor: "#FFE9C7FF",
+      },
+      position: "bottom",
+      animation: "blur-focus",
+      linesPerPage: 2,
+      lineSpacing: 2,
     },
   },
 ];

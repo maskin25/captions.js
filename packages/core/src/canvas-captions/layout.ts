@@ -4,6 +4,7 @@ import {
   CaptionsSettings,
   EMPHASIS_MAX_SCALE,
 } from "../entities/captions/captions.types";
+import { keywordEmphasis } from "./keywords";
 
 /**
  * Engine-independent text widths for line breaking.
@@ -111,17 +112,29 @@ const clamp01 = (value: unknown) =>
     ? Math.min(1, Math.max(0, value))
     : 0;
 
+/** A word's emphasis: from the data, else from `autoEmphasis`, else 0. */
+const emphasisOf = (caption: Caption, { autoEmphasis }: CaptionsSettings) => {
+  if (caption.emphasis !== undefined || !autoEmphasis) return caption.emphasis;
+  return Array.isArray(autoEmphasis)
+    ? keywordEmphasis(caption.word, autoEmphasis)
+    : keywordEmphasis(caption.word);
+};
+
 /** emphasis × expressiveness, 0–1: how much a word reacts to its emphasis. */
 export const emphasisStrength = (
   caption: Caption,
   captionsSettings: CaptionsSettings,
-) => clamp01(caption.emphasis) * clamp01(captionsSettings.expressiveness);
+) => clamp01(emphasisOf(caption, captionsSettings)) * clamp01(captionsSettings.expressiveness);
 
 /** Font size of a word relative to the preset's, from its emphasis. */
 export const emphasisScale = (
   caption: Caption,
   captionsSettings: CaptionsSettings,
-) => 1 + (EMPHASIS_MAX_SCALE - 1) * emphasisStrength(caption, captionsSettings);
+) => {
+  const max = captionsSettings.emphasisMaxScale;
+  const top = typeof max === "number" && Number.isFinite(max) && max >= 1 ? max : EMPHASIS_MAX_SCALE;
+  return 1 + (top - 1) * emphasisStrength(caption, captionsSettings);
+};
 
 const baselineCache = new Map<string, number>();
 
