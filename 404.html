@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>captions.js has moved to captionsjs.dev</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://captionsjs.dev/">
+<script>
+  // maskin25.github.io/captions.js/<path> → captionsjs.dev/<path>.
+  // Docs and API pages keep their paths; the old preset gallery becomes /styles.
+  // The same file is served as 404.html, so every old URL lands here.
+  (function () {
+    var path = location.pathname.replace(/^\/captions\.js/, "") || "/";
+    path = path.replace(/\/index\.html$/, "/").replace(/\.html$/, "");
+    if (/^\/presets\/?$/.test(path)) path = "/styles";
+    if (path.length > 1) path = path.replace(/\/$/, "");
+    // One PostHog event per redirect, so the old address's remaining traffic stays visible
+    // (same project as captionsjs.dev; filter by event = legacy_redirect or $host = maskin25.github.io).
+    try {
+      var body = JSON.stringify({
+        api_key: "phc_p3h3RhbOqofzD9xJtYMwvTA1TXZeM1fwOa1x4kOSFaG",
+        event: "legacy_redirect",
+        distinct_id: "anon-" + Math.random().toString(36).slice(2),
+        properties: {
+          site: "github-pages", $host: location.host, $current_url: location.href,
+          $referrer: document.referrer || "$direct", to_path: path, $process_person_profile: false
+        }
+      });
+      navigator.sendBeacon("https://us.i.posthog.com/i/v0/e/", new Blob([body], { type: "text/plain" }));
+    } catch (e) {}
+    location.replace("https://captionsjs.dev" + path + location.search + location.hash);
+  })();
+</script>
+<meta http-equiv="refresh" content="1; url=https://captionsjs.dev/">
+</head>
+<body style="font:16px/1.5 system-ui,sans-serif;padding:40px">
+  captions.js has moved to <a href="https://captionsjs.dev/">captionsjs.dev</a>.
+</body>
+</html>
