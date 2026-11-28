@@ -32,6 +32,16 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   **Speaker Tags** (`speaker-tags`): a name tag in the speaker's color above
   each screen. `speakersFromTrack(track)` reads names a transcript carries
   (WebVTT voices, named speakers). `SpeakerStyle` is exported.
+- **Added:** two more presets. **Keyword Blowup** (`keyword-blowup`): numbers,
+  amounts and trigger words are drawn 1.8× larger and blow up when spoken,
+  springing in from larger and tilting, then keep the accent color.
+  **Blur Focus** (`blur-focus`): each word arrives out of focus as it is
+  spoken and sharpens (`blurTime`, `blurRadius`); the blur is Konva's Blur
+  filter, the same in the browser and on the server.
+- **Added:** `autoEmphasis` in the settings: emphasis for words whose data has
+  none, from numbers, amounts and `KEYWORDS` (or your own list).
+  `keywordEmphasis(word, keywords?)` is exported. `emphasisMaxScale` sets how
+  large a fully emphasized word gets (default 1.4).
 - **Added:** `frameWidth` and `frameHeight` in the effect context, and
   `Effect.wordGap(options)`: extra space between words, in em, that layout
   leaves for an effect (Sticker Tape uses it so strips do not touch).

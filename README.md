@@ -32,7 +32,7 @@ and every existing option makes you choose one side.
 | Server-side burn-in               | ✅ Node + FFmpeg | —                   | ✅                     | ✅           | ✅                |
 | Headless Chrome in production     | not needed      | n/a                  | **required**           | not needed   | not needed        |
 | Word-level highlighting           | ✅              | timing data only     | build it yourself      | karaoke tags only | ❌           |
-| Modern kinetic typography         | ✅ 38 presets   | —                    | build it yourself      | ❌           | ❌                |
+| Modern kinetic typography         | ✅ 40 presets   | —                    | build it yourself      | ❌           | ❌                |
 | Preview and export share one code path | ✅         | n/a                  | ✅ (via Chrome)        | n/a          | n/a               |
 
 `@remotion/captions` converts transcription formats — it does not render anything.
@@ -276,6 +276,13 @@ There are three ways to mark words:
   `applyAnnotations(track, reply)` validates the answer and applies it. A
   manual mark always wins over an annotation.
 
+Or let the preset pick words itself: `autoEmphasis: true` emphasizes numbers,
+amounts, percentages and a short list of English trigger words (`KEYWORDS`:
+never, free, secret, million, …) in words whose data has no `emphasis`; an
+array of words replaces that list. `keywordEmphasis(word)` is the same test on
+its own. The **Keyword Blowup** preset uses it, with `emphasisMaxScale: 1.8` so
+key words are drawn 1.8× larger instead of 1.4×.
+
 ```ts
 import captionsjs, { annotationPrompt, applyAnnotations, getPreset, toTrack, trackToCaptions } from "captions.js";
 
@@ -299,7 +306,7 @@ npx captions.js prompt words.json > prompt.txt          # send it to your LLM
 npx captions.js burn talk.mp4 words.json -a reply.json -e 0.7
 ```
 
-> Emphasis, annotations and `expressiveness` arrive in 2.0.
+> Emphasis, annotations, `expressiveness` and `autoEmphasis` arrive in 2.0.
 
 ## Custom effects
 
@@ -335,17 +342,17 @@ the words back from a layer can skip them. Size everything from the word's own
 
 ## What's in the box
 
-- **38 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
+- **40 style presets** — Karaoke, Focus Box, Banger, Neon Pulse, Cinema, Old Money and more,
   plus Spring Pop, Highlight Sweep, Neon Bloom, Hard Extrude, Karaoke Fill,
-  Gradient Wave, Pill, Chroma Glitch, Typewriter, Sticker Tape, Slam and Speaker Tags,
-  new in 2.0;
+  Gradient Wave, Pill, Chroma Glitch, Typewriter, Sticker Tape, Slam, Speaker Tags,
+  Keyword Blowup and Blur Focus, new in 2.0;
   each a plain object you can clone and edit. `getPreset("Karaoke")` fetches one by name.
   **[See them all animated →](https://captionsjs.dev/styles)**
-- **22 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
+- **24 animations** — `bounce`, `pop`, `scale`, `box`, `box-word`, `underline`,
   `slide-left`, `slide-up`, `slide-down`, `none`, and in 2.0 `spring`, `highlight-sweep`,
   `neon`, `extrude`, `karaoke-fill`, `gradient-wave`, `pill`, `chroma-glitch`,
-  `typewriter`, `sticker-tape`, `slam`, `speaker-tags`,
-  tunable with `animationOptions`
+  `typewriter`, `sticker-tape`, `slam`, `speaker-tags`, `keyword-blowup`,
+  `blur-focus`, tunable with `animationOptions`
   (e.g. `{ bounceScale: 0.2 }`). Add your own with `registerEffect` (2.0): an effect
   sees every word on screen with its state (past, active, future), line and timing.
 - **Full typography control** — family, weight, size, stroke, shadow, capitalization,

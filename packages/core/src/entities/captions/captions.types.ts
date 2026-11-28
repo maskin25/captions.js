@@ -57,6 +57,18 @@ export interface CaptionsSettings {
    * change.
    */
   expressiveness?: number;
+  /**
+   * Size of a fully emphasized word at `expressiveness: 1`, relative to the
+   * preset's font size. Defaults to {@link EMPHASIS_MAX_SCALE} (1.4).
+   */
+  emphasisMaxScale?: number;
+  /**
+   * Emphasis for words whose data has none (`Caption.emphasis` unset):
+   * `true` marks numbers, amounts and the built-in `KEYWORDS`; an
+   * array of words replaces the keywords (numbers still count). See
+   * `keywordEmphasis`. Unset or `false`: only the data's emphasis is used.
+   */
+  autoEmphasis?: boolean | string[];
   linesPerPage: number;
   lineSpacing?: number | null;
   position: "auto" | "top" | "middle" | "bottom";
@@ -128,7 +140,9 @@ export type BuiltInAnimation =
   | "typewriter"
   | "sticker-tape"
   | "slam"
-  | "speaker-tags";
+  | "speaker-tags"
+  | "keyword-blowup"
+  | "blur-focus";
 
 /**
  * Single timed word/segment that will be highlighted as audio plays.

@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import Konva from "konva";
 import "../dist/render/skia.js"; // Konva on skia-canvas, CPU only (as in the CLI)
-import { getPreset, registerEffect, renderFrame } from "captions.js";
+import { getPreset, keywordEmphasis, registerEffect, renderFrame } from "captions.js";
 
 const size = [540, 960];
 const stage = new Konva.Stage({ width: size[0], height: size[1] });
@@ -256,4 +256,59 @@ const classic = getPreset("Classic").captionsSettings;
   render(tags, 1.45);
   assert.deepEqual(tagText(), [], "a tag for words without a speaker");
   console.log("ok   speakers color any preset; Speaker Tags shows the speaker");
+}
+
+// Keyword Blowup and Blur Focus
+{
+  const said = ["I", "made", "$10,000", "in", "a", "week"].map((word, i) => ({ word, startTime: i, endTime: i + 0.9 }));
+  const renderSaid = (settings, time, captionsIn = said) => {
+    layer.destroyChildren();
+    renderFrame({ settings, captions: captionsIn, time, size, layer, scale: size[1] / 480 });
+    layer.draw();
+  };
+  const words = () => layer.find("Text").filter((t) => !t.hasName("decoration"));
+  const byWord = (w) => words().find((t) => t.text().trim().toLowerCase() === w);
+
+  // keywords: numbers, amounts and trigger words, case and punctuation ignored
+  for (const word of ["$10,000", "50%", "10x", "2026", "€5", "Never!", "FREE", "three", "million"]) {
+    assert.equal(keywordEmphasis(word), 1, word);
+  }
+  for (const word of ["week", "one", "the", "Captions,"]) assert.equal(keywordEmphasis(word), 0, word);
+  assert.equal(keywordEmphasis("pizza", ["Pizza"]), 1, "own keyword list");
+  assert.equal(keywordEmphasis("never", ["pizza"]), 0, "an own list replaces the built-in words");
+
+  // the key word is larger, white until spoken, then in the accent color
+  const blowupPreset = getPreset("Keyword Blowup").captionsSettings;
+  renderSaid(blowupPreset, 0.5);
+  const base = byWord("made").fontSize();
+  assert.ok(Math.abs(byWord("$10,000").fontSize() / base - 1.8) < 0.01, "the key word is not 1.8x");
+  assert.equal(byWord("$10,000").fill(), blowupPreset.style.font.fontColor, "colored before it is spoken");
+  renderSaid(blowupPreset, 2.02);
+  assert.ok(byWord("$10,000").scaleX() > 1.1, "no blow-up when spoken");
+  assert.equal(byWord("$10,000").fill(), blowupPreset.style.highlightColor);
+  renderSaid(blowupPreset, 4.5);
+  assert.equal(byWord("$10,000").fill(), blowupPreset.style.highlightColor, "loses its color once said");
+  assert.equal(byWord("$10,000").scaleX(), 1, "does not settle");
+  assert.equal(byWord("in").fill(), blowupPreset.style.font.fontColor, "a plain word is colored");
+  // emphasis in the data wins over autoEmphasis
+  renderSaid(blowupPreset, 0.5, said.map((c) => ({ ...c, emphasis: c.word === "week" ? 1 : 0 })));
+  assert.equal(byWord("$10,000").fontSize(), base, "data emphasis 0 is not kept");
+  assert.ok(byWord("week").fontSize() > base * 1.7, "data emphasis is not used");
+  // other presets do not pick out keywords
+  renderSaid(classic, 0.5);
+  assert.equal(byWord("$10,000").fontSize(), byWord("made").fontSize());
+
+  // Blur Focus: hidden until spoken, blurred as it arrives, then sharp text
+  const blurPreset = getPreset("Blur Focus").captionsSettings;
+  renderSaid(blurPreset, 1.5);
+  assert.equal(byWord("$10,000").opacity(), 0, "a future word is visible");
+  renderSaid(blurPreset, 2.05);
+  const arriving = byWord("$10,000");
+  assert.ok(arriving.blurRadius() > 0 && arriving.isCached(), "the arriving word is not blurred");
+  const blurred = await hash();
+  renderSaid(blurPreset, 2.05);
+  assert.equal(await hash(), blurred, "blur frames are not reproducible");
+  renderSaid(blurPreset, 2.6);
+  assert.ok(!byWord("$10,000").isCached() && byWord("$10,000").opacity() === 1, "the word does not sharpen");
+  console.log("ok   Keyword Blowup and Blur Focus behave as described");
 }

@@ -62,6 +62,7 @@ export {
   type WordState,
 } from "./canvas-captions/effects";
 export { getHighlightColor } from "./canvas-captions/utils";
+export { KEYWORDS, keywordEmphasis } from "./canvas-captions/keywords";
 
 export {
   toCaptions,
