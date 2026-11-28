@@ -21,10 +21,11 @@ export const createApp = (): express.Express => {
   return app;
 };
 
-export const startServer = (): Server => {
+export const startServer = (port: number = env.PORT): Server => {
   const app = createApp();
-  const server = app.listen(env.PORT, () => {
-    logger.info({ port: env.PORT }, "Server started");
+  const server = app.listen(port, () => {
+    const address = server.address();
+    logger.info({ port: typeof address === "object" && address ? address.port : port }, "Server started");
   });
 
   const terminationSignals: NodeJS.Signals[] = ["SIGTERM", "SIGINT"];

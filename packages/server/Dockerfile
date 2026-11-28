@@ -36,11 +36,11 @@ ENV NODE_ENV=production \
 WORKDIR /app
 COPY --from=deploy /app/deploy/ ./
 USER node
-EXPOSE 4000
 LABEL org.opencontainers.image.title="captions.js render" \
       org.opencontainers.image.description="Burn captions.js animated word-level captions into video with FFmpeg" \
       org.opencontainers.image.source="https://github.com/maskin25/captions.js" \
       org.opencontainers.image.licenses="MIT"
-# no args → HTTP service on $PORT; `burn …` / `presets` → CLI
+# the CLI: `burn …`, `presets`, `prompt …`; no arguments prints help.
+# `serve` starts the HTTP service on $PORT (publish it with -p 4000:4000).
 ENTRYPOINT ["node", "dist/index.js"]
 CMD []

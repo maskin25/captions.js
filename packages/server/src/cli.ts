@@ -15,6 +15,7 @@ Usage
   npx captions.js burn <video> <transcript> [options]
   npx captions.js prompt <transcript> [--share 0.1]
   npx captions.js presets
+  npx captions.js serve [--port 4000]
 
 Options for burn
   -p, --preset <name>    Style preset (default: Karaoke). See \`presets\`.
@@ -45,6 +46,11 @@ Emphasis
   Mark words in the transcript as *word*, or let an LLM pick them: \`prompt\`
   prints instructions with the numbered words; save the model's JSON reply and
   pass it with --annotations. captions.js never calls a model itself.
+
+serve
+  Starts the HTTP service: POST /render takes JSON (a video URL, the words, a
+  preset) and answers with the captioned MP4. --port or $PORT (default 4000).
+  It fetches any URL it is given: keep it off networks with internal services.
 
 Example
   npx captions.js burn talk.mp4 words.json --preset "Focus Box"
@@ -198,6 +204,19 @@ const prompt = async (argv: string[]) => {
   process.stdout.write(annotationPrompt(toTrack(captions), { share }) + "\n");
 };
 
+const serve = async (argv: string[]) => {
+  const { values } = parseArgs({
+    args: argv,
+    options: { port: { type: "string" }, help: { type: "boolean", short: "h" } },
+  });
+  if (values.help) return void process.stdout.write(HELP);
+  const port = Number(values.port ?? process.env.PORT ?? 4000);
+  if (!Number.isInteger(port) || port < 0 || port > 65535) fail(`--port takes a port number, got ${values.port}`);
+  // loaded only here, so burn and the other commands never load Express
+  const { startServer } = await import("./server.js");
+  startServer(port);
+};
+
 const main = async () => {
   const [command, ...rest] = process.argv.slice(2);
   switch (command) {
@@ -205,6 +224,8 @@ const main = async () => {
       return burn(rest);
     case "prompt":
       return prompt(rest);
+    case "serve":
+      return serve(rest);
     case "presets":
       return void process.stdout.write(presetNames.join("\n") + "\n");
     case "-v":

@@ -164,6 +164,11 @@ Upgrading from 1.x: see [MIGRATION.md](./MIGRATION.md).
   gradient); effects can define `accent(settings, color)` for their own.
 
 ### @captionsjs/server
+- **Breaking:** the Docker image runs the CLI: with no arguments it prints help
+  instead of starting the HTTP service, and it no longer exposes a port. Start
+  the service with `serve` (`docker run -p 4000:4000 … serve`).
+- **Added:** `captions.js serve [--port]`: the HTTP service from the CLI.
+  Express is loaded only by `serve`.
 - **Added:** `POST /render` in the HTTP service: JSON in (video URL, transcript
   inline or by URL, preset, `customize`, `safeArea`, `speakers`, emphasis), the
   captioned MP4 out, and errors as JSON with a 400, 422, 503 or 500 status. It

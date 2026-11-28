@@ -59,18 +59,23 @@ the preview is what you get in the file. Pass `scale` to override.
 ## Docker
 
 Multi-arch image (`linux/amd64`, `linux/arm64`) with FFmpeg and all preset fonts baked in —
-works offline.
+works offline. It is the CLI: the same commands as `npx captions.js`, and no
+arguments prints help.
 
 ```bash
-# CLI: mount a folder, burn, done
+# mount a folder, burn, done
 docker run --rm -v "$PWD:/data" maskin25/captions.js-render \
   burn /data/talk.mp4 /data/words.json --preset Karaoke -o /data/out.mp4
 
-# HTTP service on :4000
-docker run -p 4000:4000 maskin25/captions.js-render
+# the HTTP service, if you want one (see below)
+docker run -p 4000:4000 maskin25/captions.js-render serve
 ```
 
 ### HTTP service
+
+`captions.js serve [--port 4000]` (or `serve` in the image) starts a small HTTP
+service for calling the renderer from another program. Building your own API?
+Calling `burnCaptions()` from your app gives you your own auth, queue and storage.
 
 `POST /render` takes JSON and answers with the captioned MP4. The render runs while
 the request is open, so set a client timeout that fits your video length.
